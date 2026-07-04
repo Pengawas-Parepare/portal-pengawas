@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Aktivitas Pengawas Sekolah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Spectral+SC:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF8F2;
+    --paper-dim:#F1ECDD;
+    --card:#FFFFFF;
+    --ink:#20242E;
+    --ink-soft:#5A5F6E;
+    --navy:#1B2A4A;
+    --navy-light:#2C4270;
+    --maroon:#8B1E3F;
+    --maroon-dark:#6E1731;
+    --gold:#B08D57;
+    --gold-light:#D9C08F;
+    --line:#DCD5C4;
+    --shadow: 0 1px 2px rgba(27,42,74,0.06), 0 8px 24px -8px rgba(27,42,74,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 500px at 10% -10%, rgba(176,141,87,0.08), transparent 60%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--gold-light); }
+
+  .wrap{ max-width:960px; margin:0 auto; padding:0 24px 80px; }
+
+  header.masthead{
+    padding:48px 24px 28px;
+    max-width:960px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    gap:22px;
+  }
+  .seal{ flex:0 0 auto; width:64px; height:64px; }
+  .masthead-text{ flex:1 1 auto; min-width:0; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--maroon);
+    margin:0 0 6px;
+  }
+  h1.title{
+    font-family:'Spectral', serif;
+    font-weight:600;
+    font-size:clamp(26px,4vw,38px);
+    letter-spacing:.01em;
+    margin:0 0 6px;
+    color:var(--navy);
+  }
+  .subtitle{
+    margin:0;
+    color:var(--ink-soft);
+    font-size:14.5px;
+    line-height:1.5;
+  }
+  .rule{
+    max-width:960px;
+    margin:0 auto;
+    height:1px;
+    background:linear-gradient(90deg, var(--gold) 0%, var(--line) 18%, var(--line) 100%);
+  }
+
+  .toolbar{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    padding:22px 0 20px;
+    flex-wrap:wrap;
+  }
+  .search-box{ position:relative; flex:1 1 260px; }
+  .search-box input{
+    width:100%;
+    padding:11px 14px 11px 38px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    background:var(--card);
+    font-family:'Inter';
+    font-size:14px;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .search-box input:focus{ border-color:var(--navy-light); box-shadow:0 0 0 3px rgba(44,66,112,0.12); }
+  .search-box svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:var(--ink-soft); }
+
+  .btn{
+    font-family:'Inter';
+    font-weight:600;
+    font-size:13.5px;
+    letter-spacing:.01em;
+    border:none;
+    border-radius:3px;
+    padding:11px 18px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    transition:transform .12s ease, box-shadow .12s ease, background .15s ease;
+  }
+  .btn:active{ transform:translateY(1px); }
+  .btn-primary{ background:var(--navy); color:#F7F4EA; }
+  .btn-primary:hover{ background:var(--navy-light); }
+  .btn-ghost{ background:transparent; color:var(--navy); border:1px solid var(--line); }
+  .btn-ghost:hover{ border-color:var(--navy-light); }
+  .btn-danger-text{ background:transparent; color:var(--maroon); font-size:12.5px; padding:6px 8px; }
+  .btn-danger-text:hover{ text-decoration:underline; }
+
+  .count-note{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    letter-spacing:.02em;
+  }
+
+  .notice{
+    display:flex; gap:10px; align-items:flex-start;
+    background:var(--paper-dim);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:12px 14px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:22px;
+    line-height:1.5;
+  }
+  .notice svg{ flex:0 0 auto; width:15px; height:15px; margin-top:1px; color:var(--gold); }
+
+  .register{ display:flex; flex-direction:column; }
+  .entry{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:3px solid var(--gold);
+    border-radius:3px;
+    margin-bottom:12px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .entry-head{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding:16px 18px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .entry-no{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--maroon);
+    background:rgba(139,30,63,0.06);
+    border:1px solid rgba(139,30,63,0.18);
+    border-radius:3px;
+    padding:3px 8px;
+    white-space:nowrap;
+  }
+  .entry-date{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    min-width:92px;
+  }
+  .entry-name-wrap{ flex:1 1 auto; min-width:0; }
+  .entry-name{
+    font-family:'Spectral', serif;
+    font-weight:600;
+    font-size:17px;
+    color:var(--navy);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .entry-sub{
+    font-size:12px;
+    color:var(--ink-soft);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    margin-top:2px;
+  }
+  .chevron{ width:16px; height:16px; color:var(--ink-soft); transition:transform .18s ease; flex:0 0 auto; }
+  .entry.open .chevron{ transform:rotate(180deg); }
+
+  .entry-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease;
+    border-top:1px solid transparent;
+  }
+  .entry.open .entry-body{ border-top:1px solid var(--line); }
+  .entry-body-inner{ padding:18px 20px 22px; }
+
+  .field-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px 24px; margin-bottom:6px; }
+  @media (max-width:620px){ .field-grid{ grid-template-columns:1fr; } }
+  .field label{
+    display:block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:5px;
+  }
+  .field .val{
+    font-size:14px;
+    line-height:1.55;
+    color:var(--ink);
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+  .field .val a{ color:var(--navy-light); word-break:break-all; }
+  .field .val a:hover{ color:var(--maroon); }
+  .field.full{ grid-column:1 / -1; }
+
+  .entry-actions{ display:flex; justify-content:flex-end; padding-top:12px; margin-top:10px; border-top:1px dashed var(--line); }
+
+  .empty{
+    text-align:center;
+    padding:60px 20px;
+    border:1px dashed var(--line);
+    border-radius:4px;
+    color:var(--ink-soft);
+  }
+  .empty svg{ width:34px; height:34px; color:var(--gold); margin-bottom:12px; }
+  .empty h3{ font-family:'Spectral', serif; color:var(--navy); font-weight:600; margin:0 0 6px; font-size:18px; }
+  .empty p{ margin:0; font-size:13.5px; }
+
+  .loading-row{ display:flex; align-items:center; gap:10px; color:var(--ink-soft); font-size:13px; padding:24px 0; justify-content:center; }
+  .spinner{ width:14px; height:14px; border-radius:50%; border:2px solid var(--line); border-top-color:var(--navy); animation:spin .7s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+
+  .overlay{
+    position:fixed; inset:0; background:rgba(27,32,42,0.45);
+    display:none; align-items:flex-start; justify-content:center;
+    padding:40px 16px; z-index:50; overflow-y:auto;
+    backdrop-filter:blur(2px);
+  }
+  .overlay.show{ display:flex; }
+  .panel{
+    background:var(--paper);
+    width:100%; max-width:640px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    box-shadow:0 24px 60px -12px rgba(20,25,40,0.35);
+    animation:rise .22s ease;
+  }
+  @keyframes rise{ from{ opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  .panel-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 24px; border-bottom:1px solid var(--line);
+  }
+  .panel-head h2{ font-family:'Spectral', serif; font-weight:600; font-size:20px; color:var(--navy); margin:0; }
+  .close-x{ background:none; border:none; cursor:pointer; color:var(--ink-soft); padding:4px; }
+  .close-x:hover{ color:var(--maroon); }
+  .panel-body{ padding:22px 24px 8px; }
+  .panel-foot{ padding:16px 24px 22px; display:flex; justify-content:flex-end; gap:10px; }
+
+  .form-row{ margin-bottom:16px; }
+  .form-row.two{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:560px){ .form-row.two{ grid-template-columns:1fr; } }
+  .form-row label{
+    display:block; font-family:'IBM Plex Mono', monospace; font-size:11px;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--navy); margin-bottom:6px;
+  }
+  .form-row .hint{ font-family:'Inter'; text-transform:none; letter-spacing:0; color:var(--ink-soft); font-size:11.5px; margin-left:6px; }
+  input[type=text], input[type=date], input[type=url]{
+    width:100%; border:1px solid var(--line); border-radius:3px;
+    padding:10px 12px; font-family:'Inter'; font-size:14px; color:var(--ink);
+    background:#fff; outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  input:focus{ border-color:var(--navy-light); box-shadow:0 0 0 3px rgba(44,66,112,0.12); }
+
+  .error-msg{ color:var(--maroon); font-size:12.5px; margin-top:4px; display:none; }
+  .error-msg.show{ display:block; }
+
+  .stamp-overlay{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:80; }
+  .stamp-mark{ opacity:0; transform:scale(2.6) rotate(-18deg); }
+  .stamp-mark.play{ animation:stampDown .55s cubic-bezier(.2,.9,.3,1.2) forwards; }
+  @keyframes stampDown{
+    0%{ opacity:0; transform:scale(2.6) rotate(-18deg); }
+    55%{ opacity:1; transform:scale(0.94) rotate(-8deg); }
+    70%{ transform:scale(1.04) rotate(-8deg); }
+    100%{ opacity:0; transform:scale(1) rotate(-8deg); transition:opacity .3s ease .35s; }
+  }
+
+  footer.foot{
+    max-width:960px; margin:40px auto 0; padding:20px 24px 0; text-align:center;
+    color:var(--ink-soft); font-size:11.5px; font-family:'IBM Plex Mono', monospace; letter-spacing:.03em;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="seal" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="32" cy="32" r="30" stroke="#1B2A4A" stroke-width="1.4"/>
+    <circle cx="32" cy="32" r="24.5" stroke="#B08D57" stroke-width="1" stroke-dasharray="2 3"/>
+    <circle cx="32" cy="32" r="4" fill="#8B1E3F"/>
+    <path d="M32 12 L32 20 M32 44 L32 52 M12 32 L20 32 M44 32 L52 32" stroke="#1B2A4A" stroke-width="1.2"/>
+    <path d="M18.3 18.3 L23.8 23.8 M40.2 40.2 L45.7 45.7 M45.7 18.3 L40.2 23.8 M23.8 40.2 L18.3 45.7" stroke="#B08D57" stroke-width="1"/>
+  </svg>
+  <div class="masthead-text">
+    <p class="eyebrow">Buku Register &middot; Dokumentasi Resmi</p>
+    <h1 class="title">Portal Aktivitas Pengawas Sekolah</h1>
+    <p class="subtitle">Pencatatan nama pengawas, kegiatan, lama kegiatan, tanggal, surat tugas, dan dokumentasi dalam satu register bersama.</p>
+  </div>
+</header>
+<div class="rule"></div>
+
+<div class="wrap">
+
+  <div class="notice">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9.2"/><path d="M12 8v5M12 16h.01"/></svg>
+    <span>Data pada portal ini tersimpan di Google Sheets &mdash; dapat digunakan bersama, setiap pengawas yang membuka portal ini dapat melihat, menambah, dan menghapus entri.</span>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="Cari nama pengawas, nama kegiatan, atau tanggal…">
+    </div>
+    <button class="btn btn-primary" id="openFormBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+      Catat Kegiatan Baru
+    </button>
+  </div>
+
+  <div id="countNote" class="count-note" style="margin-bottom:14px;"></div>
+
+  <div id="listRoot" class="register">
+    <div class="loading-row"><span class="spinner"></span> Memuat register…</div>
+  </div>
+
+</div>
+
+<footer class="foot">PORTAL AKTIVITAS PENGAWAS SEKOLAH &middot; register bersama &middot; disimpan otomatis</footer>
+
+<!-- ===== Form Panel ===== -->
+<div class="overlay" id="formOverlay">
+  <div class="panel">
+    <div class="panel-head">
+      <h2 id="panelTitle">Catat Kegiatan Baru</h2>
+      <button class="close-x" id="closeFormBtn" aria-label="Tutup">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">
+      <form id="entryForm">
+        <div class="form-row">
+          <label for="f_pengawas">Nama Pengawas Sekolah</label>
+          <input type="text" id="f_pengawas" placeholder="cth. Drs. Ahmad Fauzi, M.Pd." required>
+        </div>
+
+        <div class="form-row">
+          <label for="f_nama">Nama Kegiatan</label>
+          <input type="text" id="f_nama" placeholder="cth. Supervisi Akademik SMPN 1 Parepare" required>
+        </div>
+
+        <div class="form-row two">
+          <div>
+            <label for="f_tanggal">Tanggal Kegiatan</label>
+            <input type="date" id="f_tanggal" required>
+          </div>
+          <div>
+            <label for="f_lama">Lama Kegiatan</label>
+            <input type="text" id="f_lama" placeholder="cth. 1 hari / 3 hari">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="f_tempat">Tempat Kegiatan</label>
+          <input type="text" id="f_tempat" placeholder="cth. SMPN 1 Parepare">
+        </div>
+
+        <div class="form-row">
+          <label for="f_surattugas">Surat Tugas <span class="hint">tautan/link dokumen</span></label>
+          <input type="url" id="f_surattugas" placeholder="https://drive.google.com/…">
+        </div>
+
+        <div class="form-row">
+          <label for="f_dokumentasi">Dokumentasi <span class="hint">tautan/link foto atau dokumen</span></label>
+          <input type="url" id="f_dokumentasi" placeholder="https://drive.google.com/…">
+        </div>
+
+        <div class="error-msg" id="formError"></div>
+      </form>
+    </div>
+    <div class="panel-foot">
+      <button class="btn btn-ghost" id="cancelFormBtn" type="button">Batal</button>
+      <button class="btn btn-primary" id="submitFormBtn" type="submit" form="entryForm">
+        <span id="submitLabel">Simpan &amp; Bubuhkan Stempel</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Stamp confirmation ===== -->
+<div class="stamp-overlay" id="stampOverlay">
+  <svg id="stampMark" class="stamp-mark" width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="75" cy="75" r="66" stroke="#8B1E3F" stroke-width="3"/>
+    <circle cx="75" cy="75" r="56" stroke="#8B1E3F" stroke-width="1.5" stroke-dasharray="3 4"/>
+    <text x="75" y="65" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8B1E3F" letter-spacing="2">TERCATAT</text>
+    <text x="75" y="95" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="#8B1E3F" letter-spacing="1" id="stampDate">--/--/----</text>
+  </svg>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ==========================================================
+  // TEMPEL URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
+  // (didapat setelah Deploy > Web app, diakhiri dengan /exec)
+  // ==========================================================
+  const API_URL = "https://script.google.com/macros/s/AKfycbwNXXaNeGY0m1t3sgDGvwRx0lzeIeVbmztgl8j2KM10rSN3IusrZdm3EyZWv8Fsa_O5/exec";
+
+  let entries = [];      // {id, ...fields}
+  let searchTerm = "";
+
+  const listRoot = document.getElementById('listRoot');
+  const countNote = document.getElementById('countNote');
+  const formOverlay = document.getElementById('formOverlay');
+  const entryForm = document.getElementById('entryForm');
+  const formError = document.getElementById('formError');
+
+  function escapeHtml(str){
+    return (str || "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function isValidUrl(str){
+    if(!str) return false;
+    try{ const u = new URL(str); return u.protocol === 'http:' || u.protocol === 'https:'; }
+    catch(e){ return false; }
+  }
+
+  function linkOrDash(str){
+    const val = (str || "").trim();
+    if(!val) return '—';
+    if(isValidUrl(val)){
+      return `<a href="${escapeHtml(val)}" target="_blank" rel="noopener noreferrer">${escapeHtml(val)}</a>`;
+    }
+    return escapeHtml(val);
+  }
+
+  function formatDateID(iso){
+    if(!iso) return '—';
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const parts = iso.split('-');
+    if(parts.length !== 3) return iso;
+    const [y,m,d] = parts;
+    return `${parseInt(d,10)} ${months[parseInt(m,10)-1]} ${y}`;
+  }
+
+  function shortDateID(iso){
+    if(!iso) return '—';
+    const parts = iso.split('-');
+    if(parts.length !== 3) return iso;
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+
+  // ---------- Storage (Google Sheets via Apps Script) ----------
+  function apiConfigured_(){
+    return API_URL && API_URL.indexOf('PASTE_URL_WEB_APP_DI_SINI') === -1;
+  }
+
+  async function loadEntries(){
+    if(!apiConfigured_()){
+      listRoot.innerHTML = `
+        <div class="empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9.5"/></svg>
+          <h3>Portal belum tersambung</h3>
+          <p>Tempelkan URL Web App Google Apps Script Anda pada konstanta <code>API_URL</code> di bagian atas kode &lt;script&gt;, lalu muat ulang halaman.</p>
+        </div>`;
+      return;
+    }
+    listRoot.innerHTML = `<div class="loading-row"><span class="spinner"></span> Memuat register…</div>`;
+    try{
+      const res = await fetch(API_URL + '?action=list');
+      const data = await res.json();
+      if(!data.ok) throw new Error(data.error || 'Gagal memuat data');
+      entries = (data.entries || []).sort((a,b) => (a.tanggal||'').localeCompare(b.tanggal||'') || (a.createdAt||0)-(b.createdAt||0));
+      render();
+    }catch(e){
+      listRoot.innerHTML = `<div class="empty"><h3>Gagal memuat data</h3><p>Terjadi kendala saat mengambil register dari Google Sheets. Periksa koneksi internet dan pastikan URL API sudah benar, lalu muat ulang halaman.</p></div>`;
+      console.error('loadEntries error', e);
+    }
+  }
+
+  async function saveEntry(entry){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // hindari CORS preflight di Apps Script
+      body: JSON.stringify({ action: 'add', entry })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal menyimpan');
+    return data;
+  }
+
+  async function deleteEntry(id){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'delete', id })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal menghapus');
+    return data;
+  }
+
+  // ---------- Render list ----------
+  function render(){
+    const filtered = entries.filter(e => {
+      if(!searchTerm) return true;
+      const hay = [e.namaPengawas, e.namaKegiatan, e.tanggal, e.lamaKegiatan, e.tempatKegiatan].join(' ').toLowerCase();
+      return hay.includes(searchTerm.toLowerCase());
+    });
+
+    countNote.textContent = entries.length
+      ? `${filtered.length} dari ${entries.length} kegiatan tercatat`
+      : '';
+
+    if(entries.length === 0){
+      listRoot.innerHTML = `
+        <div class="empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <h3>Register masih kosong</h3>
+          <p>Belum ada kegiatan yang dicatat. Mulai dengan menekan "Catat Kegiatan Baru".</p>
+        </div>`;
+      return;
+    }
+    if(filtered.length === 0){
+      listRoot.innerHTML = `<div class="empty"><h3>Tidak ditemukan</h3><p>Tidak ada kegiatan yang cocok dengan pencarian "${escapeHtml(searchTerm)}".</p></div>`;
+      return;
+    }
+
+    // Chronological registration numbers (oldest = 001), display newest first
+    const withNumbers = entries.map((e, i) => ({...e, regNo: String(i+1).padStart(3,'0')}));
+    const numberMap = {};
+    withNumbers.forEach(e => numberMap[e.id] = e.regNo);
+
+    const ordered = filtered.slice().sort((a,b) => (b.tanggal||'').localeCompare(a.tanggal||'') || (b.createdAt||0)-(a.createdAt||0));
+
+    listRoot.innerHTML = ordered.map(e => {
+      const regNo = numberMap[e.id] || '—';
+      const year = (e.tanggal||'').split('-')[0] || '';
+      return `
+      <div class="entry" data-id="${e.id}">
+        <div class="entry-head" data-toggle="${e.id}">
+          <span class="entry-no">No. ${regNo}${year ? '/'+year : ''}</span>
+          <span class="entry-date">${shortDateID(e.tanggal)}</span>
+          <div class="entry-name-wrap">
+            <div class="entry-name">${escapeHtml(e.namaKegiatan) || '(tanpa nama)'}</div>
+            <div class="entry-sub">${escapeHtml(e.namaPengawas) || '—'}${e.tempatKegiatan ? ' &middot; ' + escapeHtml(e.tempatKegiatan) : ''}</div>
+          </div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="entry-body">
+          <div class="entry-body-inner">
+            <div class="field-grid">
+              <div class="field"><label>Nama Pengawas Sekolah</label><div class="val">${escapeHtml(e.namaPengawas) || '—'}</div></div>
+              <div class="field"><label>Nama Kegiatan</label><div class="val">${escapeHtml(e.namaKegiatan) || '—'}</div></div>
+              <div class="field"><label>Tanggal Kegiatan</label><div class="val">${formatDateID(e.tanggal)}</div></div>
+              <div class="field"><label>Lama Kegiatan</label><div class="val">${escapeHtml(e.lamaKegiatan) || '—'}</div></div>
+              <div class="field"><label>Tempat Kegiatan</label><div class="val">${escapeHtml(e.tempatKegiatan) || '—'}</div></div>
+              <div class="field full"><label>Surat Tugas</label><div class="val">${linkOrDash(e.suratTugas)}</div></div>
+              <div class="field full"><label>Dokumentasi</label><div class="val">${linkOrDash(e.dokumentasi)}</div></div>
+            </div>
+            <div class="entry-actions">
+              <button class="btn-danger-text" data-delete="${e.id}">Hapus entri ini</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ---------- Interactions: expand/collapse ----------
+  listRoot.addEventListener('click', async (ev) => {
+    const head = ev.target.closest('[data-toggle]');
+    if(head){
+      const entryEl = head.closest('.entry');
+      const body = entryEl.querySelector('.entry-body');
+      const isOpen = entryEl.classList.toggle('open');
+      body.style.maxHeight = isOpen ? body.scrollHeight + 'px' : '0px';
+      return;
+    }
+    const delBtn = ev.target.closest('[data-delete]');
+    if(delBtn){
+      const id = delBtn.getAttribute('data-delete');
+      if(confirm('Hapus entri kegiatan ini dari register? Tindakan ini tidak dapat dibatalkan.')){
+        delBtn.textContent = 'Menghapus…';
+        try{
+          await deleteEntry(id);
+          entries = entries.filter(e => e.id !== id);
+          render();
+        }catch(e){
+          alert('Gagal menghapus entri. Silakan coba lagi.');
+          console.error(e);
+        }
+      }
+    }
+  });
+
+  document.getElementById('searchInput').addEventListener('input', (ev) => {
+    searchTerm = ev.target.value.trim();
+    render();
+  });
+
+  // ---------- Form panel open/close ----------
+  const openFormBtn = document.getElementById('openFormBtn');
+  const closeFormBtn = document.getElementById('closeFormBtn');
+  const cancelFormBtn = document.getElementById('cancelFormBtn');
+
+  function openForm(){
+    entryForm.reset();
+    formError.classList.remove('show');
+    document.getElementById('f_tanggal').valueAsDate = new Date();
+    formOverlay.classList.add('show');
+    document.getElementById('f_pengawas').focus();
+  }
+  function closeForm(){ formOverlay.classList.remove('show'); }
+
+  openFormBtn.addEventListener('click', openForm);
+  closeFormBtn.addEventListener('click', closeForm);
+  cancelFormBtn.addEventListener('click', closeForm);
+  formOverlay.addEventListener('click', (ev) => { if(ev.target === formOverlay) closeForm(); });
+  document.addEventListener('keydown', (ev) => {
+    if(ev.key === 'Escape'){
+      closeForm();
+    }
+  });
+
+  // ---------- Submit ----------
+  entryForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const namaPengawas = document.getElementById('f_pengawas').value.trim();
+    const namaKegiatan = document.getElementById('f_nama').value.trim();
+    const tanggal = document.getElementById('f_tanggal').value;
+    const suratTugas = document.getElementById('f_surattugas').value.trim();
+    const dokumentasi = document.getElementById('f_dokumentasi').value.trim();
+
+    if(!namaPengawas || !namaKegiatan || !tanggal){
+      formError.textContent = 'Nama Pengawas Sekolah, Nama Kegiatan, dan Tanggal Kegiatan wajib diisi.';
+      formError.classList.add('show');
+      return;
+    }
+    if(suratTugas && !isValidUrl(suratTugas)){
+      formError.textContent = 'Tautan Surat Tugas harus berupa URL yang valid (diawali http:// atau https://).';
+      formError.classList.add('show');
+      return;
+    }
+    if(dokumentasi && !isValidUrl(dokumentasi)){
+      formError.textContent = 'Tautan Dokumentasi harus berupa URL yang valid (diawali http:// atau https://).';
+      formError.classList.add('show');
+      return;
+    }
+    formError.classList.remove('show');
+
+    const submitBtn = document.getElementById('submitFormBtn');
+    const submitLabel = document.getElementById('submitLabel');
+    submitBtn.disabled = true;
+    const prevLabel = submitLabel.textContent;
+    submitLabel.textContent = 'Menyimpan…';
+
+    const entry = {
+      id: 'e' + Date.now() + Math.random().toString(36).slice(2,8),
+      namaPengawas,
+      namaKegiatan,
+      tanggal,
+      lamaKegiatan: document.getElementById('f_lama').value.trim(),
+      tempatKegiatan: document.getElementById('f_tempat').value.trim(),
+      suratTugas,
+      dokumentasi,
+      createdAt: Date.now()
+    };
+
+    try{
+      await saveEntry(entry);
+      entries.push(entry);
+      closeForm();
+      playStamp(tanggal);
+      render();
+    }catch(e){
+      formError.textContent = 'Gagal menyimpan data. Periksa koneksi lalu coba lagi.';
+      formError.classList.add('show');
+      console.error('save error', e);
+    }finally{
+      submitBtn.disabled = false;
+      submitLabel.textContent = prevLabel;
+    }
+  });
+
+  // ---------- Stamp animation ----------
+  function playStamp(tanggal){
+    const overlay = document.getElementById('stampOverlay');
+    const mark = document.getElementById('stampMark');
+    document.getElementById('stampDate').textContent = shortDateID(tanggal);
+    mark.classList.remove('play');
+    void mark.offsetWidth; // reflow to restart animation
+    mark.classList.add('play');
+    overlay.style.display = 'flex';
+    setTimeout(() => { overlay.style.display = 'none'; }, 900);
+  }
+
+  // ---------- Init ----------
+  loadEntries();
+})();
+</script>
+</body>
+</html>
