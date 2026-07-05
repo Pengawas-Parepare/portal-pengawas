@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal Aktivitas Pengawas Sekolah</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Spectral+SC:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#FAF8F2;
@@ -331,7 +332,7 @@
 
   <div class="notice">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9.2"/><path d="M12 8v5M12 16h.01"/></svg>
-    <span>Data pada portal ini tersimpan di Google Sheets &mdash; dapat digunakan bersama, setiap pengawas yang membuka portal ini dapat melihat, menambah, dan menghapus entri.</span>
+    <span>Data pada portal ini tersimpan di Google Sheets &mdash; siapa saja yang membuka link ini dapat melihat daftar kegiatan. Untuk menambah atau menghapus entri, silakan masuk terlebih dahulu dengan akun terdaftar.</span>
   </div>
 
   <div class="toolbar">
@@ -339,6 +340,15 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
       <input type="text" id="searchInput" placeholder="Cari nama pengawas, nama kegiatan, atau tanggal…">
     </div>
+    <span id="authStatus" class="count-note" style="display:none;"></span>
+    <button class="btn btn-ghost" id="loginBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+      Masuk
+    </button>
+    <button class="btn btn-ghost" id="logoutBtn" style="display:none;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      Keluar
+    </button>
     <button class="btn btn-primary" id="openFormBtn">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
       Catat Kegiatan Baru
@@ -424,6 +434,37 @@
   </svg>
 </div>
 
+<!-- ===== Login Panel ===== -->
+<div class="overlay" id="loginOverlay">
+  <div class="panel" style="max-width:420px;">
+    <div class="panel-head">
+      <h2>Masuk ke Portal</h2>
+      <button class="close-x" id="closeLoginBtn" aria-label="Tutup">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">
+      <form id="loginForm">
+        <div class="form-row">
+          <label for="l_email">Email</label>
+          <input type="text" id="l_email" placeholder="nama@email.com" autocomplete="username" required>
+        </div>
+        <div class="form-row">
+          <label for="l_password">Password</label>
+          <input type="password" id="l_password" placeholder="Password" autocomplete="current-password" required>
+        </div>
+        <div class="error-msg" id="loginError"></div>
+      </form>
+    </div>
+    <div class="panel-foot">
+      <button class="btn btn-ghost" id="cancelLoginBtn" type="button">Batal</button>
+      <button class="btn btn-primary" id="submitLoginBtn" type="submit" form="loginForm">
+        <span id="loginSubmitLabel">Masuk</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   "use strict";
@@ -433,15 +474,25 @@
   // (didapat setelah Deploy > Web app, diakhiri dengan /exec)
   // ==========================================================
   const API_URL = "https://script.google.com/macros/s/AKfycbwNXXaNeGY0m1t3sgDGvwRx0lzeIeVbmztgl8j2KM10rSN3IusrZdm3EyZWv8Fsa_O5/exec";
+  const CACHE_KEY = "portalPengawas_cache_v1";
+  const AUTH_KEY = "portalPengawas_auth_v1";
 
   let entries = [];      // {id, ...fields}
   let searchTerm = "";
+  let auth = null;       // { token, email } jika sudah login
 
   const listRoot = document.getElementById('listRoot');
   const countNote = document.getElementById('countNote');
   const formOverlay = document.getElementById('formOverlay');
   const entryForm = document.getElementById('entryForm');
   const formError = document.getElementById('formError');
+  const loginOverlay = document.getElementById('loginOverlay');
+  const loginForm = document.getElementById('loginForm');
+  const loginError = document.getElementById('loginError');
+  const loginBtn = document.getElementById('loginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const authStatus = document.getElementById('authStatus');
+  const openFormBtn = document.getElementById('openFormBtn');
 
   function escapeHtml(str){
     return (str || "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -493,15 +544,33 @@
         </div>`;
       return;
     }
-    listRoot.innerHTML = `<div class="loading-row"><span class="spinner"></span> Memuat register…</div>`;
+
+    // Tampilkan cache lokal dulu (jika ada) agar terasa instan
+    let hasCache = false;
+    try{
+      const cached = localStorage.getItem(CACHE_KEY);
+      if(cached){
+        entries = JSON.parse(cached);
+        hasCache = true;
+        render();
+      }
+    }catch(e){ /* localStorage tidak tersedia, lanjut tanpa cache */ }
+
+    if(!hasCache){
+      listRoot.innerHTML = `<div class="loading-row"><span class="spinner"></span> Memuat register…</div>`;
+    }
+
     try{
       const res = await fetch(API_URL + '?action=list');
       const data = await res.json();
       if(!data.ok) throw new Error(data.error || 'Gagal memuat data');
       entries = (data.entries || []).sort((a,b) => (a.tanggal||'').localeCompare(b.tanggal||'') || (a.createdAt||0)-(b.createdAt||0));
       render();
+      try{ localStorage.setItem(CACHE_KEY, JSON.stringify(entries)); }catch(e){}
     }catch(e){
-      listRoot.innerHTML = `<div class="empty"><h3>Gagal memuat data</h3><p>Terjadi kendala saat mengambil register dari Google Sheets. Periksa koneksi internet dan pastikan URL API sudah benar, lalu muat ulang halaman.</p></div>`;
+      if(!hasCache){
+        listRoot.innerHTML = `<div class="empty"><h3>Gagal memuat data</h3><p>Terjadi kendala saat mengambil register dari Google Sheets. Periksa koneksi internet dan pastikan URL API sudah benar, lalu muat ulang halaman.</p></div>`;
+      }
       console.error('loadEntries error', e);
     }
   }
@@ -510,7 +579,7 @@
     const res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // hindari CORS preflight di Apps Script
-      body: JSON.stringify({ action: 'add', entry })
+      body: JSON.stringify({ action: 'add', entry, token: auth ? auth.token : null })
     });
     const data = await res.json();
     if(!data.ok) throw new Error(data.error || 'Gagal menyimpan');
@@ -521,12 +590,113 @@
     const res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'delete', id })
+      body: JSON.stringify({ action: 'delete', id, token: auth ? auth.token : null })
     });
     const data = await res.json();
     if(!data.ok) throw new Error(data.error || 'Gagal menghapus');
     return data;
   }
+
+  async function loginRequest(email, password){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'login', email, password })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal masuk');
+    return data; // { token, email }
+  }
+
+  async function logoutRequest(token){
+    try{
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'logout', token })
+      });
+    }catch(e){ /* abaikan kegagalan logout jaringan */ }
+  }
+
+  // ---------- Auth (login/logout) ----------
+  function loadAuth_(){
+    try{
+      const raw = localStorage.getItem(AUTH_KEY);
+      if(raw){ auth = JSON.parse(raw); }
+    }catch(e){ auth = null; }
+    updateAuthUI();
+  }
+  function persistAuth_(){
+    try{
+      if(auth) localStorage.setItem(AUTH_KEY, JSON.stringify(auth));
+      else localStorage.removeItem(AUTH_KEY);
+    }catch(e){}
+  }
+  function updateAuthUI(){
+    if(auth){
+      loginBtn.style.display = 'none';
+      logoutBtn.style.display = 'inline-flex';
+      authStatus.style.display = 'inline';
+      authStatus.textContent = 'Masuk sebagai ' + auth.email;
+    }else{
+      loginBtn.style.display = 'inline-flex';
+      logoutBtn.style.display = 'none';
+      authStatus.style.display = 'none';
+      authStatus.textContent = '';
+    }
+    render(); // perbarui tombol hapus di tiap entri
+  }
+
+  function openLogin(){
+    loginForm.reset();
+    loginError.classList.remove('show');
+    loginOverlay.classList.add('show');
+    document.getElementById('l_email').focus();
+  }
+  function closeLogin(){ loginOverlay.classList.remove('show'); }
+
+  loginBtn.addEventListener('click', openLogin);
+  document.getElementById('closeLoginBtn').addEventListener('click', closeLogin);
+  document.getElementById('cancelLoginBtn').addEventListener('click', closeLogin);
+  loginOverlay.addEventListener('click', (ev) => { if(ev.target === loginOverlay) closeLogin(); });
+
+  loginForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const email = document.getElementById('l_email').value.trim();
+    const password = document.getElementById('l_password').value;
+    if(!email || !password){
+      loginError.textContent = 'Email dan password wajib diisi.';
+      loginError.classList.add('show');
+      return;
+    }
+    loginError.classList.remove('show');
+    const submitBtn = document.getElementById('submitLoginBtn');
+    const submitLabel = document.getElementById('loginSubmitLabel');
+    submitBtn.disabled = true;
+    submitLabel.textContent = 'Memeriksa…';
+    try{
+      const result = await loginRequest(email, password);
+      auth = { token: result.token, email: result.email };
+      persistAuth_();
+      updateAuthUI();
+      closeLogin();
+    }catch(e){
+      loginError.textContent = e.message || 'Email atau password salah.';
+      loginError.classList.add('show');
+    }finally{
+      submitBtn.disabled = false;
+      submitLabel.textContent = 'Masuk';
+    }
+  });
+
+  logoutBtn.addEventListener('click', async () => {
+    if(auth){
+      await logoutRequest(auth.token);
+    }
+    auth = null;
+    persistAuth_();
+    updateAuthUI();
+  });
 
   // ---------- Render list ----------
   function render(){
@@ -587,7 +757,7 @@
               <div class="field full"><label>Dokumentasi</label><div class="val">${linkOrDash(e.dokumentasi)}</div></div>
             </div>
             <div class="entry-actions">
-              <button class="btn-danger-text" data-delete="${e.id}">Hapus entri ini</button>
+              ${auth ? `<button class="btn-danger-text" data-delete="${e.id}">Hapus entri ini</button>` : `<span class="entry-sub">Masuk untuk mengelola entri ini</span>`}
             </div>
           </div>
         </div>
@@ -613,6 +783,7 @@
         try{
           await deleteEntry(id);
           entries = entries.filter(e => e.id !== id);
+          try{ localStorage.setItem(CACHE_KEY, JSON.stringify(entries)); }catch(err){}
           render();
         }catch(e){
           alert('Gagal menghapus entri. Silakan coba lagi.');
@@ -628,11 +799,14 @@
   });
 
   // ---------- Form panel open/close ----------
-  const openFormBtn = document.getElementById('openFormBtn');
   const closeFormBtn = document.getElementById('closeFormBtn');
   const cancelFormBtn = document.getElementById('cancelFormBtn');
 
   function openForm(){
+    if(!auth){
+      openLogin();
+      return;
+    }
     entryForm.reset();
     formError.classList.remove('show');
     document.getElementById('f_tanggal').valueAsDate = new Date();
@@ -698,6 +872,7 @@
     try{
       await saveEntry(entry);
       entries.push(entry);
+      try{ localStorage.setItem(CACHE_KEY, JSON.stringify(entries)); }catch(err){}
       closeForm();
       playStamp(tanggal);
       render();
@@ -724,6 +899,7 @@
   }
 
   // ---------- Init ----------
+  loadAuth_();
   loadEntries();
 })();
 </script>
