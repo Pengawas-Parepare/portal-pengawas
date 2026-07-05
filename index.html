@@ -20,8 +20,11 @@
     --maroon-dark:#6E1731;
     --gold:#B08D57;
     --gold-light:#D9C08F;
+    --emerald:#1F7A5C;
+    --emerald-light:#E4F3EC;
     --line:#DCD5C4;
     --shadow: 0 1px 2px rgba(27,42,74,0.06), 0 8px 24px -8px rgba(27,42,74,0.12);
+    --header-gradient: linear-gradient(120deg, #1B2A4A 0%, #2C4270 45%, #8B1E3F 100%);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -38,44 +41,53 @@
 
   .wrap{ max-width:960px; margin:0 auto; padding:0 24px 80px; }
 
+  .masthead-band{
+    background: var(--header-gradient);
+    padding:44px 0 56px;
+  }
   header.masthead{
-    padding:48px 24px 28px;
+    padding:0 24px;
     max-width:960px;
     margin:0 auto;
     display:flex;
     align-items:center;
     gap:22px;
   }
-  .seal{ flex:0 0 auto; width:64px; height:64px; }
+  .seal{ flex:0 0 auto; width:64px; height:64px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25)); }
+  .seal circle, .seal path{ stroke: #F1ECDD; }
+  .seal circle[fill]{ fill:var(--gold-light); }
   .masthead-text{ flex:1 1 auto; min-width:0; }
   .eyebrow{
     font-family:'IBM Plex Mono', monospace;
     font-size:11px;
-    letter-spacing:.16em;
+    letter-spacing:.2em;
     text-transform:uppercase;
-    color:var(--maroon);
-    margin:0 0 6px;
+    color:var(--gold-light);
+    margin:0 0 8px;
   }
   h1.title{
     font-family:'Spectral', serif;
-    font-weight:600;
-    font-size:clamp(26px,4vw,38px);
-    letter-spacing:.01em;
-    margin:0 0 6px;
-    color:var(--navy);
+    font-weight:700;
+    font-size:clamp(28px,4.2vw,40px);
+    letter-spacing:.005em;
+    margin:0 0 10px;
+    color:#FFFFFF;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.18);
   }
   .subtitle{
     margin:0;
-    color:var(--ink-soft);
+    color:rgba(255,255,255,0.82);
     font-size:14.5px;
-    line-height:1.5;
+    line-height:1.55;
+    max-width:640px;
   }
   .rule{
     max-width:960px;
-    margin:0 auto;
+    margin:-24px auto 0;
     height:1px;
-    background:linear-gradient(90deg, var(--gold) 0%, var(--line) 18%, var(--line) 100%);
+    background:transparent;
   }
+  .wrap{ max-width:960px; margin:-32px auto 0; padding:0 24px 80px; position:relative; z-index:2; }
 
   .toolbar{
     display:flex;
@@ -106,7 +118,7 @@
     font-size:13.5px;
     letter-spacing:.01em;
     border:none;
-    border-radius:3px;
+    border-radius:6px;
     padding:11px 18px;
     cursor:pointer;
     display:inline-flex;
@@ -115,12 +127,26 @@
     transition:transform .12s ease, box-shadow .12s ease, background .15s ease;
   }
   .btn:active{ transform:translateY(1px); }
-  .btn-primary{ background:var(--navy); color:#F7F4EA; }
-  .btn-primary:hover{ background:var(--navy-light); }
-  .btn-ghost{ background:transparent; color:var(--navy); border:1px solid var(--line); }
-  .btn-ghost:hover{ border-color:var(--navy-light); }
-  .btn-danger-text{ background:transparent; color:var(--maroon); font-size:12.5px; padding:6px 8px; }
-  .btn-danger-text:hover{ text-decoration:underline; }
+  .btn-primary{
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    color:#FFFFFF;
+    box-shadow: 0 4px 14px -4px rgba(27,42,74,0.5);
+  }
+  .btn-primary:hover{ box-shadow: 0 6px 18px -4px rgba(27,42,74,0.6); transform:translateY(-1px); }
+  .btn-ghost{ background:#fff; color:var(--navy); border:1px solid var(--line); }
+  .btn-ghost:hover{ border-color:var(--navy-light); box-shadow:0 2px 8px -2px rgba(27,42,74,0.15); }
+  .btn-danger-text{ background:transparent; color:var(--maroon); font-size:12.5px; padding:6px 10px; border-radius:4px; font-weight:600; }
+  .btn-danger-text:hover{ background:rgba(139,30,63,0.08); }
+  .btn-edit-text{ background:transparent; color:var(--emerald); font-size:12.5px; padding:6px 10px; border-radius:4px; font-weight:600; }
+  .btn-edit-text:hover{ background:var(--emerald-light); }
+
+  .owner-badge{
+    display:inline-flex; align-items:center; gap:5px;
+    background:var(--emerald-light); color:var(--emerald);
+    font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase;
+    border-radius:3px; padding:3px 8px; font-weight:600;
+    flex:0 0 auto; white-space:nowrap;
+  }
 
   .count-note{
     font-family:'IBM Plex Mono', monospace;
@@ -147,11 +173,14 @@
     background:var(--card);
     border:1px solid var(--line);
     border-left:3px solid var(--gold);
-    border-radius:3px;
+    border-radius:6px;
     margin-bottom:12px;
     box-shadow:var(--shadow);
     overflow:hidden;
+    transition: box-shadow .15s ease, transform .15s ease;
   }
+  .entry:hover{ box-shadow: 0 4px 16px -4px rgba(27,42,74,0.18), 0 2px 6px -2px rgba(27,42,74,0.1); }
+  .entry.mine{ border-left-color: var(--emerald); }
   .entry-head{
     display:flex;
     align-items:center;
@@ -290,6 +319,15 @@
   .error-msg{ color:var(--maroon); font-size:12.5px; margin-top:4px; display:none; }
   .error-msg.show{ display:block; }
 
+  .drive-hint{
+    display:flex; gap:10px; align-items:flex-start;
+    background:var(--emerald-light); color:var(--emerald);
+    border:1px solid rgba(31,122,92,0.25);
+    border-radius:4px; padding:11px 13px; font-size:12.5px; line-height:1.5;
+    margin-bottom:16px;
+  }
+  .drive-hint svg{ flex:0 0 auto; width:16px; height:16px; margin-top:1px; }
+
   .stamp-overlay{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:80; }
   .stamp-mark{ opacity:0; transform:scale(2.6) rotate(-18deg); }
   .stamp-mark.play{ animation:stampDown .55s cubic-bezier(.2,.9,.3,1.2) forwards; }
@@ -312,13 +350,14 @@
 </head>
 <body>
 
+<div class="masthead-band">
 <header class="masthead">
   <svg class="seal" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <circle cx="32" cy="32" r="30" stroke="#1B2A4A" stroke-width="1.4"/>
-    <circle cx="32" cy="32" r="24.5" stroke="#B08D57" stroke-width="1" stroke-dasharray="2 3"/>
-    <circle cx="32" cy="32" r="4" fill="#8B1E3F"/>
-    <path d="M32 12 L32 20 M32 44 L32 52 M12 32 L20 32 M44 32 L52 32" stroke="#1B2A4A" stroke-width="1.2"/>
-    <path d="M18.3 18.3 L23.8 23.8 M40.2 40.2 L45.7 45.7 M45.7 18.3 L40.2 23.8 M23.8 40.2 L18.3 45.7" stroke="#B08D57" stroke-width="1"/>
+    <circle cx="32" cy="32" r="30" stroke="#F1ECDD" stroke-width="1.4"/>
+    <circle cx="32" cy="32" r="24.5" stroke="#D9C08F" stroke-width="1" stroke-dasharray="2 3"/>
+    <circle cx="32" cy="32" r="4" fill="#D9C08F"/>
+    <path d="M32 12 L32 20 M32 44 L32 52 M12 32 L20 32 M44 32 L52 32" stroke="#F1ECDD" stroke-width="1.2"/>
+    <path d="M18.3 18.3 L23.8 23.8 M40.2 40.2 L45.7 45.7 M45.7 18.3 L40.2 23.8 M23.8 40.2 L18.3 45.7" stroke="#D9C08F" stroke-width="1"/>
   </svg>
   <div class="masthead-text">
     <p class="eyebrow">Buku Register &middot; Dokumentasi Resmi</p>
@@ -326,7 +365,8 @@
     <p class="subtitle">Pencatatan nama pengawas, kegiatan, lama kegiatan, tanggal, surat tugas, dan dokumentasi dalam satu register bersama.</p>
   </div>
 </header>
-<div class="rule"></div>
+</div>
+
 
 <div class="wrap">
 
@@ -344,6 +384,10 @@
     <button class="btn btn-ghost" id="loginBtn">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
       Masuk
+    </button>
+    <button class="btn btn-ghost" id="changePasswordBtn" style="display:none;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Ubah Password
     </button>
     <button class="btn btn-ghost" id="logoutBtn" style="display:none;">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
@@ -412,6 +456,11 @@
           <input type="url" id="f_dokumentasi" placeholder="https://drive.google.com/…">
         </div>
 
+        <div class="drive-hint" id="driveHint" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9.2"/></svg>
+          <span>Terdeteksi tautan Google Drive. Pastikan pengaturan berbagi file itu sudah <strong>"Siapa saja yang memiliki link"</strong> (bukan "Terbatas"), supaya semua pengawas lain bisa membukanya. Portal ini tidak bisa mengubah pengaturan berbagi Drive secara otomatis.</span>
+        </div>
+
         <div class="error-msg" id="formError"></div>
       </form>
     </div>
@@ -465,6 +514,42 @@
   </div>
 </div>
 
+<!-- ===== Change Password Panel ===== -->
+<div class="overlay" id="passwordOverlay">
+  <div class="panel" style="max-width:420px;">
+    <div class="panel-head">
+      <h2>Ubah Password</h2>
+      <button class="close-x" id="closePasswordBtn" aria-label="Tutup">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">
+      <form id="passwordForm">
+        <div class="form-row">
+          <label for="p_old">Password Lama</label>
+          <input type="password" id="p_old" placeholder="Password saat ini" autocomplete="current-password" required>
+        </div>
+        <div class="form-row">
+          <label for="p_new">Password Baru <span class="hint">minimal 4 karakter</span></label>
+          <input type="password" id="p_new" placeholder="Password baru" autocomplete="new-password" required>
+        </div>
+        <div class="form-row">
+          <label for="p_confirm">Ulangi Password Baru</label>
+          <input type="password" id="p_confirm" placeholder="Ulangi password baru" autocomplete="new-password" required>
+        </div>
+        <div class="error-msg" id="passwordError"></div>
+        <div class="error-msg" id="passwordSuccess" style="color:var(--emerald);"></div>
+      </form>
+    </div>
+    <div class="panel-foot">
+      <button class="btn btn-ghost" id="cancelPasswordBtn" type="button">Batal</button>
+      <button class="btn btn-primary" id="submitPasswordBtn" type="submit" form="passwordForm">
+        <span id="passwordSubmitLabel">Simpan Password</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   "use strict";
@@ -486,11 +571,17 @@
   const formOverlay = document.getElementById('formOverlay');
   const entryForm = document.getElementById('entryForm');
   const formError = document.getElementById('formError');
+  const driveHint = document.getElementById('driveHint');
   const loginOverlay = document.getElementById('loginOverlay');
   const loginForm = document.getElementById('loginForm');
   const loginError = document.getElementById('loginError');
   const loginBtn = document.getElementById('loginBtn');
   const logoutBtn = document.getElementById('logoutBtn');
+  const changePasswordBtn = document.getElementById('changePasswordBtn');
+  const passwordOverlay = document.getElementById('passwordOverlay');
+  const passwordForm = document.getElementById('passwordForm');
+  const passwordError = document.getElementById('passwordError');
+  const passwordSuccess = document.getElementById('passwordSuccess');
   const authStatus = document.getElementById('authStatus');
   const openFormBtn = document.getElementById('openFormBtn');
 
@@ -597,6 +688,28 @@
     return data;
   }
 
+  async function updateEntryRequest(id, entry){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'update', id, entry, token: auth ? auth.token : null })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal menyimpan perubahan');
+    return data;
+  }
+
+  async function changePasswordRequest(oldPassword, newPassword){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'changePassword', oldPassword, newPassword, token: auth ? auth.token : null })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal mengubah password');
+    return data;
+  }
+
   async function loginRequest(email, password){
     const res = await fetch(API_URL, {
       method: 'POST',
@@ -636,16 +749,75 @@
     if(auth){
       loginBtn.style.display = 'none';
       logoutBtn.style.display = 'inline-flex';
+      changePasswordBtn.style.display = 'inline-flex';
       authStatus.style.display = 'inline';
-      authStatus.textContent = 'Masuk sebagai ' + auth.email;
+      authStatus.textContent = 'Masuk sebagai ' + auth.email + (auth.isAdmin ? ' (Admin)' : '');
     }else{
       loginBtn.style.display = 'inline-flex';
       logoutBtn.style.display = 'none';
+      changePasswordBtn.style.display = 'none';
       authStatus.style.display = 'none';
       authStatus.textContent = '';
     }
     render(); // perbarui tombol hapus di tiap entri
   }
+
+  function openPasswordPanel(){
+    passwordForm.reset();
+    passwordError.classList.remove('show');
+    passwordSuccess.classList.remove('show');
+    passwordOverlay.classList.add('show');
+    document.getElementById('p_old').focus();
+  }
+  function closePasswordPanel(){ passwordOverlay.classList.remove('show'); }
+
+  changePasswordBtn.addEventListener('click', openPasswordPanel);
+  document.getElementById('closePasswordBtn').addEventListener('click', closePasswordPanel);
+  document.getElementById('cancelPasswordBtn').addEventListener('click', closePasswordPanel);
+  passwordOverlay.addEventListener('click', (ev) => { if(ev.target === passwordOverlay) closePasswordPanel(); });
+
+  passwordForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const oldPassword = document.getElementById('p_old').value;
+    const newPassword = document.getElementById('p_new').value;
+    const confirmPassword = document.getElementById('p_confirm').value;
+    passwordError.classList.remove('show');
+    passwordSuccess.classList.remove('show');
+
+    if(!oldPassword || !newPassword || !confirmPassword){
+      passwordError.textContent = 'Semua kolom wajib diisi.';
+      passwordError.classList.add('show');
+      return;
+    }
+    if(newPassword.length < 4){
+      passwordError.textContent = 'Password baru minimal 4 karakter.';
+      passwordError.classList.add('show');
+      return;
+    }
+    if(newPassword !== confirmPassword){
+      passwordError.textContent = 'Konfirmasi password baru tidak cocok.';
+      passwordError.classList.add('show');
+      return;
+    }
+
+    const submitBtn = document.getElementById('submitPasswordBtn');
+    const submitLabel = document.getElementById('passwordSubmitLabel');
+    submitBtn.disabled = true;
+    submitLabel.textContent = 'Menyimpan…';
+    try{
+      await changePasswordRequest(oldPassword, newPassword);
+      passwordSuccess.textContent = 'Password berhasil diubah.';
+      passwordSuccess.classList.add('show');
+      passwordForm.reset();
+      setTimeout(closePasswordPanel, 1200);
+    }catch(e){
+      passwordError.textContent = e.message || 'Gagal mengubah password.';
+      passwordError.classList.add('show');
+    }finally{
+      submitBtn.disabled = false;
+      submitLabel.textContent = 'Simpan Password';
+    }
+  });
 
   function openLogin(){
     loginForm.reset();
@@ -676,7 +848,7 @@
     submitLabel.textContent = 'Memeriksa…';
     try{
       const result = await loginRequest(email, password);
-      auth = { token: result.token, email: result.email };
+      auth = { token: result.token, email: result.email, isAdmin: !!result.isAdmin };
       persistAuth_();
       updateAuthUI();
       closeLogin();
@@ -734,8 +906,10 @@
     listRoot.innerHTML = ordered.map(e => {
       const regNo = numberMap[e.id] || '—';
       const year = (e.tanggal||'').split('-')[0] || '';
+      const isMine = auth && e.createdBy && auth.email.toLowerCase() === String(e.createdBy).toLowerCase();
+      const canManage = auth && (isMine || auth.isAdmin);
       return `
-      <div class="entry" data-id="${e.id}">
+      <div class="entry ${isMine ? 'mine' : ''}" data-id="${e.id}">
         <div class="entry-head" data-toggle="${e.id}">
           <span class="entry-no">No. ${regNo}${year ? '/'+year : ''}</span>
           <span class="entry-date">${shortDateID(e.tanggal)}</span>
@@ -743,6 +917,7 @@
             <div class="entry-name">${escapeHtml(e.namaKegiatan) || '(tanpa nama)'}</div>
             <div class="entry-sub">${escapeHtml(e.namaPengawas) || '—'}${e.tempatKegiatan ? ' &middot; ' + escapeHtml(e.tempatKegiatan) : ''}</div>
           </div>
+          ${isMine ? '<span class="owner-badge">Milik Anda</span>' : ''}
           <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </div>
         <div class="entry-body">
@@ -757,7 +932,10 @@
               <div class="field full"><label>Dokumentasi</label><div class="val">${linkOrDash(e.dokumentasi)}</div></div>
             </div>
             <div class="entry-actions">
-              ${auth ? `<button class="btn-danger-text" data-delete="${e.id}">Hapus entri ini</button>` : `<span class="entry-sub">Masuk untuk mengelola entri ini</span>`}
+              ${canManage ? `
+                <button class="btn-edit-text" data-edit="${e.id}">Edit entri ini</button>
+                <button class="btn-danger-text" data-delete="${e.id}">Hapus entri ini</button>
+              ` : (auth ? `<span class="entry-sub">Hanya pembuat entri atau admin yang bisa mengubah/menghapus</span>` : `<span class="entry-sub">Masuk untuk mengelola entri ini</span>`)}
             </div>
           </div>
         </div>
@@ -786,10 +964,17 @@
           try{ localStorage.setItem(CACHE_KEY, JSON.stringify(entries)); }catch(err){}
           render();
         }catch(e){
-          alert('Gagal menghapus entri. Silakan coba lagi.');
+          alert(e.message || 'Gagal menghapus entri. Silakan coba lagi.');
           console.error(e);
         }
       }
+      return;
+    }
+    const editBtn = ev.target.closest('[data-edit]');
+    if(editBtn){
+      const id = editBtn.getAttribute('data-edit');
+      const entry = entries.find(e => e.id === id);
+      if(entry) openEntryForm(entry);
     }
   });
 
@@ -801,21 +986,52 @@
   // ---------- Form panel open/close ----------
   const closeFormBtn = document.getElementById('closeFormBtn');
   const cancelFormBtn = document.getElementById('cancelFormBtn');
+  const panelTitle = document.getElementById('panelTitle');
+  const submitLabelEl = document.getElementById('submitLabel');
+  let editingId = null; // null = mode tambah baru, terisi = mode edit
 
-  function openForm(){
+  function openEntryForm(entryToEdit){
     if(!auth){
       openLogin();
       return;
     }
     entryForm.reset();
     formError.classList.remove('show');
-    document.getElementById('f_tanggal').valueAsDate = new Date();
+    driveHint.style.display = 'none';
+
+    if(entryToEdit){
+      editingId = entryToEdit.id;
+      panelTitle.textContent = 'Ubah Kegiatan';
+      submitLabelEl.textContent = 'Simpan Perubahan';
+      document.getElementById('f_pengawas').value = entryToEdit.namaPengawas || '';
+      document.getElementById('f_nama').value = entryToEdit.namaKegiatan || '';
+      document.getElementById('f_tanggal').value = entryToEdit.tanggal || '';
+      document.getElementById('f_lama').value = entryToEdit.lamaKegiatan || '';
+      document.getElementById('f_tempat').value = entryToEdit.tempatKegiatan || '';
+      document.getElementById('f_surattugas').value = entryToEdit.suratTugas || '';
+      document.getElementById('f_dokumentasi').value = entryToEdit.dokumentasi || '';
+    }else{
+      editingId = null;
+      panelTitle.textContent = 'Catat Kegiatan Baru';
+      submitLabelEl.textContent = 'Simpan & Bubuhkan Stempel';
+      document.getElementById('f_tanggal').valueAsDate = new Date();
+    }
+    checkDriveHint();
     formOverlay.classList.add('show');
     document.getElementById('f_pengawas').focus();
   }
   function closeForm(){ formOverlay.classList.remove('show'); }
 
-  openFormBtn.addEventListener('click', openForm);
+  function checkDriveHint(){
+    const s = document.getElementById('f_surattugas').value.trim();
+    const d = document.getElementById('f_dokumentasi').value.trim();
+    const hasDrive = /drive\.google\.com/i.test(s) || /drive\.google\.com/i.test(d);
+    driveHint.style.display = hasDrive ? 'flex' : 'none';
+  }
+  document.getElementById('f_surattugas').addEventListener('input', checkDriveHint);
+  document.getElementById('f_dokumentasi').addEventListener('input', checkDriveHint);
+
+  openFormBtn.addEventListener('click', () => openEntryForm(null));
   closeFormBtn.addEventListener('click', closeForm);
   cancelFormBtn.addEventListener('click', closeForm);
   formOverlay.addEventListener('click', (ev) => { if(ev.target === formOverlay) closeForm(); });
@@ -855,29 +1071,35 @@
     const submitLabel = document.getElementById('submitLabel');
     submitBtn.disabled = true;
     const prevLabel = submitLabel.textContent;
-    submitLabel.textContent = 'Menyimpan…';
+    submitLabel.textContent = editingId ? 'Menyimpan perubahan…' : 'Menyimpan…';
 
-    const entry = {
-      id: 'e' + Date.now() + Math.random().toString(36).slice(2,8),
+    const fieldsOnly = {
       namaPengawas,
       namaKegiatan,
       tanggal,
       lamaKegiatan: document.getElementById('f_lama').value.trim(),
       tempatKegiatan: document.getElementById('f_tempat').value.trim(),
       suratTugas,
-      dokumentasi,
-      createdAt: Date.now()
+      dokumentasi
     };
 
     try{
-      await saveEntry(entry);
-      entries.push(entry);
+      if(editingId){
+        await updateEntryRequest(editingId, fieldsOnly);
+        const idx = entries.findIndex(e => e.id === editingId);
+        if(idx !== -1){ entries[idx] = { ...entries[idx], ...fieldsOnly }; }
+      }else{
+        const entry = { id: 'e' + Date.now() + Math.random().toString(36).slice(2,8), ...fieldsOnly, createdAt: Date.now() };
+        await saveEntry(entry);
+        entry.createdBy = auth.email;
+        entries.push(entry);
+      }
       try{ localStorage.setItem(CACHE_KEY, JSON.stringify(entries)); }catch(err){}
       closeForm();
-      playStamp(tanggal);
+      if(!editingId) playStamp(tanggal);
       render();
     }catch(e){
-      formError.textContent = 'Gagal menyimpan data. Periksa koneksi lalu coba lagi.';
+      formError.textContent = e.message || 'Gagal menyimpan data. Periksa koneksi lalu coba lagi.';
       formError.classList.add('show');
       console.error('save error', e);
     }finally{
