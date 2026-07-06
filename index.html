@@ -168,6 +168,35 @@
   }
   .notice svg{ flex:0 0 auto; width:15px; height:15px; margin-top:1px; color:var(--gold); }
 
+  .resources-box{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:3px solid var(--emerald);
+    border-radius:6px;
+    padding:16px 20px 18px;
+    margin-bottom:22px;
+    box-shadow:var(--shadow);
+  }
+  .resources-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .resources-head h2{
+    font-family:'Spectral', serif; font-weight:600; font-size:17px; color:var(--navy); margin:0;
+  }
+  .resource-item{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+    padding:10px 0; border-bottom:1px dashed var(--line);
+  }
+  .resource-item:last-child{ border-bottom:none; }
+  .resource-info{ min-width:0; flex:1 1 auto; }
+  .resource-title{ font-weight:600; font-size:14px; color:var(--ink); }
+  .resource-title a{ color:var(--navy-light); text-decoration:none; }
+  .resource-title a:hover{ color:var(--maroon); text-decoration:underline; }
+  .resource-desc{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
+  .resource-actions{ flex:0 0 auto; display:flex; gap:6px; }
+  .resource-empty{ font-size:13px; color:var(--ink-soft); padding:6px 0; }
+
   .register{ display:flex; flex-direction:column; }
   .entry{
     background:var(--card);
@@ -392,6 +421,19 @@
     <span>Data pada portal ini tersimpan di Google Sheets &mdash; siapa saja yang membuka link ini dapat melihat daftar kegiatan. Untuk menambah atau menghapus entri, silakan masuk terlebih dahulu dengan akun terdaftar.</span>
   </div>
 
+  <div id="resourcesSection" style="display:none;">
+    <div class="resources-box">
+      <div class="resources-head">
+        <h2>Ruang Unduhan</h2>
+        <button class="btn btn-ghost" id="addResourceBtn" style="display:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+          Tambah
+        </button>
+      </div>
+      <div id="resourcesList"></div>
+    </div>
+  </div>
+
   <div class="toolbar">
     <div class="search-box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -567,6 +609,45 @@
   </div>
 </div>
 
+<!-- ===== Resource Panel (Admin) ===== -->
+<div class="overlay" id="resourceOverlay">
+  <div class="panel" style="max-width:480px;">
+    <div class="panel-head">
+      <h2 id="resourcePanelTitle">Tambah Link/Folder Unduhan</h2>
+      <button class="close-x" id="closeResourceBtn" aria-label="Tutup">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">
+      <form id="resourceForm">
+        <div class="form-row">
+          <label for="r_title">Judul</label>
+          <input type="text" id="r_title" placeholder="cth. Format Laporan Bulanan" required>
+        </div>
+        <div class="form-row">
+          <label for="r_url">Tautan/Link <span class="hint">Google Drive, folder, dsb.</span></label>
+          <input type="url" id="r_url" placeholder="https://drive.google.com/…" required>
+        </div>
+        <div class="form-row">
+          <label for="r_desc">Keterangan <span class="hint">opsional</span></label>
+          <input type="text" id="r_desc" placeholder="cth. Berlaku mulai Juli 2026">
+        </div>
+        <div class="drive-hint" id="resourceDriveHint" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9.2"/></svg>
+          <span>Terdeteksi tautan Google Drive. Pastikan pengaturan berbagi sudah <strong>"Siapa saja yang memiliki link"</strong> supaya semua pengguna bisa mengunduhnya.</span>
+        </div>
+        <div class="error-msg" id="resourceError"></div>
+      </form>
+    </div>
+    <div class="panel-foot">
+      <button class="btn btn-ghost" id="cancelResourceBtn" type="button">Batal</button>
+      <button class="btn btn-primary" id="submitResourceBtn" type="submit" form="resourceForm">
+        <span id="resourceSubmitLabel">Simpan</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   "use strict";
@@ -603,6 +684,16 @@
   const passwordSuccess = document.getElementById('passwordSuccess');
   const authStatus = document.getElementById('authStatus');
   const openFormBtn = document.getElementById('openFormBtn');
+  const resourcesSection = document.getElementById('resourcesSection');
+  const resourcesListEl = document.getElementById('resourcesList');
+  const addResourceBtn = document.getElementById('addResourceBtn');
+  const resourceOverlay = document.getElementById('resourceOverlay');
+  const resourceForm = document.getElementById('resourceForm');
+  const resourceError = document.getElementById('resourceError');
+  const resourceDriveHint = document.getElementById('resourceDriveHint');
+  const resourcePanelTitle = document.getElementById('resourcePanelTitle');
+  let resources = [];
+  let editingResourceId = null;
 
   function escapeHtml(str){
     return (str || "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -729,6 +820,46 @@
     return data;
   }
 
+  async function listResourcesRequest(){
+    const res = await fetch(API_URL + '?action=listResources&token=' + encodeURIComponent(auth ? auth.token : ''));
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal memuat ruang unduhan');
+    return data.resources || [];
+  }
+
+  async function addResourceRequest(fields){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'addResource', ...fields, token: auth ? auth.token : null })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal menyimpan');
+    return data;
+  }
+
+  async function updateResourceRequest(id, fields){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'updateResource', id, ...fields, token: auth ? auth.token : null })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal menyimpan perubahan');
+    return data;
+  }
+
+  async function deleteResourceRequest(id){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'deleteResource', id, token: auth ? auth.token : null })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal menghapus');
+    return data;
+  }
+
   async function loginRequest(email, password){
     const res = await fetch(API_URL, {
       method: 'POST',
@@ -771,15 +902,145 @@
       changePasswordBtn.style.display = 'inline-flex';
       authStatus.style.display = 'inline';
       authStatus.textContent = 'Masuk sebagai ' + auth.email + (auth.isAdmin ? ' (Admin)' : '');
+      resourcesSection.style.display = 'block';
+      addResourceBtn.style.display = auth.isAdmin ? 'inline-flex' : 'none';
+      loadResources();
     }else{
       loginBtn.style.display = 'inline-flex';
       logoutBtn.style.display = 'none';
       changePasswordBtn.style.display = 'none';
       authStatus.style.display = 'none';
       authStatus.textContent = '';
+      resourcesSection.style.display = 'none';
+      resources = [];
     }
     render(); // perbarui tombol hapus di tiap entri
   }
+
+  async function loadResources(){
+    resourcesListEl.innerHTML = `<div class="resource-empty">Memuat…</div>`;
+    try{
+      resources = await listResourcesRequest();
+      renderResources();
+    }catch(e){
+      resourcesListEl.innerHTML = `<div class="resource-empty">Gagal memuat ruang unduhan.</div>`;
+      console.error(e);
+    }
+  }
+
+  function renderResources(){
+    if(resources.length === 0){
+      resourcesListEl.innerHTML = `<div class="resource-empty">Belum ada file/folder yang dibagikan admin.</div>`;
+      return;
+    }
+    resourcesListEl.innerHTML = resources.map(r => `
+      <div class="resource-item">
+        <div class="resource-info">
+          <div class="resource-title"><a href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.title)}</a></div>
+          ${r.description ? `<div class="resource-desc">${escapeHtml(r.description)}</div>` : ''}
+        </div>
+        ${auth && auth.isAdmin ? `
+        <div class="resource-actions">
+          <button class="btn-edit-text" data-edit-resource="${r.id}">Edit</button>
+          <button class="btn-danger-text" data-delete-resource="${r.id}">Hapus</button>
+        </div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function checkResourceDriveHint(){
+    const url = document.getElementById('r_url').value.trim();
+    resourceDriveHint.style.display = /drive\.google\.com/i.test(url) ? 'flex' : 'none';
+  }
+  document.getElementById('r_url').addEventListener('input', checkResourceDriveHint);
+
+  function openResourceForm(resourceToEdit){
+    resourceForm.reset();
+    resourceError.classList.remove('show');
+    resourceDriveHint.style.display = 'none';
+    if(resourceToEdit){
+      editingResourceId = resourceToEdit.id;
+      resourcePanelTitle.textContent = 'Ubah Link/Folder Unduhan';
+      document.getElementById('resourceSubmitLabel').textContent = 'Simpan Perubahan';
+      document.getElementById('r_title').value = resourceToEdit.title || '';
+      document.getElementById('r_url').value = resourceToEdit.url || '';
+      document.getElementById('r_desc').value = resourceToEdit.description || '';
+      checkResourceDriveHint();
+    }else{
+      editingResourceId = null;
+      resourcePanelTitle.textContent = 'Tambah Link/Folder Unduhan';
+      document.getElementById('resourceSubmitLabel').textContent = 'Simpan';
+    }
+    resourceOverlay.classList.add('show');
+    document.getElementById('r_title').focus();
+  }
+  function closeResourceForm(){ resourceOverlay.classList.remove('show'); }
+
+  addResourceBtn.addEventListener('click', () => openResourceForm(null));
+  document.getElementById('closeResourceBtn').addEventListener('click', closeResourceForm);
+  document.getElementById('cancelResourceBtn').addEventListener('click', closeResourceForm);
+  resourceOverlay.addEventListener('click', (ev) => { if(ev.target === resourceOverlay) closeResourceForm(); });
+
+  resourceForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const title = document.getElementById('r_title').value.trim();
+    const url = document.getElementById('r_url').value.trim();
+    const description = document.getElementById('r_desc').value.trim();
+    if(!title || !url){
+      resourceError.textContent = 'Judul dan tautan wajib diisi.';
+      resourceError.classList.add('show');
+      return;
+    }
+    if(!isValidUrl(url)){
+      resourceError.textContent = 'Tautan harus berupa URL yang valid (diawali http:// atau https://).';
+      resourceError.classList.add('show');
+      return;
+    }
+    resourceError.classList.remove('show');
+    const submitBtn = document.getElementById('submitResourceBtn');
+    const submitLabel = document.getElementById('resourceSubmitLabel');
+    submitBtn.disabled = true;
+    const prevLabel = submitLabel.textContent;
+    submitLabel.textContent = 'Menyimpan…';
+    try{
+      if(editingResourceId){
+        await updateResourceRequest(editingResourceId, { title, url, description });
+      }else{
+        await addResourceRequest({ title, url, description });
+      }
+      closeResourceForm();
+      await loadResources();
+    }catch(e){
+      resourceError.textContent = e.message || 'Gagal menyimpan.';
+      resourceError.classList.add('show');
+    }finally{
+      submitBtn.disabled = false;
+      submitLabel.textContent = prevLabel;
+    }
+  });
+
+  resourcesListEl.addEventListener('click', async (ev) => {
+    const editBtn = ev.target.closest('[data-edit-resource]');
+    if(editBtn){
+      const id = editBtn.getAttribute('data-edit-resource');
+      const r = resources.find(x => x.id === id);
+      if(r) openResourceForm(r);
+      return;
+    }
+    const delBtn = ev.target.closest('[data-delete-resource]');
+    if(delBtn){
+      const id = delBtn.getAttribute('data-delete-resource');
+      if(confirm('Hapus link/folder unduhan ini?')){
+        delBtn.textContent = 'Menghapus…';
+        try{
+          await deleteResourceRequest(id);
+          await loadResources();
+        }catch(e){
+          alert(e.message || 'Gagal menghapus.');
+        }
+      }
+    }
+  });
 
   function openPasswordPanel(){
     passwordForm.reset();
