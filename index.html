@@ -350,6 +350,20 @@
   .error-msg{ color:var(--maroon); font-size:12.5px; margin-top:4px; display:none; }
   .error-msg.show{ display:block; }
 
+  .upload-row{ display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap; }
+  .upload-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'Inter'; font-weight:600; font-size:12.5px;
+    color:var(--navy); background:#fff; border:1px solid var(--line);
+    border-radius:5px; padding:7px 12px; cursor:pointer;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .upload-btn:hover{ border-color:var(--navy-light); box-shadow:0 2px 8px -2px rgba(27,42,74,0.15); }
+  .upload-btn.uploading{ opacity:.6; pointer-events:none; }
+  .upload-status{ font-size:12px; color:var(--ink-soft); }
+  .upload-status.ok{ color:var(--emerald); font-weight:600; }
+  .upload-status.err{ color:var(--maroon); font-weight:600; }
+
   .drive-hint{
     display:flex; gap:10px; align-items:flex-start;
     background:var(--emerald-light); color:var(--emerald);
@@ -506,13 +520,29 @@
         </div>
 
         <div class="form-row">
-          <label for="f_surattugas">Surat Tugas <span class="hint">tautan/link dokumen</span></label>
+          <label for="f_surattugas">Surat Tugas <span class="hint">tautan/link dokumen, atau upload file</span></label>
           <input type="url" id="f_surattugas" placeholder="https://drive.google.com/…">
+          <div class="upload-row">
+            <label class="upload-btn" for="f_surattugas_file">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+              <span>Upload File (PDF/Word/Foto)</span>
+            </label>
+            <input type="file" id="f_surattugas_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.heic" style="display:none;">
+            <span class="upload-status" id="f_surattugas_status"></span>
+          </div>
         </div>
 
         <div class="form-row">
-          <label for="f_dokumentasi">Dokumentasi <span class="hint">tautan/link foto atau dokumen</span></label>
+          <label for="f_dokumentasi">Dokumentasi <span class="hint">tautan/link foto atau dokumen, atau upload file</span></label>
           <input type="url" id="f_dokumentasi" placeholder="https://drive.google.com/…">
+          <div class="upload-row">
+            <label class="upload-btn" for="f_dokumentasi_file">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+              <span>Upload File (PDF/Word/Foto)</span>
+            </label>
+            <input type="file" id="f_dokumentasi_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.heic" style="display:none;">
+            <span class="upload-status" id="f_dokumentasi_status"></span>
+          </div>
         </div>
 
         <div class="drive-hint" id="driveHint" style="display:none;">
@@ -807,6 +837,32 @@
     const data = await res.json();
     if(!data.ok) throw new Error(data.error || 'Gagal menyimpan perubahan');
     return data;
+  }
+
+  async function uploadFileRequest(file){
+    const MAX_BYTES = 8 * 1024 * 1024; // 8MB, aman untuk Apps Script doPost
+    if(file.size > MAX_BYTES){
+      throw new Error('Ukuran file maksimal 8MB. Untuk file lebih besar, silakan upload manual ke Google Drive lalu tempel link-nya.');
+    }
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = () => reject(new Error('Gagal membaca file.'));
+      reader.readAsDataURL(file);
+    });
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'uploadFile',
+        filename: file.name,
+        mimeType: file.type || 'application/octet-stream',
+        dataBase64: base64,
+        token: auth ? auth.token : null
+      })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal mengupload file.');
+    return data.url;
   }
 
   async function changePasswordRequest(oldPassword, newPassword){
@@ -1294,6 +1350,10 @@
     entryForm.reset();
     formError.classList.remove('show');
     driveHint.style.display = 'none';
+    document.getElementById('f_surattugas_status').textContent = '';
+    document.getElementById('f_surattugas_status').className = 'upload-status';
+    document.getElementById('f_dokumentasi_status').textContent = '';
+    document.getElementById('f_dokumentasi_status').className = 'upload-status';
 
     if(entryToEdit){
       editingId = entryToEdit.id;
@@ -1326,6 +1386,35 @@
   }
   document.getElementById('f_surattugas').addEventListener('input', checkDriveHint);
   document.getElementById('f_dokumentasi').addEventListener('input', checkDriveHint);
+
+  function wireFileUpload(fileInputId, urlInputId, statusId){
+    const fileInput = document.getElementById(fileInputId);
+    const urlInput = document.getElementById(urlInputId);
+    const statusEl = document.getElementById(statusId);
+    const btnEl = fileInput.previousElementSibling; // .upload-btn label
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files[0];
+      if(!file) return;
+      statusEl.className = 'upload-status';
+      statusEl.textContent = 'Mengupload "' + file.name + '"…';
+      btnEl.classList.add('uploading');
+      try{
+        const url = await uploadFileRequest(file);
+        urlInput.value = url;
+        checkDriveHint();
+        statusEl.className = 'upload-status ok';
+        statusEl.textContent = 'Terupload: ' + file.name;
+      }catch(err){
+        statusEl.className = 'upload-status err';
+        statusEl.textContent = err.message || 'Gagal upload file.';
+      }finally{
+        btnEl.classList.remove('uploading');
+        fileInput.value = '';
+      }
+    });
+  }
+  wireFileUpload('f_surattugas_file', 'f_surattugas', 'f_surattugas_status');
+  wireFileUpload('f_dokumentasi_file', 'f_dokumentasi', 'f_dokumentasi_status');
 
   openFormBtn.addEventListener('click', () => openEntryForm(null));
   closeFormBtn.addEventListener('click', closeForm);
