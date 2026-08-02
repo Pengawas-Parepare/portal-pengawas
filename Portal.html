@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Aktivitas Pengawas Sekolah dan Penilik Kota Parepare</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF8F2;
+    --paper-dim:#F1ECDD;
+    --card:#FFFFFF;
+    --ink:#20242E;
+    --ink-soft:#5A5F6E;
+    --navy:#1B2A4A;
+    --navy-light:#2C4270;
+    --maroon:#8B1E3F;
+    --maroon-dark:#6E1731;
+    --gold:#B08D57;
+    --gold-light:#D9C08F;
+    --emerald:#1F7A5C;
+    --emerald-light:#E4F3EC;
+    --line:#DCD5C4;
+    --shadow: 0 1px 2px rgba(27,42,74,0.06), 0 8px 24px -8px rgba(27,42,74,0.12);
+    --header-gradient: linear-gradient(120deg, #1B2A4A 0%, #2C4270 45%, #8B1E3F 100%);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 500px at 10% -10%, rgba(176,141,87,0.08), transparent 60%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--gold-light); }
+
+  .wrap{ max-width:960px; margin:0 auto; padding:0 24px 80px; }
+
+  .masthead-band{
+    background: var(--header-gradient);
+    padding:44px 0 56px;
+  }
+  header.masthead{
+    padding:0 24px;
+    max-width:960px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    gap:22px;
+  }
+  .seal{ flex:0 0 auto; width:64px; height:64px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25)); }
+  .seal circle, .seal path{ stroke: #F1ECDD; }
+  .seal circle[fill]{ fill:var(--gold-light); }
+  .masthead-text{ flex:1 1 auto; min-width:0; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--gold-light);
+    margin:0 0 8px;
+  }
+  h1.title{
+    font-family:'Spectral', serif;
+    font-weight:700;
+    font-size:clamp(28px,4.2vw,40px);
+    letter-spacing:.005em;
+    margin:0 0 10px;
+    color:#FFFFFF;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  }
+  .subtitle{
+    margin:0;
+    color:rgba(255,255,255,0.82);
+    font-size:14.5px;
+    line-height:1.55;
+    max-width:640px;
+  }
+  .rule{
+    max-width:960px;
+    margin:-24px auto 0;
+    height:1px;
+    background:transparent;
+  }
+  .wrap{ max-width:960px; margin:-32px auto 0; padding:0 24px 80px; position:relative; z-index:2; }
+
+  .toolbar{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    padding:22px 0 20px;
+    flex-wrap:wrap;
+  }
+  .search-box{ position:relative; flex:1 1 260px; }
+  .search-box input{
+    width:100%;
+    padding:11px 14px 11px 38px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    background:var(--card);
+    font-family:'Inter';
+    font-size:14px;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .search-box input:focus{ border-color:var(--navy-light); box-shadow:0 0 0 3px rgba(44,66,112,0.12); }
+  .search-box svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:var(--ink-soft); }
+
+  .btn{
+    font-family:'Inter';
+    font-weight:600;
+    font-size:13.5px;
+    letter-spacing:.01em;
+    border:none;
+    border-radius:6px;
+    padding:11px 18px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    transition:transform .12s ease, box-shadow .12s ease, background .15s ease;
+  }
+  .btn:active{ transform:translateY(1px); }
+  .btn-primary{
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    color:#FFFFFF;
+    box-shadow: 0 4px 14px -4px rgba(27,42,74,0.5);
+  }
+  .btn-primary:hover{ box-shadow: 0 6px 18px -4px rgba(27,42,74,0.6); transform:translateY(-1px); }
+  .btn-ghost{ background:#fff; color:var(--navy); border:1px solid var(--line); }
+  .btn-ghost:hover{ border-color:var(--navy-light); box-shadow:0 2px 8px -2px rgba(27,42,74,0.15); }
+  .btn-danger-text{ background:transparent; color:var(--maroon); font-size:12.5px; padding:6px 10px; border-radius:4px; font-weight:600; }
+  .btn-danger-text:hover{ background:rgba(139,30,63,0.08); }
+  .btn-edit-text{ background:transparent; color:var(--emerald); font-size:12.5px; padding:6px 10px; border-radius:4px; font-weight:600; }
+  .btn-edit-text:hover{ background:var(--emerald-light); }
+
+  .owner-badge{
+    display:inline-flex; align-items:center; gap:5px;
+    background:var(--emerald-light); color:var(--emerald);
+    font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase;
+    border-radius:3px; padding:3px 8px; font-weight:600;
+    flex:0 0 auto; white-space:nowrap;
+  }
+
+  .count-note{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    letter-spacing:.02em;
+  }
+
+  .notice{
+    display:flex; gap:10px; align-items:flex-start;
+    background:var(--paper-dim);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:12px 14px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:22px;
+    line-height:1.5;
+  }
+  .notice svg{ flex:0 0 auto; width:15px; height:15px; margin-top:1px; color:var(--gold); }
+
+  .resources-box{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:3px solid var(--emerald);
+    border-radius:6px;
+    padding:16px 20px 18px;
+    margin-bottom:22px;
+    box-shadow:var(--shadow);
+  }
+  .resources-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .resources-head h2{
+    font-family:'Spectral', serif; font-weight:600; font-size:17px; color:var(--navy); margin:0;
+  }
+  .resource-item{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+    padding:10px 0; border-bottom:1px dashed var(--line);
+  }
+  .resource-item:last-child{ border-bottom:none; }
+  .resource-info{ min-width:0; flex:1 1 auto; }
+  .resource-title{ font-weight:600; font-size:14px; color:var(--ink); }
+  .resource-title a{ color:var(--navy-light); text-decoration:none; }
+  .resource-title a:hover{ color:var(--maroon); text-decoration:underline; }
+  .resource-desc{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
+  .resource-actions{ flex:0 0 auto; display:flex; gap:6px; }
+  .resource-empty{ font-size:13px; color:var(--ink-soft); padding:6px 0; }
+
+  .register{ display:flex; flex-direction:column; }
+  .entry{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-left:3px solid var(--gold);
+    border-radius:6px;
+    margin-bottom:12px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    transition: box-shadow .15s ease, transform .15s ease;
+  }
+  .entry:hover{ box-shadow: 0 4px 16px -4px rgba(27,42,74,0.18), 0 2px 6px -2px rgba(27,42,74,0.1); }
+  .entry.mine{ border-left-color: var(--emerald); }
+  .entry-head{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding:16px 18px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .entry-no{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--maroon);
+    background:rgba(139,30,63,0.06);
+    border:1px solid rgba(139,30,63,0.18);
+    border-radius:3px;
+    padding:3px 8px;
+    white-space:nowrap;
+  }
+  .entry-date{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    min-width:92px;
+  }
+  .entry-name-wrap{ flex:1 1 auto; min-width:0; }
+  .entry-name{
+    font-family:'Spectral', serif;
+    font-weight:600;
+    font-size:17px;
+    color:var(--navy);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .entry-sub{
+    font-size:12px;
+    color:var(--ink-soft);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    margin-top:2px;
+  }
+  .chevron{ width:16px; height:16px; color:var(--ink-soft); transition:transform .18s ease; flex:0 0 auto; }
+  .entry.open .chevron{ transform:rotate(180deg); }
+
+  .entry-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease;
+    border-top:1px solid transparent;
+  }
+  .entry.open .entry-body{ border-top:1px solid var(--line); }
+  .entry-body-inner{ padding:18px 20px 22px; }
+
+  .field-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px 24px; margin-bottom:6px; }
+  @media (max-width:620px){ .field-grid{ grid-template-columns:1fr; } }
+  .field label{
+    display:block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:5px;
+  }
+  .field .val{
+    font-size:14px;
+    line-height:1.55;
+    color:var(--ink);
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+  .field .val a{ color:var(--navy-light); word-break:break-all; }
+  .field .val a:hover{ color:var(--maroon); }
+  .field.full{ grid-column:1 / -1; }
+
+  .entry-actions{ display:flex; justify-content:flex-end; padding-top:12px; margin-top:10px; border-top:1px dashed var(--line); }
+
+  .show-toggle{ display:flex; justify-content:center; padding:8px 0 4px; }
+
+  .empty{
+    text-align:center;
+    padding:60px 20px;
+    border:1px dashed var(--line);
+    border-radius:4px;
+    color:var(--ink-soft);
+  }
+  .empty svg{ width:34px; height:34px; color:var(--gold); margin-bottom:12px; }
+  .empty h3{ font-family:'Spectral', serif; color:var(--navy); font-weight:600; margin:0 0 6px; font-size:18px; }
+  .empty p{ margin:0; font-size:13.5px; }
+
+  .loading-row{ display:flex; align-items:center; gap:10px; color:var(--ink-soft); font-size:13px; padding:24px 0; justify-content:center; }
+  .spinner{ width:14px; height:14px; border-radius:50%; border:2px solid var(--line); border-top-color:var(--navy); animation:spin .7s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+
+  .overlay{
+    position:fixed; inset:0; background:rgba(27,32,42,0.45);
+    display:none; align-items:flex-start; justify-content:center;
+    padding:40px 16px; z-index:50; overflow-y:auto;
+    backdrop-filter:blur(2px);
+  }
+  .overlay.show{ display:flex; }
+  .panel{
+    background:var(--paper);
+    width:100%; max-width:640px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    box-shadow:0 24px 60px -12px rgba(20,25,40,0.35);
+    animation:rise .22s ease;
+  }
+  @keyframes rise{ from{ opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  .panel-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 24px; border-bottom:1px solid var(--line);
+  }
+  .panel-head h2{ font-family:'Spectral', serif; font-weight:600; font-size:20px; color:var(--navy); margin:0; }
+  .close-x{ background:none; border:none; cursor:pointer; color:var(--ink-soft); padding:4px; }
+  .close-x:hover{ color:var(--maroon); }
+  .panel-body{ padding:22px 24px 8px; }
+  .panel-foot{ padding:16px 24px 22px; display:flex; justify-content:flex-end; gap:10px; }
+
+  .form-row{ margin-bottom:16px; }
+  .form-row.two{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:560px){ .form-row.two{ grid-template-columns:1fr; } }
+  .form-row label{
+    display:block; font-family:'IBM Plex Mono', monospace; font-size:11px;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--navy); margin-bottom:6px;
+  }
+  .form-row .hint{ font-family:'Inter'; text-transform:none; letter-spacing:0; color:var(--ink-soft); font-size:11.5px; margin-left:6px; }
+  input[type=text], input[type=date], input[type=url]{
+    width:100%; border:1px solid var(--line); border-radius:3px;
+    padding:10px 12px; font-family:'Inter'; font-size:14px; color:var(--ink);
+    background:#fff; outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  input:focus{ border-color:var(--navy-light); box-shadow:0 0 0 3px rgba(44,66,112,0.12); }
+
+  .error-msg{ color:var(--maroon); font-size:12.5px; margin-top:4px; display:none; }
+  .error-msg.show{ display:block; }
+
+  .upload-row{ display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap; }
+  .upload-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'Inter'; font-weight:600; font-size:12.5px;
+    color:var(--navy); background:#fff; border:1px solid var(--line);
+    border-radius:5px; padding:7px 12px; cursor:pointer;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .upload-btn:hover{ border-color:var(--navy-light); box-shadow:0 2px 8px -2px rgba(27,42,74,0.15); }
+  .upload-btn.uploading{ opacity:.6; pointer-events:none; }
+  .upload-status{ font-size:12px; color:var(--ink-soft); }
+  .upload-status.ok{ color:var(--emerald); font-weight:600; }
+  .upload-status.err{ color:var(--maroon); font-weight:600; }
+
+  .drive-hint{
+    display:flex; gap:10px; align-items:flex-start;
+    background:var(--emerald-light); color:var(--emerald);
+    border:1px solid rgba(31,122,92,0.25);
+    border-radius:4px; padding:11px 13px; font-size:12.5px; line-height:1.5;
+    margin-bottom:16px;
+  }
+  .drive-hint svg{ flex:0 0 auto; width:16px; height:16px; margin-top:1px; }
+
+  .stamp-overlay{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:80; }
+  .stamp-mark{ opacity:0; transform:scale(2.6) rotate(-18deg); }
+  .stamp-mark.play{ animation:stampDown .55s cubic-bezier(.2,.9,.3,1.2) forwards; }
+  @keyframes stampDown{
+    0%{ opacity:0; transform:scale(2.6) rotate(-18deg); }
+    55%{ opacity:1; transform:scale(0.94) rotate(-8deg); }
+    70%{ transform:scale(1.04) rotate(-8deg); }
+    100%{ opacity:0; transform:scale(1) rotate(-8deg); transition:opacity .3s ease .35s; }
+  }
+
+  footer.foot{
+    max-width:960px; margin:40px auto 0; padding:20px 24px 0; text-align:center;
+    color:var(--ink-soft); font-size:11.5px; font-family:'IBM Plex Mono', monospace; letter-spacing:.03em;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead-band">
+<header class="masthead">
+  <svg class="seal" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- Lingkaran luar & dalam -->
+    <circle cx="32" cy="32" r="21" fill="none" stroke="#F1ECDD" stroke-width="1.6"/>
+    <circle cx="32" cy="32" r="16.5" fill="none" stroke="#D9C08F" stroke-width="1"/>
+    <!-- Gerigi roda (melambangkan usaha yang berkesinambungan) -->
+    <g fill="#F1ECDD">
+      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(0 32 32)"/>
+      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(36 32 32)"/>
+      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(72 32 32)"/>
+      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(108 32 32)"/>
+      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(144 32 32)"/>
+      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(180 32 32)"/>
+      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(216 32 32)"/>
+      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(252 32 32)"/>
+      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(288 32 32)"/>
+      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(324 32 32)"/>
+    </g>
+    <!-- Nyala obor / bulir di tengah, melambangkan semangat mendidik -->
+    <path d="M32 20 C 27.5 25, 27.5 31, 32 35 C 36.5 31, 36.5 25, 32 20 Z" fill="#D9C08F"/>
+    <path d="M32 35 C 29.8 38.2, 29.8 41.8, 32 45 C 34.2 41.8, 34.2 38.2, 32 35 Z" fill="#D9C08F"/>
+    <circle cx="32" cy="32" r="2.1" fill="#8B1E3F"/>
+  </svg>
+  <div class="masthead-text">
+    <p class="eyebrow">Tut Wuri Handayani &middot; Dokumen Pengawas dan Penilik</p>
+    <h1 class="title">Portal Aktivitas Pengawas Sekolah dan Penilik Kota Parepare</h1>
+    <p class="subtitle">Pencatatan nama pengawas, kegiatan, lama kegiatan, tanggal, surat tugas, dan dokumentasi dalam satu register bersama.</p>
+  </div>
+</header>
+</div>
+
+
+<div class="wrap">
+
+  <div class="notice">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9.2"/><path d="M12 8v5M12 16h.01"/></svg>
+    <span>Data pada portal ini tersimpan di Google Sheets &mdash; siapa saja yang membuka link ini dapat melihat daftar kegiatan. Untuk menambah atau menghapus entri, silakan masuk terlebih dahulu dengan akun terdaftar.</span>
+  </div>
+
+  <div id="resourcesSection" style="display:none;">
+    <div class="resources-box">
+      <div class="resources-head">
+        <h2>Ruang Unduhan</h2>
+        <button class="btn btn-ghost" id="addResourceBtn" style="display:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+          Tambah
+        </button>
+      </div>
+      <div id="resourcesList"></div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="Cari nama pengawas, nama kegiatan, atau tanggal…">
+    </div>
+    <span id="authStatus" class="count-note" style="display:none;"></span>
+    <button class="btn btn-ghost" id="loginBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+      Masuk
+    </button>
+    <button class="btn btn-ghost" id="changePasswordBtn" style="display:none;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Ubah Password
+    </button>
+    <button class="btn btn-ghost" id="logoutBtn" style="display:none;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      Keluar
+    </button>
+    <button class="btn btn-primary" id="openFormBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+      Catat Kegiatan Baru
+    </button>
+  </div>
+
+  <div id="countNote" class="count-note" style="margin-bottom:14px;"></div>
+
+  <div id="listRoot" class="register">
+    <div class="loading-row"><span class="spinner"></span> Memuat register…</div>
+  </div>
+
+</div>
+
+<footer class="foot">PORTAL AKTIVITAS PENGAWAS SEKOLAH &middot; register bersama &middot; disimpan otomatis</footer>
+
+<!-- ===== Form Panel ===== -->
+<div class="overlay" id="formOverlay">
+  <div class="panel">
+    <div class="panel-head">
+      <h2 id="panelTitle">Catat Kegiatan Baru</h2>
+      <button class="close-x" id="closeFormBtn" aria-label="Tutup">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">
+      <form id="entryForm">
+        <div class="form-row">
+          <label for="f_pengawas">Nama Pengawas Sekolah</label>
+          <input type="text" id="f_pengawas" placeholder="cth. Drs. Ahmad Fauzi, M.Pd." required>
+        </div>
+
+        <div class="form-row">
+          <label for="f_nama">Nama Kegiatan</label>
+          <input type="text" id="f_nama" placeholder="cth. Supervisi Akademik SMPN 1 Parepare" required>
+        </div>
+
+        <div class="form-row two">
+          <div>
+            <label for="f_tanggal">Tanggal Kegiatan</label>
+            <input type="date" id="f_tanggal" required>
+          </div>
+          <div>
+            <label for="f_lama">Lama Kegiatan</label>
+            <input type="text" id="f_lama" placeholder="cth. 1 hari / 3 hari">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="f_tempat">Tempat Kegiatan</label>
+          <input type="text" id="f_tempat" placeholder="cth. SMPN 1 Parepare">
+        </div>
+
+        <div class="form-row">
+          <label for="f_surattugas">Surat Tugas <span class="hint">tautan/link dokumen, atau upload file</span></label>
+          <input type="url" id="f_surattugas" placeholder="https://drive.google.com/…">
+          <div class="upload-row">
+            <label class="upload-btn" for="f_surattugas_file">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+              <span>Upload File (PDF/Word/Foto)</span>
+            </label>
+            <input type="file" id="f_surattugas_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.heic" style="display:none;">
+            <span class="upload-status" id="f_surattugas_status"></span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="f_dokumentasi">Dokumentasi <span class="hint">tautan/link foto atau dokumen, atau upload file</span></label>
+          <input type="url" id="f_dokumentasi" placeholder="https://drive.google.com/…">
+          <div class="upload-row">
+            <label class="upload-btn" for="f_dokumentasi_file">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+              <span>Upload File (PDF/Word/Foto)</span>
+            </label>
+            <input type="file" id="f_dokumentasi_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.heic" style="display:none;">
+            <span class="upload-status" id="f_dokumentasi_status"></span>
+          </div>
+        </div>
+
+        <div class="drive-hint" id="driveHint" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9.2"/></svg>
+          <span>Terdeteksi tautan Google Drive. Pastikan pengaturan berbagi file itu sudah <strong>"Siapa saja yang memiliki link"</strong> (bukan "Terbatas"), supaya semua pengawas lain bisa membukanya. Portal ini tidak bisa mengubah pengaturan berbagi Drive secara otomatis.</span>
+        </div>
+
+        <div class="error-msg" id="formError"></div>
+      </form>
+    </div>
+    <div class="panel-foot">
+      <button class="btn btn-ghost" id="cancelFormBtn" type="button">Batal</button>
+      <button class="btn btn-primary" id="submitFormBtn" type="submit" form="entryForm">
+        <span id="submitLabel">Simpan &amp; Bubuhkan Stempel</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Stamp confirmation ===== -->
+<div class="stamp-overlay" id="stampOverlay">
+  <svg id="stampMark" class="stamp-mark" width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="75" cy="75" r="66" stroke="#8B1E3F" stroke-width="3"/>
+    <circle cx="75" cy="75" r="56" stroke="#8B1E3F" stroke-width="1.5" stroke-dasharray="3 4"/>
+    <text x="75" y="65" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8B1E3F" letter-spacing="2">TERCATAT</text>
+    <text x="75" y="95" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="#8B1E3F" letter-spacing="1" id="stampDate">--/--/----</text>
+  </svg>
+</div>
+
+<!-- ===== Login Panel ===== -->
+<div class="overlay" id="loginOverlay">
+  <div class="panel" style="max-width:420px;">
+    <div class="panel-head">
+      <h2>Masuk ke Portal</h2>
+      <button class="close-x" id="closeLoginBtn" aria-label="Tutup">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">
+      <form id="loginForm">
+        <div class="form-row">
+          <label for="l_email">Email</label>
+          <input type="text" id="l_email" placeholder="nama@email.com" autocomplete="username" required>
+        </div>
+        <div class="form-row">
+          <label for="l_password">Password</label>
+          <input type="password" id="l_password" placeholder="Password" autocomplete="current-password" required>
+        </div>
+        <div class="error-msg" id="loginError"></div>
+      </form>
+    </div>
+    <div class="panel-foot">
+      <button class="btn btn-ghost" id="cancelLoginBtn" type="button">Batal</button>
+      <button class="btn btn-primary" id="submitLoginBtn" type="submit" form="loginForm">
+        <span id="loginSubmitLabel">Masuk</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Change Password Panel ===== -->
+<div class="overlay" id="passwordOverlay">
+  <div class="panel" style="max-width:420px;">
+    <div class="panel-head">
+      <h2>Ubah Password</h2>
+      <button class="close-x" id="closePasswordBtn" aria-label="Tutup">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">
+      <form id="passwordForm">
+        <div class="form-row">
+          <label for="p_old">Password Lama</label>
+          <input type="password" id="p_old" placeholder="Password saat ini" autocomplete="current-password" required>
+        </div>
+        <div class="form-row">
+          <label for="p_new">Password Baru <span class="hint">minimal 4 karakter</span></label>
+          <input type="password" id="p_new" placeholder="Password baru" autocomplete="new-password" required>
+        </div>
+        <div class="form-row">
+          <label for="p_confirm">Ulangi Password Baru</label>
+          <input type="password" id="p_confirm" placeholder="Ulangi password baru" autocomplete="new-password" required>
+        </div>
+        <div class="error-msg" id="passwordError"></div>
+        <div class="error-msg" id="passwordSuccess" style="color:var(--emerald);"></div>
+      </form>
+    </div>
+    <div class="panel-foot">
+      <button class="btn btn-ghost" id="cancelPasswordBtn" type="button">Batal</button>
+      <button class="btn btn-primary" id="submitPasswordBtn" type="submit" form="passwordForm">
+        <span id="passwordSubmitLabel">Simpan Password</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Resource Panel (Admin) ===== -->
+<div class="overlay" id="resourceOverlay">
+  <div class="panel" style="max-width:480px;">
+    <div class="panel-head">
+      <h2 id="resourcePanelTitle">Tambah Link/Folder Unduhan</h2>
+      <button class="close-x" id="closeResourceBtn" aria-label="Tutup">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">
+      <form id="resourceForm">
+        <div class="form-row">
+          <label for="r_title">Judul</label>
+          <input type="text" id="r_title" placeholder="cth. Format Laporan Bulanan" required>
+        </div>
+        <div class="form-row">
+          <label for="r_url">Tautan/Link <span class="hint">Google Drive, folder, dsb.</span></label>
+          <input type="url" id="r_url" placeholder="https://drive.google.com/…" required>
+        </div>
+        <div class="form-row">
+          <label for="r_desc">Keterangan <span class="hint">opsional</span></label>
+          <input type="text" id="r_desc" placeholder="cth. Berlaku mulai Juli 2026">
+        </div>
+        <div class="drive-hint" id="resourceDriveHint" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9.2"/></svg>
+          <span>Terdeteksi tautan Google Drive. Pastikan pengaturan berbagi sudah <strong>"Siapa saja yang memiliki link"</strong> supaya semua pengguna bisa mengunduhnya.</span>
+        </div>
+        <div class="error-msg" id="resourceError"></div>
+      </form>
+    </div>
+    <div class="panel-foot">
+      <button class="btn btn-ghost" id="cancelResourceBtn" type="button">Batal</button>
+      <button class="btn btn-primary" id="submitResourceBtn" type="submit" form="resourceForm">
+        <span id="resourceSubmitLabel">Simpan</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ==========================================================
+  // TEMPEL URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
+  // (didapat setelah Deploy > Web app, diakhiri dengan /exec)
+  // ==========================================================
+  const API_URL = "https://script.google.com/macros/s/AKfycbzcGWGF-6qZ7swfTVeb8xuK0KuwE3bm6jbeKRZ0Zn67KZtrjXXKLxkGzrmEdNYKaA15/exec";
+  const CACHE_KEY = "portalPengawas_cache_v1";
+  const AUTH_KEY = "portalPengawas_auth_v1";
+
+  let entries = [];      // {id, ...fields}
+  const DISPLAY_LIMIT = 5; // jumlah kegiatan yang ditampilkan sebelum "Tampilkan Semua"
+  let showAllEntries = false;
+  let searchTerm = "";
+  let auth = null;       // { token, email } jika sudah login
+
+  const listRoot = document.getElementById('listRoot');
+  const countNote = document.getElementById('countNote');
+  const formOverlay = document.getElementById('formOverlay');
+  const entryForm = document.getElementById('entryForm');
+  const formError = document.getElementById('formError');
+  const driveHint = document.getElementById('driveHint');
+  const loginOverlay = document.getElementById('loginOverlay');
+  const loginForm = document.getElementById('loginForm');
+  const loginError = document.getElementById('loginError');
+  const loginBtn = document.getElementById('loginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const changePasswordBtn = document.getElementById('changePasswordBtn');
+  const passwordOverlay = document.getElementById('passwordOverlay');
+  const passwordForm = document.getElementById('passwordForm');
+  const passwordError = document.getElementById('passwordError');
+  const passwordSuccess = document.getElementById('passwordSuccess');
+  const authStatus = document.getElementById('authStatus');
+  const openFormBtn = document.getElementById('openFormBtn');
+  const resourcesSection = document.getElementById('resourcesSection');
+  const resourcesListEl = document.getElementById('resourcesList');
+  const addResourceBtn = document.getElementById('addResourceBtn');
+  const resourceOverlay = document.getElementById('resourceOverlay');
+  const resourceForm = document.getElementById('resourceForm');
+  const resourceError = document.getElementById('resourceError');
+  const resourceDriveHint = document.getElementById('resourceDriveHint');
+  const resourcePanelTitle = document.getElementById('resourcePanelTitle');
+  let resources = [];
+  let editingResourceId = null;
+
+  function escapeHtml(str){
+    return (str || "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function isValidUrl(str){
+    if(!str) return false;
+    try{ const u = new URL(str); return u.protocol === 'http:' || u.protocol === 'https:'; }
+    catch(e){ return false; }
+  }
+
+  function linkOrDash(str){
+    const val = (str || "").trim();
+    if(!val) return '—';
+    if(isValidUrl(val)){
+      return `<a href="${escapeHtml(val)}" target="_blank" rel="noopener noreferrer">${escapeHtml(val)}</a>`;
+    }
+    return escapeHtml(val);
+  }
+
+  function formatDateID(iso){
+    if(!iso) return '—';
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const parts = iso.split('-');
+    if(parts.length !== 3) return iso;
+    const [y,m,d] = parts;
+    return `${parseInt(d,10)} ${months[parseInt(m,10)-1]} ${y}`;
+  }
+
+  function shortDateID(iso){
+    if(!iso) return '—';
+    const parts = iso.split('-');
+    if(parts.length !== 3) return iso;
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+
+  // ---------- Storage (Google Sheets via Apps Script) ----------
+  function apiConfigured_(){
+    return API_URL && API_URL.indexOf('PASTE_URL_WEB_APP_DI_SINI') === -1;
+  }
+
+  async function loadEntries(){
+    if(!apiConfigured_()){
+      listRoot.innerHTML = `
+        <div class="empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9.5"/></svg>
+          <h3>Portal belum tersambung</h3>
+          <p>Tempelkan URL Web App Google Apps Script Anda pada konstanta <code>API_URL</code> di bagian atas kode &lt;script&gt;, lalu muat ulang halaman.</p>
+        </div>`;
+      return;
+    }
+
+    // Tampilkan cache lokal dulu (jika ada) agar terasa instan
+    let hasCache = false;
+    try{
+      const cached = localStorage.getItem(CACHE_KEY);
+      if(cached){
+        entries = JSON.parse(cached);
+        hasCache = true;
+        render();
+      }
+    }catch(e){ /* localStorage tidak tersedia, lanjut tanpa cache */ }
+
+    if(!hasCache){
+      listRoot.innerHTML = `<div class="loading-row"><span class="spinner"></span> Memuat register…</div>`;
+    }
+
+    try{
+      const res = await fetch(API_URL + '?action=list');
+      const data = await res.json();
+      if(!data.ok) throw new Error(data.error || 'Gagal memuat data');
+      entries = (data.entries || []).sort((a,b) => (a.tanggal||'').localeCompare(b.tanggal||'') || (a.createdAt||0)-(b.createdAt||0));
+      render();
+      try{ localStorage.setItem(CACHE_KEY, JSON.stringify(entries)); }catch(e){}
+    }catch(e){
+      if(!hasCache){
+        listRoot.innerHTML = `<div class="empty"><h3>Gagal memuat data</h3><p>Terjadi kendala saat mengambil register dari Google Sheets. Periksa koneksi internet dan pastikan URL API sudah benar, lalu muat ulang halaman.</p></div>`;
+      }
+      console.error('loadEntries error', e);
+    }
+  }
+
+  async function saveEntry(entry){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // hindari CORS preflight di Apps Script
+      body: JSON.stringify({ action: 'add', entry, token: auth ? auth.token : null })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal menyimpan');
+    return data;
+  }
+
+  async function deleteEntry(id){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'delete', id, token: auth ? auth.token : null })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal menghapus');
+    return data;
+  }
+
+  async function updateEntryRequest(id, entry){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'update', id, entry, token: auth ? auth.token : null })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal menyimpan perubahan');
+    return data;
+  }
+
+  async function uploadFileRequest(file){
+    const MAX_BYTES = 8 * 1024 * 1024; // 8MB, aman untuk Apps Script doPost
+    if(file.size > MAX_BYTES){
+      throw new Error('Ukuran file maksimal 8MB. Untuk file lebih besar, silakan upload manual ke Google Drive lalu tempel link-nya.');
+    }
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = () => reject(new Error('Gagal membaca file.'));
+      reader.readAsDataURL(file);
+    });
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'uploadFile',
+        filename: file.name,
+        mimeType: file.type || 'application/octet-stream',
+        dataBase64: base64,
+        token: auth ? auth.token : null
+      })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal mengupload file.');
+    return data.url;
+  }
+
+  async function changePasswordRequest(oldPassword, newPassword){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'changePassword', oldPassword, newPassword, token: auth ? auth.token : null })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal mengubah password');
+    return data;
+  }
+
+  async function listResourcesRequest(){
+    const res = await fetch(API_URL + '?action=listResources&token=' + encodeURIComponent(auth ? auth.token : ''));
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal memuat ruang unduhan');
+    return data.resources || [];
+  }
+
+  async function addResourceRequest(fields){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'addResource', ...fields, token: auth ? auth.token : null })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal menyimpan');
+    return data;
+  }
+
+  async function updateResourceRequest(id, fields){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'updateResource', id, ...fields, token: auth ? auth.token : null })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal menyimpan perubahan');
+    return data;
+  }
+
+  async function deleteResourceRequest(id){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'deleteResource', id, token: auth ? auth.token : null })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal menghapus');
+    return data;
+  }
+
+  async function loginRequest(email, password){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'login', email, password })
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Gagal masuk');
+    return data; // { token, email }
+  }
+
+  async function logoutRequest(token){
+    try{
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'logout', token })
+      });
+    }catch(e){ /* abaikan kegagalan logout jaringan */ }
+  }
+
+  // ---------- Auth (login/logout) ----------
+  function loadAuth_(){
+    try{
+      const raw = localStorage.getItem(AUTH_KEY);
+      if(raw){ auth = JSON.parse(raw); }
+    }catch(e){ auth = null; }
+    updateAuthUI();
+  }
+  function persistAuth_(){
+    try{
+      if(auth) localStorage.setItem(AUTH_KEY, JSON.stringify(auth));
+      else localStorage.removeItem(AUTH_KEY);
+    }catch(e){}
+  }
+  function updateAuthUI(){
+    if(auth){
+      loginBtn.style.display = 'none';
+      logoutBtn.style.display = 'inline-flex';
+      changePasswordBtn.style.display = 'inline-flex';
+      authStatus.style.display = 'inline';
+      authStatus.textContent = 'Masuk sebagai ' + auth.email + (auth.isAdmin ? ' (Admin)' : '');
+      resourcesSection.style.display = 'block';
+      addResourceBtn.style.display = auth.isAdmin ? 'inline-flex' : 'none';
+      loadResources();
+    }else{
+      loginBtn.style.display = 'inline-flex';
+      logoutBtn.style.display = 'none';
+      changePasswordBtn.style.display = 'none';
+      authStatus.style.display = 'none';
+      authStatus.textContent = '';
+      resourcesSection.style.display = 'none';
+      resources = [];
+    }
+    render(); // perbarui tombol hapus di tiap entri
+  }
+
+  async function loadResources(){
+    resourcesListEl.innerHTML = `<div class="resource-empty">Memuat…</div>`;
+    try{
+      resources = await listResourcesRequest();
+      renderResources();
+    }catch(e){
+      resourcesListEl.innerHTML = `<div class="resource-empty">Gagal memuat ruang unduhan.</div>`;
+      console.error(e);
+    }
+  }
+
+  function renderResources(){
+    if(resources.length === 0){
+      resourcesListEl.innerHTML = `<div class="resource-empty">Belum ada file/folder yang dibagikan admin.</div>`;
+      return;
+    }
+    resourcesListEl.innerHTML = resources.map(r => `
+      <div class="resource-item">
+        <div class="resource-info">
+          <div class="resource-title"><a href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.title)}</a></div>
+          ${r.description ? `<div class="resource-desc">${escapeHtml(r.description)}</div>` : ''}
+        </div>
+        ${auth && auth.isAdmin ? `
+        <div class="resource-actions">
+          <button class="btn-edit-text" data-edit-resource="${r.id}">Edit</button>
+          <button class="btn-danger-text" data-delete-resource="${r.id}">Hapus</button>
+        </div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function checkResourceDriveHint(){
+    const url = document.getElementById('r_url').value.trim();
+    resourceDriveHint.style.display = /drive\.google\.com/i.test(url) ? 'flex' : 'none';
+  }
+  document.getElementById('r_url').addEventListener('input', checkResourceDriveHint);
+
+  function openResourceForm(resourceToEdit){
+    resourceForm.reset();
+    resourceError.classList.remove('show');
+    resourceDriveHint.style.display = 'none';
+    if(resourceToEdit){
+      editingResourceId = resourceToEdit.id;
+      resourcePanelTitle.textContent = 'Ubah Link/Folder Unduhan';
+      document.getElementById('resourceSubmitLabel').textContent = 'Simpan Perubahan';
+      document.getElementById('r_title').value = resourceToEdit.title || '';
+      document.getElementById('r_url').value = resourceToEdit.url || '';
+      document.getElementById('r_desc').value = resourceToEdit.description || '';
+      checkResourceDriveHint();
+    }else{
+      editingResourceId = null;
+      resourcePanelTitle.textContent = 'Tambah Link/Folder Unduhan';
+      document.getElementById('resourceSubmitLabel').textContent = 'Simpan';
+    }
+    resourceOverlay.classList.add('show');
+    document.getElementById('r_title').focus();
+  }
+  function closeResourceForm(){ resourceOverlay.classList.remove('show'); }
+
+  addResourceBtn.addEventListener('click', () => openResourceForm(null));
+  document.getElementById('closeResourceBtn').addEventListener('click', closeResourceForm);
+  document.getElementById('cancelResourceBtn').addEventListener('click', closeResourceForm);
+  resourceOverlay.addEventListener('click', (ev) => { if(ev.target === resourceOverlay) closeResourceForm(); });
+
+  resourceForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const title = document.getElementById('r_title').value.trim();
+    const url = document.getElementById('r_url').value.trim();
+    const description = document.getElementById('r_desc').value.trim();
+    if(!title || !url){
+      resourceError.textContent = 'Judul dan tautan wajib diisi.';
+      resourceError.classList.add('show');
+      return;
+    }
+    if(!isValidUrl(url)){
+      resourceError.textContent = 'Tautan harus berupa URL yang valid (diawali http:// atau https://).';
+      resourceError.classList.add('show');
+      return;
+    }
+    resourceError.classList.remove('show');
+    const submitBtn = document.getElementById('submitResourceBtn');
+    const submitLabel = document.getElementById('resourceSubmitLabel');
+    submitBtn.disabled = true;
+    const prevLabel = submitLabel.textContent;
+    submitLabel.textContent = 'Menyimpan…';
+    try{
+      if(editingResourceId){
+        await updateResourceRequest(editingResourceId, { title, url, description });
+      }else{
+        await addResourceRequest({ title, url, description });
+      }
+      closeResourceForm();
+      await loadResources();
+    }catch(e){
+      resourceError.textContent = e.message || 'Gagal menyimpan.';
+      resourceError.classList.add('show');
+    }finally{
+      submitBtn.disabled = false;
+      submitLabel.textContent = prevLabel;
+    }
+  });
+
+  resourcesListEl.addEventListener('click', async (ev) => {
+    const editBtn = ev.target.closest('[data-edit-resource]');
+    if(editBtn){
+      const id = editBtn.getAttribute('data-edit-resource');
+      const r = resources.find(x => x.id === id);
+      if(r) openResourceForm(r);
+      return;
+    }
+    const delBtn = ev.target.closest('[data-delete-resource]');
+    if(delBtn){
+      const id = delBtn.getAttribute('data-delete-resource');
+      if(confirm('Hapus link/folder unduhan ini?')){
+        delBtn.textContent = 'Menghapus…';
+        try{
+          await deleteResourceRequest(id);
+          await loadResources();
+        }catch(e){
+          alert(e.message || 'Gagal menghapus.');
+        }
+      }
+    }
+  });
+
+  function openPasswordPanel(){
+    passwordForm.reset();
+    passwordError.classList.remove('show');
+    passwordSuccess.classList.remove('show');
+    passwordOverlay.classList.add('show');
+    document.getElementById('p_old').focus();
+  }
+  function closePasswordPanel(){ passwordOverlay.classList.remove('show'); }
+
+  changePasswordBtn.addEventListener('click', openPasswordPanel);
+  document.getElementById('closePasswordBtn').addEventListener('click', closePasswordPanel);
+  document.getElementById('cancelPasswordBtn').addEventListener('click', closePasswordPanel);
+  passwordOverlay.addEventListener('click', (ev) => { if(ev.target === passwordOverlay) closePasswordPanel(); });
+
+  passwordForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const oldPassword = document.getElementById('p_old').value;
+    const newPassword = document.getElementById('p_new').value;
+    const confirmPassword = document.getElementById('p_confirm').value;
+    passwordError.classList.remove('show');
+    passwordSuccess.classList.remove('show');
+
+    if(!oldPassword || !newPassword || !confirmPassword){
+      passwordError.textContent = 'Semua kolom wajib diisi.';
+      passwordError.classList.add('show');
+      return;
+    }
+    if(newPassword.length < 4){
+      passwordError.textContent = 'Password baru minimal 4 karakter.';
+      passwordError.classList.add('show');
+      return;
+    }
+    if(newPassword !== confirmPassword){
+      passwordError.textContent = 'Konfirmasi password baru tidak cocok.';
+      passwordError.classList.add('show');
+      return;
+    }
+
+    const submitBtn = document.getElementById('submitPasswordBtn');
+    const submitLabel = document.getElementById('passwordSubmitLabel');
+    submitBtn.disabled = true;
+    submitLabel.textContent = 'Menyimpan…';
+    try{
+      await changePasswordRequest(oldPassword, newPassword);
+      passwordSuccess.textContent = 'Password berhasil diubah.';
+      passwordSuccess.classList.add('show');
+      passwordForm.reset();
+      setTimeout(closePasswordPanel, 1200);
+    }catch(e){
+      passwordError.textContent = e.message || 'Gagal mengubah password.';
+      passwordError.classList.add('show');
+    }finally{
+      submitBtn.disabled = false;
+      submitLabel.textContent = 'Simpan Password';
+    }
+  });
+
+  function openLogin(){
+    loginForm.reset();
+    loginError.classList.remove('show');
+    loginOverlay.classList.add('show');
+    document.getElementById('l_email').focus();
+  }
+  function closeLogin(){ loginOverlay.classList.remove('show'); }
+
+  loginBtn.addEventListener('click', openLogin);
+  document.getElementById('closeLoginBtn').addEventListener('click', closeLogin);
+  document.getElementById('cancelLoginBtn').addEventListener('click', closeLogin);
+  loginOverlay.addEventListener('click', (ev) => { if(ev.target === loginOverlay) closeLogin(); });
+
+  loginForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const email = document.getElementById('l_email').value.trim();
+    const password = document.getElementById('l_password').value;
+    if(!email || !password){
+      loginError.textContent = 'Email dan password wajib diisi.';
+      loginError.classList.add('show');
+      return;
+    }
+    loginError.classList.remove('show');
+    const submitBtn = document.getElementById('submitLoginBtn');
+    const submitLabel = document.getElementById('loginSubmitLabel');
+    submitBtn.disabled = true;
+    submitLabel.textContent = 'Memeriksa…';
+    try{
+      const result = await loginRequest(email, password);
+      auth = { token: result.token, email: result.email, isAdmin: !!result.isAdmin };
+      persistAuth_();
+      updateAuthUI();
+      closeLogin();
+    }catch(e){
+      loginError.textContent = e.message || 'Email atau password salah.';
+      loginError.classList.add('show');
+    }finally{
+      submitBtn.disabled = false;
+      submitLabel.textContent = 'Masuk';
+    }
+  });
+
+  logoutBtn.addEventListener('click', async () => {
+    if(auth){
+      await logoutRequest(auth.token);
+    }
+    auth = null;
+    persistAuth_();
+    updateAuthUI();
+  });
+
+  // ---------- Render list ----------
+  function render(){
+    const filtered = entries.filter(e => {
+      if(!searchTerm) return true;
+      const hay = [e.namaPengawas, e.namaKegiatan, e.tanggal, e.lamaKegiatan, e.tempatKegiatan].join(' ').toLowerCase();
+      return hay.includes(searchTerm.toLowerCase());
+    });
+
+    countNote.textContent = entries.length
+      ? `${filtered.length} dari ${entries.length} kegiatan tercatat`
+      : '';
+
+    if(entries.length === 0){
+      listRoot.innerHTML = `
+        <div class="empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <h3>Register masih kosong</h3>
+          <p>Belum ada kegiatan yang dicatat. Mulai dengan menekan "Catat Kegiatan Baru".</p>
+        </div>`;
+      return;
+    }
+    if(filtered.length === 0){
+      listRoot.innerHTML = `<div class="empty"><h3>Tidak ditemukan</h3><p>Tidak ada kegiatan yang cocok dengan pencarian "${escapeHtml(searchTerm)}".</p></div>`;
+      return;
+    }
+
+    // Chronological registration numbers (oldest = 001), display newest first
+    const withNumbers = entries.map((e, i) => ({...e, regNo: String(i+1).padStart(3,'0')}));
+    const numberMap = {};
+    withNumbers.forEach(e => numberMap[e.id] = e.regNo);
+
+    const ordered = filtered.slice().sort((a,b) => (b.tanggal||'').localeCompare(a.tanggal||'') || (b.createdAt||0)-(a.createdAt||0));
+
+    const visible = showAllEntries ? ordered : ordered.slice(0, DISPLAY_LIMIT);
+
+    const cardsHtml = visible.map(e => {
+      const regNo = numberMap[e.id] || '—';
+      const year = (e.tanggal||'').split('-')[0] || '';
+      const isMine = auth && e.createdBy && auth.email.toLowerCase() === String(e.createdBy).toLowerCase();
+      const canManage = auth && (isMine || auth.isAdmin);
+      return `
+      <div class="entry ${isMine ? 'mine' : ''}" data-id="${e.id}">
+        <div class="entry-head" data-toggle="${e.id}">
+          <span class="entry-no">No. ${regNo}${year ? '/'+year : ''}</span>
+          <span class="entry-date">${shortDateID(e.tanggal)}</span>
+          <div class="entry-name-wrap">
+            <div class="entry-name">${escapeHtml(e.namaKegiatan) || '(tanpa nama)'}</div>
+            <div class="entry-sub">${escapeHtml(e.namaPengawas) || '—'}${e.tempatKegiatan ? ' &middot; ' + escapeHtml(e.tempatKegiatan) : ''}</div>
+          </div>
+          ${isMine ? '<span class="owner-badge">Milik Anda</span>' : ''}
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="entry-body">
+          <div class="entry-body-inner">
+            <div class="field-grid">
+              <div class="field"><label>Nama Pengawas Sekolah</label><div class="val">${escapeHtml(e.namaPengawas) || '—'}</div></div>
+              <div class="field"><label>Nama Kegiatan</label><div class="val">${escapeHtml(e.namaKegiatan) || '—'}</div></div>
+              <div class="field"><label>Tanggal Kegiatan</label><div class="val">${formatDateID(e.tanggal)}</div></div>
+              <div class="field"><label>Lama Kegiatan</label><div class="val">${escapeHtml(e.lamaKegiatan) || '—'}</div></div>
+              <div class="field"><label>Tempat Kegiatan</label><div class="val">${escapeHtml(e.tempatKegiatan) || '—'}</div></div>
+              <div class="field full"><label>Surat Tugas</label><div class="val">${linkOrDash(e.suratTugas)}</div></div>
+              <div class="field full"><label>Dokumentasi</label><div class="val">${linkOrDash(e.dokumentasi)}</div></div>
+            </div>
+            <div class="entry-actions">
+              ${canManage ? `
+                <button class="btn-edit-text" data-edit="${e.id}">Edit entri ini</button>
+                <button class="btn-danger-text" data-delete="${e.id}">Hapus entri ini</button>
+              ` : (auth ? `<span class="entry-sub">Hanya pembuat entri atau admin yang bisa mengubah/menghapus</span>` : `<span class="entry-sub">Masuk untuk mengelola entri ini</span>`)}
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    let toggleHtml = '';
+    if(ordered.length > DISPLAY_LIMIT){
+      toggleHtml = showAllEntries
+        ? `<div class="show-toggle"><button class="btn btn-ghost" id="showLessBtn">Tampilkan lebih sedikit</button></div>`
+        : `<div class="show-toggle"><button class="btn btn-ghost" id="showAllBtn">Tampilkan Semua (${ordered.length} kegiatan)</button></div>`;
+    }
+
+    listRoot.innerHTML = cardsHtml + toggleHtml;
+
+    const showAllBtn = document.getElementById('showAllBtn');
+    if(showAllBtn) showAllBtn.addEventListener('click', () => { showAllEntries = true; render(); });
+    const showLessBtn = document.getElementById('showLessBtn');
+    if(showLessBtn) showLessBtn.addEventListener('click', () => { showAllEntries = false; render(); });
+  }
+
+  // ---------- Interactions: expand/collapse ----------
+  listRoot.addEventListener('click', async (ev) => {
+    const head = ev.target.closest('[data-toggle]');
+    if(head){
+      const entryEl = head.closest('.entry');
+      const body = entryEl.querySelector('.entry-body');
+      const isOpen = entryEl.classList.toggle('open');
+      body.style.maxHeight = isOpen ? body.scrollHeight + 'px' : '0px';
+      return;
+    }
+    const delBtn = ev.target.closest('[data-delete]');
+    if(delBtn){
+      const id = delBtn.getAttribute('data-delete');
+      if(confirm('Hapus entri kegiatan ini dari register? Tindakan ini tidak dapat dibatalkan.')){
+        delBtn.textContent = 'Menghapus…';
+        try{
+          await deleteEntry(id);
+          entries = entries.filter(e => e.id !== id);
+          try{ localStorage.setItem(CACHE_KEY, JSON.stringify(entries)); }catch(err){}
+          render();
+        }catch(e){
+          alert(e.message || 'Gagal menghapus entri. Silakan coba lagi.');
+          console.error(e);
+        }
+      }
+      return;
+    }
+    const editBtn = ev.target.closest('[data-edit]');
+    if(editBtn){
+      const id = editBtn.getAttribute('data-edit');
+      const entry = entries.find(e => e.id === id);
+      if(entry) openEntryForm(entry);
+    }
+  });
+
+  document.getElementById('searchInput').addEventListener('input', (ev) => {
+    searchTerm = ev.target.value.trim();
+    render();
+  });
+
+  // ---------- Form panel open/close ----------
+  const closeFormBtn = document.getElementById('closeFormBtn');
+  const cancelFormBtn = document.getElementById('cancelFormBtn');
+  const panelTitle = document.getElementById('panelTitle');
+  const submitLabelEl = document.getElementById('submitLabel');
+  let editingId = null; // null = mode tambah baru, terisi = mode edit
+
+  function openEntryForm(entryToEdit){
+    if(!auth){
+      openLogin();
+      return;
+    }
+    entryForm.reset();
+    formError.classList.remove('show');
+    driveHint.style.display = 'none';
+    document.getElementById('f_surattugas_status').textContent = '';
+    document.getElementById('f_surattugas_status').className = 'upload-status';
+    document.getElementById('f_dokumentasi_status').textContent = '';
+    document.getElementById('f_dokumentasi_status').className = 'upload-status';
+
+    if(entryToEdit){
+      editingId = entryToEdit.id;
+      panelTitle.textContent = 'Ubah Kegiatan';
+      submitLabelEl.textContent = 'Simpan Perubahan';
+      document.getElementById('f_pengawas').value = entryToEdit.namaPengawas || '';
+      document.getElementById('f_nama').value = entryToEdit.namaKegiatan || '';
+      document.getElementById('f_tanggal').value = entryToEdit.tanggal || '';
+      document.getElementById('f_lama').value = entryToEdit.lamaKegiatan || '';
+      document.getElementById('f_tempat').value = entryToEdit.tempatKegiatan || '';
+      document.getElementById('f_surattugas').value = entryToEdit.suratTugas || '';
+      document.getElementById('f_dokumentasi').value = entryToEdit.dokumentasi || '';
+    }else{
+      editingId = null;
+      panelTitle.textContent = 'Catat Kegiatan Baru';
+      submitLabelEl.textContent = 'Simpan & Bubuhkan Stempel';
+      document.getElementById('f_tanggal').valueAsDate = new Date();
+    }
+    checkDriveHint();
+    formOverlay.classList.add('show');
+    document.getElementById('f_pengawas').focus();
+  }
+  function closeForm(){ formOverlay.classList.remove('show'); }
+
+  function checkDriveHint(){
+    const s = document.getElementById('f_surattugas').value.trim();
+    const d = document.getElementById('f_dokumentasi').value.trim();
+    const hasDrive = /drive\.google\.com/i.test(s) || /drive\.google\.com/i.test(d);
+    driveHint.style.display = hasDrive ? 'flex' : 'none';
+  }
+  document.getElementById('f_surattugas').addEventListener('input', checkDriveHint);
+  document.getElementById('f_dokumentasi').addEventListener('input', checkDriveHint);
+
+  function wireFileUpload(fileInputId, urlInputId, statusId){
+    const fileInput = document.getElementById(fileInputId);
+    const urlInput = document.getElementById(urlInputId);
+    const statusEl = document.getElementById(statusId);
+    const btnEl = fileInput.previousElementSibling; // .upload-btn label
+    fileInput.addEventListener('change', async () => {
+      const file = fileInput.files[0];
+      if(!file) return;
+      statusEl.className = 'upload-status';
+      statusEl.textContent = 'Mengupload "' + file.name + '"…';
+      btnEl.classList.add('uploading');
+      try{
+        const url = await uploadFileRequest(file);
+        urlInput.value = url;
+        checkDriveHint();
+        statusEl.className = 'upload-status ok';
+        statusEl.textContent = 'Terupload: ' + file.name;
+      }catch(err){
+        statusEl.className = 'upload-status err';
+        statusEl.textContent = err.message || 'Gagal upload file.';
+      }finally{
+        btnEl.classList.remove('uploading');
+        fileInput.value = '';
+      }
+    });
+  }
+  wireFileUpload('f_surattugas_file', 'f_surattugas', 'f_surattugas_status');
+  wireFileUpload('f_dokumentasi_file', 'f_dokumentasi', 'f_dokumentasi_status');
+
+  openFormBtn.addEventListener('click', () => openEntryForm(null));
+  closeFormBtn.addEventListener('click', closeForm);
+  cancelFormBtn.addEventListener('click', closeForm);
+  formOverlay.addEventListener('click', (ev) => { if(ev.target === formOverlay) closeForm(); });
+  document.addEventListener('keydown', (ev) => {
+    if(ev.key === 'Escape'){
+      closeForm();
+    }
+  });
+
+  // ---------- Submit ----------
+  entryForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const namaPengawas = document.getElementById('f_pengawas').value.trim();
+    const namaKegiatan = document.getElementById('f_nama').value.trim();
+    const tanggal = document.getElementById('f_tanggal').value;
+    const suratTugas = document.getElementById('f_surattugas').value.trim();
+    const dokumentasi = document.getElementById('f_dokumentasi').value.trim();
+
+    if(!namaPengawas || !namaKegiatan || !tanggal){
+      formError.textContent = 'Nama Pengawas Sekolah, Nama Kegiatan, dan Tanggal Kegiatan wajib diisi.';
+      formError.classList.add('show');
+      return;
+    }
+    if(suratTugas && !isValidUrl(suratTugas)){
+      formError.textContent = 'Tautan Surat Tugas harus berupa URL yang valid (diawali http:// atau https://).';
+      formError.classList.add('show');
+      return;
+    }
+    if(dokumentasi && !isValidUrl(dokumentasi)){
+      formError.textContent = 'Tautan Dokumentasi harus berupa URL yang valid (diawali http:// atau https://).';
+      formError.classList.add('show');
+      return;
+    }
+    formError.classList.remove('show');
+
+    const submitBtn = document.getElementById('submitFormBtn');
+    const submitLabel = document.getElementById('submitLabel');
+    submitBtn.disabled = true;
+    const prevLabel = submitLabel.textContent;
+    submitLabel.textContent = editingId ? 'Menyimpan perubahan…' : 'Menyimpan…';
+
+    const fieldsOnly = {
+      namaPengawas,
+      namaKegiatan,
+      tanggal,
+      lamaKegiatan: document.getElementById('f_lama').value.trim(),
+      tempatKegiatan: document.getElementById('f_tempat').value.trim(),
+      suratTugas,
+      dokumentasi
+    };
+
+    try{
+      if(editingId){
+        await updateEntryRequest(editingId, fieldsOnly);
+        const idx = entries.findIndex(e => e.id === editingId);
+        if(idx !== -1){ entries[idx] = { ...entries[idx], ...fieldsOnly }; }
+      }else{
+        const entry = { id: 'e' + Date.now() + Math.random().toString(36).slice(2,8), ...fieldsOnly, createdAt: Date.now() };
+        await saveEntry(entry);
+        entry.createdBy = auth.email;
+        entries.push(entry);
+      }
+      try{ localStorage.setItem(CACHE_KEY, JSON.stringify(entries)); }catch(err){}
+      closeForm();
+      if(!editingId) playStamp(tanggal);
+      render();
+    }catch(e){
+      formError.textContent = e.message || 'Gagal menyimpan data. Periksa koneksi lalu coba lagi.';
+      formError.classList.add('show');
+      console.error('save error', e);
+    }finally{
+      submitBtn.disabled = false;
+      submitLabel.textContent = prevLabel;
+    }
+  });
+
+  // ---------- Stamp animation ----------
+  function playStamp(tanggal){
+    const overlay = document.getElementById('stampOverlay');
+    const mark = document.getElementById('stampMark');
+    document.getElementById('stampDate').textContent = shortDateID(tanggal);
+    mark.classList.remove('play');
+    void mark.offsetWidth; // reflow to restart animation
+    mark.classList.add('play');
+    overlay.style.display = 'flex';
+    setTimeout(() => { overlay.style.display = 'none'; }, 900);
+  }
+
+  // ---------- Init ----------
+  loadAuth_();
+  loadEntries();
+})();
+</script>
+</body>
+</html>
