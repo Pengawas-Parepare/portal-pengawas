@@ -33,6 +33,8 @@
     --cap-style: italic;
     --desc-font: 'Lora', serif;
     --desc-style: italic;
+    --judul-size: 28px;
+    --judul-color: #1E2126;
   }
   *{ box-sizing:border-box; }
   body{
@@ -131,7 +133,7 @@
     display:flex; justify-content:center; gap:10px; margin-bottom:20px; flex-wrap:wrap;
   }
   .gallery-header{ text-align:center; margin-bottom:22px; }
-  .gallery-title{ font-family:'Poppins',sans-serif; font-size:24px; font-weight:700; color:var(--ink); }
+  .gallery-title{ font-family:'Poppins',sans-serif; font-size:var(--judul-size); font-weight:700; color:var(--judul-color); }
   .gallery-sub{ font-family:'Poppins',sans-serif; font-size:13px; color:#8A8D93; margin-top:4px; }
   .gallery-grid{
     display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr));
@@ -166,6 +168,11 @@
     display:none; text-align:center; padding:60px 20px; color:#B7BABF;
     font-family:'Poppins',sans-serif; font-size:13.5px;
   }
+  .gallery-footer{
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    margin-top:34px; padding-top:26px; border-top:1px solid #DDD9D0;
+  }
+  .gallery-footer .sig-row{ display:flex; gap:24px; flex-wrap:wrap; justify-content:center; }
 
   /* ---------- lightbox ---------- */
   .lightbox{
@@ -256,7 +263,7 @@
     width:100%; font-family:'Poppins',sans-serif;
   }
   .kop .judul-edit{
-    font-size:28px; font-weight:700; margin-top:8px; color:var(--header-text);
+    font-size:var(--judul-size); font-weight:700; margin-top:8px; color:var(--judul-color);
     text-align:center; border:none; background:transparent; width:100%;
     font-family:'Poppins',sans-serif;
   }
@@ -554,6 +561,23 @@
 
   <div class="style-row" id="styleRow">
     <div class="style-block">
+      <div class="style-block-title">Judul Dokumen</div>
+      <div class="style-block-controls">
+        <div class="style-group">
+          <label for="judulSize">Ukuran</label>
+          <input type="range" id="judulSize" min="18" max="48" value="28" step="1" style="width:100px;">
+          <span id="judulSizeVal" style="font-size:11px;color:#9AA0A8;min-width:32px;">28px</span>
+        </div>
+        <div class="style-group">
+          <label for="judulColor">Warna</label>
+          <input type="color" id="judulColor" value="#1E2126">
+        </div>
+      </div>
+    </div>
+
+    <div class="style-divider"></div>
+
+    <div class="style-block">
       <div class="style-block-title">Keterangan Foto</div>
       <div class="style-block-controls">
         <div class="style-group">
@@ -656,6 +680,11 @@
     </div>
     <div class="gallery-grid" id="galleryGrid"></div>
     <div class="gallery-empty" id="galleryEmpty">Belum ada foto. Kembali ke Lembar Laporan untuk menambahkan foto.</div>
+
+    <div class="gallery-footer">
+      <div class="sig-row" id="gallerySigRow"></div>
+      <button class="btn btn-ghost no-export" id="addGallerySigBtn">+ Tambah Tanda Tangan</button>
+    </div>
   </div>
 
   <div class="lightbox" id="lightbox">
@@ -1402,6 +1431,14 @@ document.getElementById('galleryDownloadPdfBtn').onclick = ()=>{
     .finally(()=> gg.classList.remove('exporting'));
 };
 
+document.getElementById('judulSize').oninput = (e)=>{
+  document.documentElement.style.setProperty('--judul-size', e.target.value + 'px');
+  document.getElementById('judulSizeVal').textContent = e.target.value + 'px';
+};
+document.getElementById('judulColor').oninput = (e)=>{
+  document.documentElement.style.setProperty('--judul-color', e.target.value);
+};
+
 document.getElementById('capFont').onchange = (e)=>{
   document.documentElement.style.setProperty('--cap-font', e.target.value);
   renderGallery();
@@ -1582,7 +1619,7 @@ function setupSignaturePad(canvas){
   };
 }
 
-function addSignatureBlock(opts){
+function createSigBlock(opts){
   opts = opts || {};
   sigCounter++;
   const block = document.createElement('div');
@@ -1600,22 +1637,40 @@ function addSignatureBlock(opts){
     <input class="sig-name" value="${opts.name || '( Nama Terang )'}">
     <input class="sig-position" value="${opts.position || 'Jabatan'}">
   `;
-  sigRow.appendChild(block);
-
   const canvas = block.querySelector('.sig-pad');
   setupSignaturePad(canvas);
-
   block.querySelector('.sig-clear').onclick = ()=> canvas._clear();
+  return block;
+}
+
+function addSignatureBlock(opts){
+  const block = createSigBlock(opts);
+  sigRow.appendChild(block);
   block.querySelector('.sig-remove').onclick = ()=>{
     if(sigRow.children.length <= 1) return; // keep at least one signature block
     block.remove();
   };
 }
 
+/* ---------- Tanda tangan pembuat laporan (di tab Galeri) ---------- */
+const gallerySigRow = document.getElementById('gallerySigRow');
+function addGallerySignatureBlock(opts){
+  const block = createSigBlock(opts);
+  gallerySigRow.appendChild(block);
+  block.querySelector('.sig-remove').onclick = ()=>{
+    if(gallerySigRow.children.length <= 1) return; // keep at least one signature block
+    block.remove();
+  };
+}
+document.getElementById('addGallerySigBtn').onclick = ()=> addGallerySignatureBlock();
+
 addSigBtn.onclick = ()=> addSignatureBlock();
 
 // default: one signature block on load
 addSignatureBlock({ label: 'Mengetahui,', place: 'Kota, .....................', name: '( Nama Terang )', position: 'Jabatan' });
+
+// default: one signature block for report creator, on gallery view
+addGallerySignatureBlock({ label: 'Pembuat Laporan,', place: 'Kota, .....................', name: '( Nama Terang )', position: 'Jabatan' });
 
 /* ---------- Penampil PDF (lihat & unduh langsung dari kartu di lembar foto) ---------- */
 function downloadPdfAttachment(p){
