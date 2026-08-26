@@ -3,1512 +3,1711 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal Aktivitas Pengawas Sekolah dan Penilik Kota Parepare</title>
+<title>Generator Laporan Foto</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lora:ital@0;1&family=Merriweather:ital@0;1&family=Playfair+Display:ital@0;1&family=Caveat:wght@500;600&family=Roboto:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script>
+  if(window['pdfjsLib']){
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+</script>
 <style>
   :root{
-    --paper:#FAF8F2;
-    --paper-dim:#F1ECDD;
-    --card:#FFFFFF;
-    --ink:#20242E;
-    --ink-soft:#5A5F6E;
-    --navy:#1B2A4A;
-    --navy-light:#2C4270;
-    --maroon:#8B1E3F;
-    --maroon-dark:#6E1731;
-    --gold:#B08D57;
-    --gold-light:#D9C08F;
-    --emerald:#1F7A5C;
-    --emerald-light:#E4F3EC;
-    --line:#DCD5C4;
-    --shadow: 0 1px 2px rgba(27,42,74,0.06), 0 8px 24px -8px rgba(27,42,74,0.12);
-    --header-gradient: linear-gradient(120deg, #1B2A4A 0%, #2C4270 45%, #8B1E3F 100%);
+    --maroon:#8B2E2E;
+    --accent2:#C79A3D;
+    --header-bg:transparent;
+    --header-text:#1E2126;
+    --ink:#1E2126;
+    --muted:#6B6F76;
+    --line:#E7E5E0;
+    --paper:#FFFFFF;
+    --cream:#FAF7F2;
+    --page-bg:#EDEBE6;
+    --shadow: 0 8px 22px rgba(30,33,38,0.08);
+    --cap-font: 'Lora', serif;
+    --cap-color: #6B6F76;
+    --cap-style: italic;
+    --desc-font: 'Lora', serif;
+    --desc-style: italic;
+    --judul-size: 28px;
+    --judul-color: #1E2126;
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  *{ box-sizing:border-box; }
   body{
-    background:
-      radial-gradient(1200px 500px at 10% -10%, rgba(176,141,87,0.08), transparent 60%),
-      var(--paper);
-    color:var(--ink);
-    font-family:'Inter',sans-serif;
-    min-height:100vh;
-    -webkit-font-smoothing:antialiased;
-  }
-  ::selection{ background:var(--gold-light); }
-
-  .wrap{ max-width:960px; margin:0 auto; padding:0 24px 80px; }
-
-  .masthead-band{
-    background: var(--header-gradient);
-    padding:44px 0 56px;
-  }
-  header.masthead{
-    padding:0 24px;
-    max-width:960px;
-    margin:0 auto;
-    display:flex;
-    align-items:center;
-    gap:22px;
-  }
-  .seal{ flex:0 0 auto; width:64px; height:64px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25)); }
-  .seal circle, .seal path{ stroke: #F1ECDD; }
-  .seal circle[fill]{ fill:var(--gold-light); }
-  .masthead-text{ flex:1 1 auto; min-width:0; }
-  .eyebrow{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:11px;
-    letter-spacing:.2em;
-    text-transform:uppercase;
-    color:var(--gold-light);
-    margin:0 0 8px;
-  }
-  h1.title{
-    font-family:'Spectral', serif;
-    font-weight:700;
-    font-size:clamp(28px,4.2vw,40px);
-    letter-spacing:.005em;
-    margin:0 0 10px;
-    color:#FFFFFF;
-    text-shadow: 0 2px 12px rgba(0,0,0,0.18);
-  }
-  .subtitle{
     margin:0;
-    color:rgba(255,255,255,0.82);
-    font-size:14.5px;
-    line-height:1.55;
-    max-width:640px;
+    font-family:'Poppins',sans-serif;
+    background:var(--page-bg);
+    color:var(--ink);
+    padding: 28px 16px 60px 16px;
+    transition: background .25s ease;
   }
-  .rule{
-    max-width:960px;
-    margin:-24px auto 0;
-    height:1px;
-    background:transparent;
-  }
-  .wrap{ max-width:960px; margin:-32px auto 0; padding:0 24px 80px; position:relative; z-index:2; }
 
-  .toolbar{
+  /* ---------- theme picker ---------- */
+  .theme-row{
+    max-width: 900px;
+    margin: 0 auto 16px auto;
     display:flex;
-    gap:12px;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .theme-chip{
+    display:flex; align-items:center; gap:8px;
+    padding: 7px 14px 7px 7px;
+    border-radius: 999px;
+    background:#fff;
+    border: 1.5px solid #DDD9D0;
+    cursor:pointer;
+    font-family:'Poppins',sans-serif;
+    font-size:12.5px;
+    font-weight:500;
+    color:#4A4D53;
+    transition: border-color .15s ease, transform .1s ease;
+  }
+  .theme-chip:hover{ transform: translateY(-1px); }
+  .theme-chip.active{ border-color: var(--maroon); color:var(--ink); font-weight:600; }
+  .theme-chip .swatch{
+    width:22px; height:22px; border-radius:50%;
+    flex-shrink:0;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+  }
+
+  /* ---------- caption style row (not exported) ---------- */
+  .style-row{
+    max-width: 900px;
+    margin: 0 auto 22px auto;
+    display:flex;
+    gap: 20px;
+    flex-wrap:wrap;
     align-items:center;
-    padding:22px 0 20px;
+    justify-content:center;
+    background:#fff;
+    border: 1.5px solid #DDD9D0;
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-family:'Poppins',sans-serif;
+    font-size:12.5px;
+    color:#4A4D53;
+  }
+  .style-group{ display:flex; align-items:center; gap:8px; }
+  .style-group label{ font-weight:500; }
+  .style-group select{
+    font-family:'Poppins',sans-serif; font-size:12.5px;
+    padding:6px 9px; border-radius:6px; border:1px solid #DDD9D0;
+    background:#fff; color:#333; cursor:pointer;
+  }
+  .style-group input[type=color]{
+    width:34px; height:28px; border:1px solid #DDD9D0; border-radius:6px;
+    padding:2px; cursor:pointer; background:#fff;
+  }
+  .style-check{ display:flex; align-items:center; gap:6px; font-weight:500; cursor:pointer; }
+  .style-check input{ cursor:pointer; }
+  .style-block{ display:flex; flex-direction:column; gap:8px; align-items:center; }
+  .style-block-title{
+    font-size:10.5px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase;
+    color:#9AA0A8;
+  }
+  .style-block-controls{ display:flex; gap:14px; flex-wrap:wrap; align-items:center; justify-content:center; }
+  .style-divider{ width:1px; align-self:stretch; background:#E2DED5; }
+
+  /* ---------- view tabs (not exported) ---------- */
+  .view-tabs{
+    display:flex; gap:6px; background:#EAE7E0; padding:4px;
+    border-radius:10px; width:fit-content; margin:0 auto 18px auto;
+  }
+  .vtab{
+    border:none; background:transparent; padding:9px 20px; border-radius:7px;
+    font-family:'Poppins',sans-serif; font-size:12.5px; font-weight:600;
+    color:#6B6F76; cursor:pointer; transition:.15s;
+  }
+  .vtab.active{ background:#fff; color:var(--maroon); box-shadow:0 1px 4px rgba(0,0,0,0.12); }
+  .vtab:hover:not(.active){ color:#4A4D53; }
+
+  /* ---------- gallery view ---------- */
+  .gallery-wrap{ display:none; max-width:1000px; margin:0 auto 50px auto; padding:0 20px; }
+  .gallery-actions{
+    display:flex; justify-content:center; gap:10px; margin-bottom:20px; flex-wrap:wrap;
+  }
+  .gallery-header{ text-align:center; margin-bottom:22px; }
+  .gallery-title{ font-family:'Poppins',sans-serif; font-size:var(--judul-size); font-weight:700; color:var(--judul-color); }
+  .gallery-sub{ font-family:'Poppins',sans-serif; font-size:13px; color:#8A8D93; margin-top:4px; }
+  .gallery-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr));
+    gap:4px; background:#000;
+  }
+  .gallery-item{
+    position:relative; aspect-ratio:1/1; overflow:hidden; cursor:pointer; background:#F1EFEA;
+  }
+  .gallery-item img{
+    width:100%; height:100%; object-fit:cover; display:block; transition:transform .35s ease;
+  }
+  .gallery-item:hover img{ transform:scale(1.06); }
+  .gallery-item .gnum{
+    position:absolute; top:8px; left:8px; background:rgba(20,20,20,0.55); color:#fff;
+    font-family:'Poppins',sans-serif; font-size:10.5px; font-weight:700;
+    width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+  .gallery-item .gcap{
+    position:absolute; left:0; right:0; bottom:0; padding:22px 10px 9px;
+    background:linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0));
+    color:#fff; opacity:0; transition:opacity .25s;
+  }
+  .gallery-item:hover .gcap{ opacity:1; }
+  .gallery-grid.exporting .gcap{ opacity:1 !important; }
+  .gallery-item .gtitle{ font-family:'Poppins',sans-serif; font-weight:600; font-size:12px; margin-bottom:2px; }
+  .gallery-item .gdesc{
+    font-family:var(--cap-font); font-style:var(--cap-style); color:#fff;
+    font-size:11px; opacity:0.9; line-height:1.35;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .gallery-empty{
+    display:none; text-align:center; padding:60px 20px; color:#B7BABF;
+    font-family:'Poppins',sans-serif; font-size:13.5px;
+  }
+  .gallery-footer{
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    margin-top:34px; padding-top:26px; border-top:1px solid #DDD9D0;
+  }
+  .gallery-footer .sig-row{ display:flex; gap:24px; flex-wrap:wrap; justify-content:center; }
+
+  /* ---------- lightbox ---------- */
+  .lightbox{
+    display:none; position:fixed; inset:0; background:rgba(10,10,12,0.92);
+    z-index:999; align-items:center; justify-content:center; flex-direction:column;
+  }
+  .lightbox.open{ display:flex; }
+  .lb-body{ max-width:min(90vw, 880px); max-height:85vh; display:flex; flex-direction:column; align-items:center; }
+  .lb-body img{ max-width:100%; max-height:65vh; object-fit:contain; border-radius:4px; box-shadow:0 10px 40px rgba(0,0,0,0.5); }
+  .lb-info{ margin-top:16px; text-align:center; max-width:640px; }
+  .lb-title{ font-family:'Poppins',sans-serif; color:#fff; font-weight:600; font-size:14px; margin-bottom:6px; }
+  .lb-cap{ font-family:var(--cap-font); font-style:var(--cap-style); color:#D8D8D8; font-size:13px; line-height:1.5; }
+  .lb-close{
+    position:absolute; top:20px; right:24px; background:none; border:none; color:#fff;
+    font-size:32px; line-height:1; cursor:pointer; opacity:0.8;
+  }
+  .lb-close:hover{ opacity:1; }
+  .lb-nav{
+    position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.08);
+    border:none; color:#fff; font-size:18px; width:44px; height:44px; border-radius:50%;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .lb-nav:hover{ background:rgba(255,255,255,0.18); }
+  .lb-prev{ left:18px; } .lb-next{ right:18px; }
+
+  /* ---------- toolbar (not exported) ---------- */
+  .toolbar{
+    max-width: 900px;
+    margin: 0 auto 22px auto;
+    background: var(--ink);
+    border-radius: 12px;
+    padding: 18px 22px;
+    color:#fff;
+    display:flex;
+    flex-wrap:wrap;
+    gap: 14px;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .toolbar h1{
+    font-size:16px;
+    font-weight:600;
+    margin:0;
+  }
+  .toolbar p{
+    margin:2px 0 0 0;
+    font-size:12.5px;
+    color:#B9BDC6;
+    font-weight:300;
+  }
+  .btns{ display:flex; gap:10px; flex-wrap:wrap; }
+  .btn{
+    border:none;
+    border-radius:8px;
+    padding: 10px 16px;
+    font-family:'Poppins',sans-serif;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition: transform .12s ease, opacity .12s ease;
+  }
+  .btn:active{ transform: scale(0.97); }
+  .btn-accent{ background:var(--maroon); color:#fff; }
+  .btn-ghost{ background:#33363D; color:#fff; }
+  .btn:disabled{ opacity:0.4; cursor:not-allowed; }
+  input[type=file]{ display:none; }
+
+  /* ---------- report sheet (exported) ---------- */
+  .sheet-wrap{
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .sheet{
+    background: var(--paper);
+    box-shadow: var(--shadow);
+  }
+
+  .kop{
+    padding: 46px 56px 24px 56px;
+    text-align:center;
+    border-bottom: 4px solid var(--maroon);
+    background: var(--header-bg);
+    transition: background .25s ease, border-color .25s ease;
+  }
+  .kop .lembaga-edit{
+    font-size:13px; letter-spacing:3px; color: var(--header-mode-accent, var(--maroon)); font-weight:600;
+    text-transform:uppercase; text-align:center; border:none; background:transparent;
+    width:100%; font-family:'Poppins',sans-serif;
+  }
+  .kop .judul-edit{
+    font-size:var(--judul-size); font-weight:700; margin-top:8px; color:var(--judul-color);
+    text-align:center; border:none; background:transparent; width:100%;
+    font-family:'Poppins',sans-serif;
+  }
+  .kop .sub-edit{
+    margin-top:8px; font-size:15px; font-weight:400; color: var(--desc-color, var(--header-text));
+    opacity:0.85;
+    font-family:var(--desc-font); font-style:var(--desc-style); text-align:center; border:none;
+    background:transparent; width:100%;
+  }
+  .meta-bar{
+    display:flex; justify-content:center; gap:0; margin-top:20px; flex-wrap:wrap;
+  }
+  .meta-bar .m{
+    padding: 0 26px; text-align:center; border-right:1px solid var(--meta-line, var(--line));
+  }
+  .meta-bar .m:last-child{ border-right:none; }
+  .meta-bar .lbl{ font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color: var(--header-text); opacity:0.55; }
+  .meta-bar .val{
+    font-size:14px; font-weight:600; color:var(--header-text); margin-top:4px;
+    border:none; background:transparent; text-align:center; width:150px;
+    font-family:'Poppins',sans-serif;
+  }
+
+  .grid{
+    padding: 36px 56px 10px 56px;
+    display:flex; flex-wrap:wrap; gap:26px;
+  }
+  .card{
+    width: calc(50% - 13px);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    overflow:hidden;
+    box-shadow: var(--shadow);
+    background:#fff;
+    position:relative;
+  }
+  .card .tag{
+    display:flex; align-items:center; gap:10px;
+    padding: 12px 16px;
+    background: var(--cream);
+    border-bottom: 1px solid #EFEBE3;
+  }
+  .card .tag .no{
+    width:22px; height:22px; border-radius:50%;
+    background: var(--maroon); color:#fff; font-size:11px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    transition: background .25s ease;
+  }
+  .card .tag input{
+    border:none; background:transparent; font-size:13.5px; font-weight:600;
+    color:var(--ink); width:100%; font-family:'Poppins',sans-serif;
+  }
+  .card .drag-handle{
+    flex-shrink:0; width:22px; height:22px; border:none; background:transparent;
+    color:#B7BABF; font-size:15px; letter-spacing:-2px; cursor:grab;
+    display:flex; align-items:center; justify-content:center; border-radius:5px;
+  }
+  .card .drag-handle:hover{ background:#EFEBE3; color:var(--maroon); }
+  .card.dragging{ opacity:0.4; }
+  .card.drag-over{ outline:2px dashed var(--maroon); outline-offset:-4px; }
+  .card .imgbox{
+    width:100%; height:230px; background:#F1EFEA;
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden; position:relative;
+  }
+  .card img{
+    position:absolute; top:50%; left:50%; width:100%; height:100%;
+    object-fit:cover; display:block; cursor:grab;
+    transform-origin:center center;
+    touch-action:none; user-select:none;
+  }
+  .card img:active{ cursor:grabbing; }
+  .card .imgbox .placeholder{
+    color:#B7BABF; font-size:13px; text-align:center; padding:20px;
+  }
+  .card .resize-handle{
+    position:absolute; left:0; right:0; bottom:0; height:12px;
+    cursor:row-resize; display:flex; align-items:center; justify-content:center;
+    z-index:5;
+  }
+  .card .resize-handle::after{
+    content:''; width:34px; height:4px; border-radius:3px;
+    background:rgba(255,255,255,0.85); box-shadow:0 0 0 1px rgba(0,0,0,0.15);
+  }
+  .card .resize-handle:hover::after{ background:#fff; }
+  .card.resizing .imgbox{ outline:2px solid var(--maroon); outline-offset:-2px; }
+  .card .imgControls{
+    display:flex; align-items:center; justify-content:center; flex-wrap:wrap;
+    gap:6px; padding:7px 10px; background:var(--cream);
+    border-bottom:1px solid #EFEBE3; font-size:11px; color:#6B6F76;
+  }
+  .card .imgControls .ictrl{
+    border:1px solid #DDD9D0; background:#fff; border-radius:5px;
+    width:22px; height:22px; line-height:1; font-size:13px; font-weight:600;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    color:#4A4D53; padding:0;
+  }
+  .card .imgControls .ictrl:hover{ border-color:var(--maroon); color:var(--maroon); }
+  .card .imgControls .ictrl.reset{ width:auto; padding:0 8px; font-size:10.5px; font-weight:500; }
+  .card .imgControls .ival{ min-width:34px; text-align:center; font-weight:500; }
+  .card .imgControls .sep{ width:1px; height:16px; background:#DDD9D0; margin:0 2px; }
+  .card .cap{
+    padding: 9px 16px 14px 16px;
+  }
+  .card .cap textarea{
+    width:100%; border:none; resize:none; background:transparent;
+    font-size:12.5px; color:var(--cap-color); font-family:var(--cap-font);
+    font-style:var(--cap-style); line-height:1.5; overflow:hidden;
+  }
+  .card .remove{
+    position:absolute; top:10px; right:10px;
+    width:24px; height:24px; border-radius:50%;
+    background:rgba(30,33,38,0.65); color:#fff; border:none;
+    font-size:14px; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .add-card{
+    width: calc(50% - 13px);
+    min-height: 300px;
+    border: 2px dashed #CFCBC2;
+    border-radius: 6px;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:10px;
+    color:#9AA0A8; cursor:pointer;
+    background: #FCFBF9;
+    text-align:center;
+    padding: 20px;
+  }
+  .add-card:hover{ border-color: var(--maroon); color:var(--maroon); }
+  .add-card .plus{ font-size:34px; font-weight:300; line-height:1; }
+  .add-card span{ font-size:13px; font-family:'Poppins',sans-serif; }
+
+  .foot{
+    margin-top: 16px;
+    padding: 24px 56px 46px 56px;
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-top: 1px solid var(--line);
+    gap: 20px;
     flex-wrap:wrap;
   }
-  .search-box{ position:relative; flex:1 1 260px; }
-  .search-box input{
-    width:100%;
-    padding:11px 14px 11px 38px;
-    border:1px solid var(--line);
-    border-radius:3px;
-    background:var(--card);
-    font-family:'Inter';
-    font-size:14px;
-    color:var(--ink);
-    outline:none;
-    transition:border-color .15s ease, box-shadow .15s ease;
+  .foot .catatan{
+    max-width: 480px; font-size:12.5px; color:var(--muted); line-height:1.6;
   }
-  .search-box input:focus{ border-color:var(--navy-light); box-shadow:0 0 0 3px rgba(44,66,112,0.12); }
-  .search-box svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:var(--ink-soft); }
-
-  .btn{
-    font-family:'Inter';
-    font-weight:600;
-    font-size:13.5px;
-    letter-spacing:.01em;
-    border:none;
-    border-radius:6px;
-    padding:11px 18px;
-    cursor:pointer;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    transition:transform .12s ease, box-shadow .12s ease, background .15s ease;
+  .foot .catatan b{ color:var(--ink); }
+  .foot .catatan textarea{
+    width:100%; border:none; background:transparent; resize:none;
+    font-size:12.5px; color:var(--muted); font-family:'Poppins',sans-serif; line-height:1.6;
   }
-  .btn:active{ transform:translateY(1px); }
-  .btn-primary{
-    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
-    color:#FFFFFF;
-    box-shadow: 0 4px 14px -4px rgba(27,42,74,0.5);
+  .foot .sig-area{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .foot .sig-row{ display:flex; gap:24px; flex-wrap:wrap; justify-content:center; }
+  .sig-block{ position:relative; width:190px; text-align:center; font-size:12px; color:var(--ink); }
+  .sig-block .sig-remove{
+    position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%;
+    border:1px solid #DDD9D0; background:#fff; color:#9AA0A8; font-size:12px; line-height:1;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
   }
-  .btn-primary:hover{ box-shadow: 0 6px 18px -4px rgba(27,42,74,0.6); transform:translateY(-1px); }
-  .btn-ghost{ background:#fff; color:var(--navy); border:1px solid var(--line); }
-  .btn-ghost:hover{ border-color:var(--navy-light); box-shadow:0 2px 8px -2px rgba(27,42,74,0.15); }
-  .btn-danger-text{ background:transparent; color:var(--maroon); font-size:12.5px; padding:6px 10px; border-radius:4px; font-weight:600; }
-  .btn-danger-text:hover{ background:rgba(139,30,63,0.08); }
-  .btn-edit-text{ background:transparent; color:var(--emerald); font-size:12.5px; padding:6px 10px; border-radius:4px; font-weight:600; }
-  .btn-edit-text:hover{ background:var(--emerald-light); }
-
-  .owner-badge{
-    display:inline-flex; align-items:center; gap:5px;
-    background:var(--emerald-light); color:var(--emerald);
-    font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase;
-    border-radius:3px; padding:3px 8px; font-weight:600;
-    flex:0 0 auto; white-space:nowrap;
+  .sig-block .sig-remove:hover{ color:var(--maroon); border-color:var(--maroon); }
+  .sig-block input.sig-place{
+    border:none; background:transparent; text-align:center; font-size:11.5px;
+    color:var(--muted); font-family:'Poppins',sans-serif; width:100%; margin-bottom:2px;
   }
-
-  .count-note{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:11.5px;
-    color:var(--ink-soft);
-    letter-spacing:.02em;
+  .sig-block input.sig-label{
+    border:none; background:transparent; text-align:center; font-size:12px; font-weight:600;
+    color:var(--ink); font-family:'Poppins',sans-serif; width:100%;
+  }
+  .sig-block .sig-pad-wrap{
+    position:relative; width:100%; height:88px; margin:4px 0 2px 0;
+    background:
+      linear-gradient(#FBFAF7,#FBFAF7) padding-box;
+    border:1px dashed #D9D5CB; border-radius:5px;
+  }
+  .sig-block .sig-pad-wrap canvas{
+    width:100%; height:100%; display:block; cursor:crosshair; touch-action:none;
+  }
+  .sig-block .sig-pad-hint{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-size:10.5px; color:#B7BABF; font-family:'Poppins',sans-serif; pointer-events:none;
+  }
+  .sig-block .sig-clear{
+    font-size:10px; color:#9AA0A8; background:none; border:none; cursor:pointer;
+    text-decoration:underline; padding:2px 0 4px 0; font-family:'Poppins',sans-serif;
+  }
+  .sig-block .sig-clear:hover{ color:var(--maroon); }
+  .sig-block .sig-line{ border-top:1px solid var(--ink); margin-top:2px; }
+  .sig-block input.sig-name{
+    border:none; background:transparent; text-align:center; font-size:12.5px; font-weight:700;
+    color:var(--ink); font-family:'Poppins',sans-serif; width:100%; margin-top:6px;
+  }
+  .sig-block input.sig-position{
+    border:none; background:transparent; text-align:center; font-size:11px;
+    color:var(--muted); font-family:'Poppins',sans-serif; width:100%;
   }
 
-  .notice{
-    display:flex; gap:10px; align-items:flex-start;
-    background:var(--paper-dim);
-    border:1px solid var(--line);
-    border-radius:3px;
-    padding:12px 14px;
-    font-size:12.5px;
-    color:var(--ink-soft);
-    margin-bottom:22px;
-    line-height:1.5;
-  }
-  .notice svg{ flex:0 0 auto; width:15px; height:15px; margin-top:1px; color:var(--gold); }
-
-  .resources-box{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-left:3px solid var(--emerald);
-    border-radius:6px;
-    padding:16px 20px 18px;
-    margin-bottom:22px;
-    box-shadow:var(--shadow);
-  }
-  .resources-head{
-    display:flex; align-items:center; justify-content:space-between;
-    margin-bottom:10px;
-  }
-  .resources-head h2{
-    font-family:'Spectral', serif; font-weight:600; font-size:17px; color:var(--navy); margin:0;
-  }
-  .resource-item{
-    display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
-    padding:10px 0; border-bottom:1px dashed var(--line);
-  }
-  .resource-item:last-child{ border-bottom:none; }
-  .resource-info{ min-width:0; flex:1 1 auto; }
-  .resource-title{ font-weight:600; font-size:14px; color:var(--ink); }
-  .resource-title a{ color:var(--navy-light); text-decoration:none; }
-  .resource-title a:hover{ color:var(--maroon); text-decoration:underline; }
-  .resource-desc{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
-  .resource-actions{ flex:0 0 auto; display:flex; gap:6px; }
-  .resource-empty{ font-size:13px; color:var(--ink-soft); padding:6px 0; }
-
-  .register{ display:flex; flex-direction:column; }
-  .entry{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-left:3px solid var(--gold);
-    border-radius:6px;
-    margin-bottom:12px;
-    box-shadow:var(--shadow);
-    overflow:hidden;
-    transition: box-shadow .15s ease, transform .15s ease;
-  }
-  .entry:hover{ box-shadow: 0 4px 16px -4px rgba(27,42,74,0.18), 0 2px 6px -2px rgba(27,42,74,0.1); }
-  .entry.mine{ border-left-color: var(--emerald); }
-  .entry-head{
-    display:flex;
-    align-items:center;
-    gap:16px;
-    padding:16px 18px;
-    cursor:pointer;
-    user-select:none;
-  }
-  .entry-no{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:12px;
-    color:var(--maroon);
-    background:rgba(139,30,63,0.06);
-    border:1px solid rgba(139,30,63,0.18);
-    border-radius:3px;
-    padding:3px 8px;
-    white-space:nowrap;
-  }
-  .entry-date{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:12.5px;
-    color:var(--ink-soft);
-    min-width:92px;
-  }
-  .entry-name-wrap{ flex:1 1 auto; min-width:0; }
-  .entry-name{
-    font-family:'Spectral', serif;
-    font-weight:600;
-    font-size:17px;
-    color:var(--navy);
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-  .entry-sub{
-    font-size:12px;
-    color:var(--ink-soft);
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    margin-top:2px;
-  }
-  .chevron{ width:16px; height:16px; color:var(--ink-soft); transition:transform .18s ease; flex:0 0 auto; }
-  .entry.open .chevron{ transform:rotate(180deg); }
-
-  .entry-body{
-    max-height:0;
-    overflow:hidden;
-    transition:max-height .25s ease;
-    border-top:1px solid transparent;
-  }
-  .entry.open .entry-body{ border-top:1px solid var(--line); }
-  .entry-body-inner{ padding:18px 20px 22px; }
-
-  .field-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px 24px; margin-bottom:6px; }
-  @media (max-width:620px){ .field-grid{ grid-template-columns:1fr; } }
-  .field label{
-    display:block;
-    font-family:'IBM Plex Mono', monospace;
-    font-size:10.5px;
-    letter-spacing:.1em;
-    text-transform:uppercase;
-    color:var(--gold);
-    margin-bottom:5px;
-  }
-  .field .val{
-    font-size:14px;
-    line-height:1.55;
-    color:var(--ink);
-    white-space:pre-wrap;
-    word-break:break-word;
-  }
-  .field .val a{ color:var(--navy-light); word-break:break-all; }
-  .field .val a:hover{ color:var(--maroon); }
-  .field.full{ grid-column:1 / -1; }
-
-  .entry-actions{ display:flex; justify-content:flex-end; padding-top:12px; margin-top:10px; border-top:1px dashed var(--line); }
-
-  .show-toggle{ display:flex; justify-content:center; padding:8px 0 4px; }
-
-  .empty{
-    text-align:center;
-    padding:60px 20px;
-    border:1px dashed var(--line);
-    border-radius:4px;
-    color:var(--ink-soft);
-  }
-  .empty svg{ width:34px; height:34px; color:var(--gold); margin-bottom:12px; }
-  .empty h3{ font-family:'Spectral', serif; color:var(--navy); font-weight:600; margin:0 0 6px; font-size:18px; }
-  .empty p{ margin:0; font-size:13.5px; }
-
-  .loading-row{ display:flex; align-items:center; gap:10px; color:var(--ink-soft); font-size:13px; padding:24px 0; justify-content:center; }
-  .spinner{ width:14px; height:14px; border-radius:50%; border:2px solid var(--line); border-top-color:var(--navy); animation:spin .7s linear infinite; }
-  @keyframes spin{ to{ transform:rotate(360deg);} }
-
-  .overlay{
-    position:fixed; inset:0; background:rgba(27,32,42,0.45);
-    display:none; align-items:flex-start; justify-content:center;
-    padding:40px 16px; z-index:50; overflow-y:auto;
-    backdrop-filter:blur(2px);
-  }
-  .overlay.show{ display:flex; }
-  .panel{
-    background:var(--paper);
-    width:100%; max-width:640px;
-    border-radius:6px;
-    border:1px solid var(--line);
-    box-shadow:0 24px 60px -12px rgba(20,25,40,0.35);
-    animation:rise .22s ease;
-  }
-  @keyframes rise{ from{ opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
-  .panel-head{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:20px 24px; border-bottom:1px solid var(--line);
-  }
-  .panel-head h2{ font-family:'Spectral', serif; font-weight:600; font-size:20px; color:var(--navy); margin:0; }
-  .close-x{ background:none; border:none; cursor:pointer; color:var(--ink-soft); padding:4px; }
-  .close-x:hover{ color:var(--maroon); }
-  .panel-body{ padding:22px 24px 8px; }
-  .panel-foot{ padding:16px 24px 22px; display:flex; justify-content:flex-end; gap:10px; }
-
-  .form-row{ margin-bottom:16px; }
-  .form-row.two{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-  @media (max-width:560px){ .form-row.two{ grid-template-columns:1fr; } }
-  .form-row label{
-    display:block; font-family:'IBM Plex Mono', monospace; font-size:11px;
-    letter-spacing:.08em; text-transform:uppercase; color:var(--navy); margin-bottom:6px;
-  }
-  .form-row .hint{ font-family:'Inter'; text-transform:none; letter-spacing:0; color:var(--ink-soft); font-size:11.5px; margin-left:6px; }
-  input[type=text], input[type=date], input[type=url]{
-    width:100%; border:1px solid var(--line); border-radius:3px;
-    padding:10px 12px; font-family:'Inter'; font-size:14px; color:var(--ink);
-    background:#fff; outline:none;
-    transition:border-color .15s ease, box-shadow .15s ease;
-  }
-  input:focus{ border-color:var(--navy-light); box-shadow:0 0 0 3px rgba(44,66,112,0.12); }
-
-  .error-msg{ color:var(--maroon); font-size:12.5px; margin-top:4px; display:none; }
-  .error-msg.show{ display:block; }
-
-  .upload-row{ display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap; }
-  .upload-btn{
-    display:inline-flex; align-items:center; gap:6px;
-    font-family:'Inter'; font-weight:600; font-size:12.5px;
-    color:var(--navy); background:#fff; border:1px solid var(--line);
-    border-radius:5px; padding:7px 12px; cursor:pointer;
-    transition:border-color .15s ease, box-shadow .15s ease;
-  }
-  .upload-btn:hover{ border-color:var(--navy-light); box-shadow:0 2px 8px -2px rgba(27,42,74,0.15); }
-  .upload-btn.uploading{ opacity:.6; pointer-events:none; }
-  .upload-status{ font-size:12px; color:var(--ink-soft); }
-  .upload-status.ok{ color:var(--emerald); font-weight:600; }
-  .upload-status.err{ color:var(--maroon); font-weight:600; }
-
-  .drive-hint{
-    display:flex; gap:10px; align-items:flex-start;
-    background:var(--emerald-light); color:var(--emerald);
-    border:1px solid rgba(31,122,92,0.25);
-    border-radius:4px; padding:11px 13px; font-size:12.5px; line-height:1.5;
-    margin-bottom:16px;
-  }
-  .drive-hint svg{ flex:0 0 auto; width:16px; height:16px; margin-top:1px; }
-
-  .stamp-overlay{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:80; }
-  .stamp-mark{ opacity:0; transform:scale(2.6) rotate(-18deg); }
-  .stamp-mark.play{ animation:stampDown .55s cubic-bezier(.2,.9,.3,1.2) forwards; }
-  @keyframes stampDown{
-    0%{ opacity:0; transform:scale(2.6) rotate(-18deg); }
-    55%{ opacity:1; transform:scale(0.94) rotate(-8deg); }
-    70%{ transform:scale(1.04) rotate(-8deg); }
-    100%{ opacity:0; transform:scale(1) rotate(-8deg); transition:opacity .3s ease .35s; }
+  @media (max-width: 640px){
+    .card, .add-card{ width:100%; }
+    .kop{ padding: 32px 22px 20px 22px; }
+    .grid{ padding: 26px 22px 10px 22px; }
+    .foot{ padding: 20px 22px 32px 22px; }
+    .kop .judul-edit{ font-size:22px; }
   }
 
-  footer.foot{
-    max-width:960px; margin:40px auto 0; padding:20px 24px 0; text-align:center;
-    color:var(--ink-soft); font-size:11.5px; font-family:'IBM Plex Mono', monospace; letter-spacing:.03em;
+  .hint{
+    max-width:900px; margin: 14px auto 0 auto; text-align:center;
+    font-size:12px; color:#8A8D93;
   }
 
-  @media (prefers-reduced-motion: reduce){
-    *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+  /* ---------- kartu PDF di dalam lembar foto ---------- */
+  .card.pdf-card .imgbox{ cursor:pointer; background:#F1EFEA; }
+  .card.pdf-card .imgbox img{ cursor:pointer; filter:saturate(0.9); }
+  .card.pdf-card .pdf-badge{
+    position:absolute; top:10px; left:10px; z-index:4;
+    background:var(--maroon); color:#fff; font-family:'Poppins',sans-serif;
+    font-size:10px; font-weight:700; letter-spacing:0.5px;
+    padding:4px 9px; border-radius:5px; pointer-events:none;
   }
+  .card.pdf-card .pdf-hover{
+    position:absolute; inset:0; z-index:3;
+    background:linear-gradient(rgba(20,20,20,0.15), rgba(20,20,20,0.45));
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; transition:opacity .2s ease; pointer-events:none;
+  }
+  .card.pdf-card .imgbox:hover .pdf-hover{ opacity:1; }
+  .card.pdf-card .pdf-hover span{
+    background:rgba(255,255,255,0.95); color:var(--ink);
+    font-family:'Poppins',sans-serif; font-size:12px; font-weight:600;
+    padding:8px 16px; border-radius:20px;
+  }
+  .card .pdfControls{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:8px 10px; background:var(--cream); border-bottom:1px solid #EFEBE3;
+  }
+  .card .pdfControls .attach-btn{
+    border:1px solid #DDD9D0; background:#fff; border-radius:6px;
+    padding:6px 14px; font-size:11.5px; font-weight:600; color:#4A4D53;
+    cursor:pointer; font-family:'Poppins',sans-serif;
+  }
+  .card .pdfControls .attach-btn:hover{ border-color:var(--maroon); color:var(--maroon); }
+  .attach-btn{
+    border:1px solid #DDD9D0; background:#fff; border-radius:6px;
+    padding:7px 13px; font-size:12px; font-weight:600; color:#4A4D53;
+    cursor:pointer; font-family:'Poppins',sans-serif; white-space:nowrap;
+  }
+  .attach-btn:hover{ border-color:var(--maroon); color:var(--maroon); }
+
+  /* ---------- pdf viewer modal ---------- */
+  .pdf-modal{
+    display:none; position:fixed; inset:0; background:rgba(10,10,12,0.85);
+    z-index:1000; align-items:center; justify-content:center; padding:26px;
+  }
+  .pdf-modal.open{ display:flex; }
+  .pdf-modal-body{
+    background:#fff; width:min(920px,96vw); height:92vh;
+    border-radius:8px; overflow:hidden; display:flex; flex-direction:column;
+    box-shadow:0 20px 60px rgba(0,0,0,0.4);
+  }
+  .pdf-modal-header{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 16px; border-bottom:1px solid var(--line); gap:10px;
+  }
+  .pdf-modal-header b{
+    font-family:'Poppins',sans-serif; font-size:13px; color:var(--ink);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .pdf-modal-header .right{ display:flex; gap:8px; align-items:center; flex-shrink:0; }
+  .pdf-modal-close{
+    background:none; border:none; font-size:24px; line-height:1; cursor:pointer;
+    color:#4A4D53; padding:0 2px;
+  }
+  .pdf-modal-close:hover{ color:var(--maroon); }
+  .pdf-modal-frame{ flex:1; border:none; width:100%; }
 </style>
 </head>
 <body>
 
-<div class="masthead-band">
-<header class="masthead">
-  <svg class="seal" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <!-- Lingkaran luar & dalam -->
-    <circle cx="32" cy="32" r="21" fill="none" stroke="#F1ECDD" stroke-width="1.6"/>
-    <circle cx="32" cy="32" r="16.5" fill="none" stroke="#D9C08F" stroke-width="1"/>
-    <!-- Gerigi roda (melambangkan usaha yang berkesinambungan) -->
-    <g fill="#F1ECDD">
-      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(0 32 32)"/>
-      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(36 32 32)"/>
-      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(72 32 32)"/>
-      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(108 32 32)"/>
-      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(144 32 32)"/>
-      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(180 32 32)"/>
-      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(216 32 32)"/>
-      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(252 32 32)"/>
-      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(288 32 32)"/>
-      <rect x="30.5" y="8" width="3" height="6" rx="0.8" transform="rotate(324 32 32)"/>
-    </g>
-    <!-- Nyala obor / bulir di tengah, melambangkan semangat mendidik -->
-    <path d="M32 20 C 27.5 25, 27.5 31, 32 35 C 36.5 31, 36.5 25, 32 20 Z" fill="#D9C08F"/>
-    <path d="M32 35 C 29.8 38.2, 29.8 41.8, 32 45 C 34.2 41.8, 34.2 38.2, 32 35 Z" fill="#D9C08F"/>
-    <circle cx="32" cy="32" r="2.1" fill="#8B1E3F"/>
-  </svg>
-  <div class="masthead-text">
-    <p class="eyebrow">Tut Wuri Handayani &middot; Dokumen Pengawas dan Penilik</p>
-    <h1 class="title">Portal Aktivitas Pengawas Sekolah dan Penilik Kota Parepare</h1>
-    <p class="subtitle">Pencatatan nama pengawas, kegiatan, lama kegiatan, tanggal, surat tugas, dan dokumentasi dalam satu register bersama.</p>
-  </div>
-</header>
-</div>
-
-
-<div class="wrap">
-
-  <div class="notice">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9.2"/><path d="M12 8v5M12 16h.01"/></svg>
-    <span>Data pada portal ini tersimpan di Google Sheets &mdash; siapa saja yang membuka link ini dapat melihat daftar kegiatan. Untuk menambah atau menghapus entri, silakan masuk terlebih dahulu dengan akun terdaftar.</span>
-  </div>
-
-  <div id="resourcesSection" style="display:none;">
-    <div class="resources-box">
-      <div class="resources-head">
-        <h2>Ruang Unduhan</h2>
-        <button class="btn btn-ghost" id="addResourceBtn" style="display:none;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
-          Tambah
-        </button>
-      </div>
-      <div id="resourcesList"></div>
-    </div>
-  </div>
-
   <div class="toolbar">
-    <div class="search-box">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      <input type="text" id="searchInput" placeholder="Cari nama pengawas, nama kegiatan, atau tanggal…">
+    <div>
+      <h1>Generator Laporan Foto</h1>
+      <p>Upload foto, atur ukuran/posisi, isi keterangan, lalu unduh sebagai gambar.</p>
     </div>
-    <span id="authStatus" class="count-note" style="display:none;"></span>
-    <button class="btn btn-ghost" id="loginBtn">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
-      Masuk
-    </button>
-    <button class="btn btn-ghost" id="changePasswordBtn" style="display:none;">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-      Ubah Password
-    </button>
-    <button class="btn btn-ghost" id="logoutBtn" style="display:none;">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-      Keluar
-    </button>
-    <button class="btn btn-primary" id="openFormBtn">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
-      Catat Kegiatan Baru
-    </button>
+    <div class="btns">
+      <label class="btn btn-ghost" for="fileInput">+ Tambah Foto</label>
+      <input type="file" id="fileInput" accept="image/*,application/pdf" multiple>
+      <button class="btn btn-ghost" id="downloadPdfBtn">Cetak PDF</button>
+      <button class="btn btn-accent" id="downloadBtn">Kirim sebagai Poster (JPG)</button>
+    </div>
   </div>
 
-  <div id="countNote" class="count-note" style="margin-bottom:14px;"></div>
-
-  <div id="listRoot" class="register">
-    <div class="loading-row"><span class="spinner"></span> Memuat register…</div>
+  <div class="view-tabs" id="viewTabs">
+    <button class="vtab active" data-view="sheet">Lembar Laporan</button>
+    <button class="vtab" data-view="gallery">Galeri</button>
   </div>
 
-</div>
+  <div class="theme-row" id="themeRow"></div>
 
-<footer class="foot">PORTAL AKTIVITAS PENGAWAS SEKOLAH &middot; register bersama &middot; disimpan otomatis</footer>
-
-<!-- ===== Form Panel ===== -->
-<div class="overlay" id="formOverlay">
-  <div class="panel">
-    <div class="panel-head">
-      <h2 id="panelTitle">Catat Kegiatan Baru</h2>
-      <button class="close-x" id="closeFormBtn" aria-label="Tutup">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
+  <div class="style-row" id="styleRow">
+    <div class="style-block">
+      <div class="style-block-title">Judul Dokumen</div>
+      <div class="style-block-controls">
+        <div class="style-group">
+          <label for="judulSize">Ukuran</label>
+          <input type="range" id="judulSize" min="18" max="48" value="28" step="1" style="width:100px;">
+          <span id="judulSizeVal" style="font-size:11px;color:#9AA0A8;min-width:32px;">28px</span>
+        </div>
+        <div class="style-group">
+          <label for="judulColor">Warna</label>
+          <input type="color" id="judulColor" value="#1E2126">
+        </div>
+      </div>
     </div>
-    <div class="panel-body">
-      <form id="entryForm">
-        <div class="form-row">
-          <label for="f_pengawas">Nama Pengawas Sekolah</label>
-          <input type="text" id="f_pengawas" placeholder="cth. Drs. Ahmad Fauzi, M.Pd." required>
-        </div>
 
-        <div class="form-row">
-          <label for="f_nama">Nama Kegiatan</label>
-          <input type="text" id="f_nama" placeholder="cth. Supervisi Akademik SMPN 1 Parepare" required>
-        </div>
+    <div class="style-divider"></div>
 
-        <div class="form-row two">
-          <div>
-            <label for="f_tanggal">Tanggal Kegiatan</label>
-            <input type="date" id="f_tanggal" required>
+    <div class="style-block">
+      <div class="style-block-title">Keterangan Foto</div>
+      <div class="style-block-controls">
+        <div class="style-group">
+          <label for="capFont">Font</label>
+          <select id="capFont">
+            <option value="'Lora', serif" selected>Lora (Serif)</option>
+            <option value="'Poppins', sans-serif">Poppins (Sans)</option>
+            <option value="'Merriweather', serif">Merriweather</option>
+            <option value="'Playfair Display', serif">Playfair Display</option>
+            <option value="'Caveat', cursive">Caveat (Tulisan Tangan)</option>
+            <option value="'Roboto', sans-serif">Roboto</option>
+          </select>
+        </div>
+        <div class="style-group">
+          <label for="capColor">Warna</label>
+          <input type="color" id="capColor" value="#6B6F76">
+        </div>
+        <label class="style-check"><input type="checkbox" id="capItalic" checked> Miring</label>
+      </div>
+    </div>
+
+    <div class="style-divider"></div>
+
+    <div class="style-block">
+      <div class="style-block-title">Deskripsi Kegiatan</div>
+      <div class="style-block-controls">
+        <div class="style-group">
+          <label for="descFont">Font</label>
+          <select id="descFont">
+            <option value="'Lora', serif" selected>Lora (Serif)</option>
+            <option value="'Poppins', sans-serif">Poppins (Sans)</option>
+            <option value="'Merriweather', serif">Merriweather</option>
+            <option value="'Playfair Display', serif">Playfair Display</option>
+            <option value="'Caveat', cursive">Caveat (Tulisan Tangan)</option>
+            <option value="'Roboto', sans-serif">Roboto</option>
+          </select>
+        </div>
+        <div class="style-group">
+          <label for="descColor">Warna</label>
+          <input type="color" id="descColor" value="#1E2126">
+        </div>
+        <label class="style-check"><input type="checkbox" id="descItalic" checked> Miring</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet-wrap">
+    <div class="sheet" id="sheet">
+
+      <div class="kop">
+        <input class="lembaga-edit" id="lembaga" value="LAPORAN DOKUMENTASI KEGIATAN">
+        <input class="judul-edit" id="judul" value="Judul Kegiatan">
+        <input class="sub-edit" id="sub" value="Tuliskan deskripsi singkat kegiatan di sini">
+
+        <div class="meta-bar">
+          <div class="m">
+            <div class="lbl">Tanggal</div>
+            <input class="val" id="tanggal" value="20 Agustus 2026">
           </div>
-          <div>
-            <label for="f_lama">Lama Kegiatan</label>
-            <input type="text" id="f_lama" placeholder="cth. 1 hari / 3 hari">
+          <div class="m">
+            <div class="lbl">Lokasi</div>
+            <input class="val" id="lokasi" value="Nama Lokasi">
+          </div>
+          <div class="m">
+            <div class="lbl">Status</div>
+            <input class="val" id="status" value="Terlaksana">
           </div>
         </div>
+      </div>
 
-        <div class="form-row">
-          <label for="f_tempat">Tempat Kegiatan</label>
-          <input type="text" id="f_tempat" placeholder="cth. SMPN 1 Parepare">
+      <div class="grid" id="grid">
+        <div class="add-card no-export" id="addCard">
+          <div class="plus">+</div>
+          <span>Klik untuk menambahkan foto atau PDF</span>
         </div>
+      </div>
 
-        <div class="form-row">
-          <label for="f_surattugas">Surat Tugas <span class="hint">tautan/link dokumen, atau upload file</span></label>
-          <input type="url" id="f_surattugas" placeholder="https://drive.google.com/…">
-          <div class="upload-row">
-            <label class="upload-btn" for="f_surattugas_file">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
-              <span>Upload File (Foto, PDF, Word, Excel, dll)</span>
-            </label>
-            <input type="file" id="f_surattugas_file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.webp,.heic,.gif,.bmp,.tiff,.zip,.rar,.txt,.csv" style="display:none;">
-            <span class="upload-status" id="f_surattugas_status"></span>
-          </div>
+      <div class="foot">
+        <div class="catatan">
+          <b>Catatan:</b>
+          <textarea id="catatan" rows="2">Dokumentasi ini merupakan bukti pelaksanaan kegiatan sebagai bagian dari laporan.</textarea>
         </div>
-
-        <div class="form-row">
-          <label for="f_dokumentasi">Dokumentasi <span class="hint">tautan/link foto atau dokumen, atau upload file</span></label>
-          <input type="url" id="f_dokumentasi" placeholder="https://drive.google.com/…">
-          <div class="upload-row">
-            <label class="upload-btn" for="f_dokumentasi_file">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
-              <span>Upload File (Foto, PDF, Word, Excel, dll)</span>
-            </label>
-            <input type="file" id="f_dokumentasi_file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.webp,.heic,.gif,.bmp,.tiff,.zip,.rar,.txt,.csv" style="display:none;">
-            <span class="upload-status" id="f_dokumentasi_status"></span>
-          </div>
+        <div class="sig-area">
+          <div class="sig-row" id="sigRow"></div>
+          <button class="btn btn-ghost no-export" id="addSigBtn">+ Tambah Tanda Tangan</button>
         </div>
+      </div>
 
-        <div class="drive-hint" id="driveHint" style="display:none;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9.2"/></svg>
-          <span>Terdeteksi tautan Google Drive. Pastikan pengaturan berbagi file itu sudah <strong>"Siapa saja yang memiliki link"</strong> (bukan "Terbatas"), supaya semua pengawas lain bisa membukanya. Portal ini tidak bisa mengubah pengaturan berbagi Drive secara otomatis.</span>
-        </div>
-
-        <div class="error-msg" id="formError"></div>
-      </form>
-    </div>
-    <div class="panel-foot">
-      <button class="btn btn-ghost" id="cancelFormBtn" type="button">Batal</button>
-      <button class="btn btn-primary" id="submitFormBtn" type="submit" form="entryForm">
-        <span id="submitLabel">Simpan &amp; Bubuhkan Stempel</span>
-      </button>
     </div>
   </div>
-</div>
 
-<!-- ===== Stamp confirmation ===== -->
-<div class="stamp-overlay" id="stampOverlay">
-  <svg id="stampMark" class="stamp-mark" width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="75" cy="75" r="66" stroke="#8B1E3F" stroke-width="3"/>
-    <circle cx="75" cy="75" r="56" stroke="#8B1E3F" stroke-width="1.5" stroke-dasharray="3 4"/>
-    <text x="75" y="65" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="#8B1E3F" letter-spacing="2">TERCATAT</text>
-    <text x="75" y="95" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="#8B1E3F" letter-spacing="1" id="stampDate">--/--/----</text>
-  </svg>
-</div>
+  <div class="gallery-wrap" id="galleryWrap">
+    <div class="gallery-actions no-export">
+      <button class="btn btn-ghost" id="galleryDownloadPdfBtn">Cetak PDF</button>
+      <button class="btn btn-accent" id="galleryDownloadImgBtn">Kirim sebagai Poster (JPG)</button>
+    </div>
+    <div class="gallery-header">
+      <div class="gallery-title" id="galleryTitle">Judul Kegiatan</div>
+      <div class="gallery-sub" id="gallerySub"></div>
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+    <div class="gallery-empty" id="galleryEmpty">Belum ada foto. Kembali ke Lembar Laporan untuk menambahkan foto.</div>
 
-<!-- ===== Login Panel ===== -->
-<div class="overlay" id="loginOverlay">
-  <div class="panel" style="max-width:420px;">
-    <div class="panel-head">
-      <h2>Masuk ke Portal</h2>
-      <button class="close-x" id="closeLoginBtn" aria-label="Tutup">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-    </div>
-    <div class="panel-body">
-      <form id="loginForm">
-        <div class="form-row">
-          <label for="l_email">Email</label>
-          <input type="text" id="l_email" placeholder="nama@email.com" autocomplete="username" required>
-        </div>
-        <div class="form-row">
-          <label for="l_password">Password</label>
-          <input type="password" id="l_password" placeholder="Password" autocomplete="current-password" required>
-        </div>
-        <div class="error-msg" id="loginError"></div>
-      </form>
-    </div>
-    <div class="panel-foot">
-      <button class="btn btn-ghost" id="cancelLoginBtn" type="button">Batal</button>
-      <button class="btn btn-primary" id="submitLoginBtn" type="submit" form="loginForm">
-        <span id="loginSubmitLabel">Masuk</span>
-      </button>
+    <div class="gallery-footer">
+      <div class="sig-row" id="gallerySigRow"></div>
+      <button class="btn btn-ghost no-export" id="addGallerySigBtn">+ Tambah Tanda Tangan</button>
     </div>
   </div>
-</div>
 
-<!-- ===== Change Password Panel ===== -->
-<div class="overlay" id="passwordOverlay">
-  <div class="panel" style="max-width:420px;">
-    <div class="panel-head">
-      <h2>Ubah Password</h2>
-      <button class="close-x" id="closePasswordBtn" aria-label="Tutup">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" id="lbClose">&times;</button>
+    <button class="lb-nav lb-prev" id="lbPrev">&#10094;</button>
+    <div class="lb-body">
+      <img id="lbImg" src="">
+      <div class="lb-info">
+        <div class="lb-title" id="lbTitle"></div>
+        <div class="lb-cap" id="lbCap"></div>
+      </div>
     </div>
-    <div class="panel-body">
-      <form id="passwordForm">
-        <div class="form-row">
-          <label for="p_old">Password Lama</label>
-          <input type="password" id="p_old" placeholder="Password saat ini" autocomplete="current-password" required>
+    <button class="lb-nav lb-next" id="lbNext">&#10095;</button>
+  </div>
+
+  <div class="pdf-modal" id="pdfModal">
+    <div class="pdf-modal-body">
+      <div class="pdf-modal-header">
+        <b id="pdfModalTitle"></b>
+        <div class="right">
+          <button class="attach-btn" id="pdfModalDownload">Unduh</button>
+          <button class="pdf-modal-close" id="pdfModalClose">&times;</button>
         </div>
-        <div class="form-row">
-          <label for="p_new">Password Baru <span class="hint">minimal 4 karakter</span></label>
-          <input type="password" id="p_new" placeholder="Password baru" autocomplete="new-password" required>
-        </div>
-        <div class="form-row">
-          <label for="p_confirm">Ulangi Password Baru</label>
-          <input type="password" id="p_confirm" placeholder="Ulangi password baru" autocomplete="new-password" required>
-        </div>
-        <div class="error-msg" id="passwordError"></div>
-        <div class="error-msg" id="passwordSuccess" style="color:var(--emerald);"></div>
-      </form>
-    </div>
-    <div class="panel-foot">
-      <button class="btn btn-ghost" id="cancelPasswordBtn" type="button">Batal</button>
-      <button class="btn btn-primary" id="submitPasswordBtn" type="submit" form="passwordForm">
-        <span id="passwordSubmitLabel">Simpan Password</span>
-      </button>
+      </div>
+      <iframe class="pdf-modal-frame" id="pdfModalFrame" src=""></iframe>
     </div>
   </div>
-</div>
 
-<!-- ===== Resource Panel (Admin) ===== -->
-<div class="overlay" id="resourceOverlay">
-  <div class="panel" style="max-width:480px;">
-    <div class="panel-head">
-      <h2 id="resourcePanelTitle">Tambah Link/Folder Unduhan</h2>
-      <button class="close-x" id="closeResourceBtn" aria-label="Tutup">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-    </div>
-    <div class="panel-body">
-      <form id="resourceForm">
-        <div class="form-row">
-          <label for="r_title">Judul</label>
-          <input type="text" id="r_title" placeholder="cth. Format Laporan Bulanan" required>
-        </div>
-        <div class="form-row">
-          <label for="r_url">Tautan/Link <span class="hint">Google Drive, folder, dsb.</span></label>
-          <input type="url" id="r_url" placeholder="https://drive.google.com/…" required>
-        </div>
-        <div class="form-row">
-          <label for="r_desc">Keterangan <span class="hint">opsional</span></label>
-          <input type="text" id="r_desc" placeholder="cth. Berlaku mulai Juli 2026">
-        </div>
-        <div class="drive-hint" id="resourceDriveHint" style="display:none;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9.2"/></svg>
-          <span>Terdeteksi tautan Google Drive. Pastikan pengaturan berbagi sudah <strong>"Siapa saja yang memiliki link"</strong> supaya semua pengguna bisa mengunduhnya.</span>
-        </div>
-        <div class="error-msg" id="resourceError"></div>
-      </form>
-    </div>
-    <div class="panel-foot">
-      <button class="btn btn-ghost" id="cancelResourceBtn" type="button">Batal</button>
-      <button class="btn btn-primary" id="submitResourceBtn" type="submit" form="resourceForm">
-        <span id="resourceSubmitLabel">Simpan</span>
-      </button>
-    </div>
-  </div>
-</div>
+  <div class="hint">Semua data diproses langsung di perangkat Anda — tidak diunggah ke server mana pun.</div>
 
 <script>
-(function(){
-  "use strict";
-
-  // ==========================================================
-  // TEMPEL URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
-  // (didapat setelah Deploy > Web app, diakhiri dengan /exec)
-  // ==========================================================
-  const API_URL = "https://script.google.com/macros/s/AKfycbzcGWGF-6qZ7swfTVeb8xuK0KuwE3bm6jbeKRZ0Zn67KZtrjXXKLxkGzrmEdNYKaA15/exec";
-  const CACHE_KEY = "portalPengawas_cache_v1";
-  const AUTH_KEY = "portalPengawas_auth_v1";
-
-  let entries = [];      // {id, ...fields}
-  const DISPLAY_LIMIT = 5; // jumlah kegiatan yang ditampilkan sebelum "Tampilkan Semua"
-  let showAllEntries = false;
-  let searchTerm = "";
-  let auth = null;       // { token, email } jika sudah login
-
-  const listRoot = document.getElementById('listRoot');
-  const countNote = document.getElementById('countNote');
-  const formOverlay = document.getElementById('formOverlay');
-  const entryForm = document.getElementById('entryForm');
-  const formError = document.getElementById('formError');
-  const driveHint = document.getElementById('driveHint');
-  const loginOverlay = document.getElementById('loginOverlay');
-  const loginForm = document.getElementById('loginForm');
-  const loginError = document.getElementById('loginError');
-  const loginBtn = document.getElementById('loginBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const changePasswordBtn = document.getElementById('changePasswordBtn');
-  const passwordOverlay = document.getElementById('passwordOverlay');
-  const passwordForm = document.getElementById('passwordForm');
-  const passwordError = document.getElementById('passwordError');
-  const passwordSuccess = document.getElementById('passwordSuccess');
-  const authStatus = document.getElementById('authStatus');
-  const openFormBtn = document.getElementById('openFormBtn');
-  const resourcesSection = document.getElementById('resourcesSection');
-  const resourcesListEl = document.getElementById('resourcesList');
-  const addResourceBtn = document.getElementById('addResourceBtn');
-  const resourceOverlay = document.getElementById('resourceOverlay');
-  const resourceForm = document.getElementById('resourceForm');
-  const resourceError = document.getElementById('resourceError');
-  const resourceDriveHint = document.getElementById('resourceDriveHint');
-  const resourcePanelTitle = document.getElementById('resourcePanelTitle');
-  let resources = [];
-  let editingResourceId = null;
-
-  function escapeHtml(str){
-    return (str || "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// ---------- Theme definitions ----------
+const THEMES = [
+  {
+    id: 'marun',
+    name: 'Merah Marun',
+    vars: {
+      '--maroon': '#8B2E2E',
+      '--accent2': '#C79A3D',
+      '--header-bg': 'transparent',
+      '--header-text': '#1E2126',
+      '--ink': '#1E2126',
+      '--muted': '#6B6F76',
+      '--line': '#E7E5E0',
+      '--paper': '#FFFFFF',
+      '--cream': '#FAF7F2',
+      '--page-bg': '#EDEBE6'
+    },
+    swatch: 'linear-gradient(135deg,#8B2E2E,#C79A3D)'
+  },
+  {
+    id: 'navy',
+    name: 'Navy Emas',
+    vars: {
+      '--maroon': '#E3A431',
+      '--accent2': '#E3A431',
+      '--header-bg': '#16233F',
+      '--header-text': '#FFFFFF',
+      '--ink': '#16233F',
+      '--muted': '#5C657C',
+      '--line': '#E4E6EC',
+      '--paper': '#FFFFFF',
+      '--cream': '#F3F0E6',
+      '--page-bg': '#E7E9EE'
+    },
+    swatch: 'linear-gradient(135deg,#16233F,#E3A431)'
+  },
+  {
+    id: 'zamrud',
+    name: 'Zamrud Institusi',
+    vars: {
+      '--maroon': '#C9A227',
+      '--accent2': '#C9A227',
+      '--header-bg': '#0F4C3A',
+      '--header-text': '#FBF8EF',
+      '--ink': '#12332A',
+      '--muted': '#5C6D65',
+      '--line': '#E1E7E2',
+      '--paper': '#FFFFFF',
+      '--cream': '#F1EFE2',
+      '--page-bg': '#E7EBE5'
+    },
+    swatch: 'linear-gradient(135deg,#0F4C3A,#C9A227)'
+  },
+  {
+    id: 'plum',
+    name: 'Plum Elegan',
+    vars: {
+      '--maroon': '#D98BA0',
+      '--accent2': '#D98BA0',
+      '--header-bg': '#3B1F3D',
+      '--header-text': '#FBF3F6',
+      '--ink': '#3B1F3D',
+      '--muted': '#6E5E71',
+      '--line': '#ECE4EA',
+      '--paper': '#FFFFFF',
+      '--cream': '#F7EEF3',
+      '--page-bg': '#EEE6EA'
+    },
+    swatch: 'linear-gradient(135deg,#3B1F3D,#D98BA0)'
+  },
+  {
+    id: 'laut',
+    name: 'Biru Laut',
+    vars: {
+      '--maroon': '#F2B705',
+      '--accent2': '#F2B705',
+      '--header-bg': '#0E4F56',
+      '--header-text': '#F4FBFB',
+      '--ink': '#0E4F56',
+      '--muted': '#587377',
+      '--line': '#E2ECEC',
+      '--paper': '#FFFFFF',
+      '--cream': '#EAF3F1',
+      '--page-bg': '#E5EEEE'
+    },
+    swatch: 'linear-gradient(135deg,#0E4F56,#F2B705)'
   }
+];
 
-  function isValidUrl(str){
-    if(!str) return false;
-    try{ const u = new URL(str); return u.protocol === 'http:' || u.protocol === 'https:'; }
-    catch(e){ return false; }
-  }
+let currentTheme = 'marun';
 
-  function linkOrDash(str){
-    const val = (str || "").trim();
-    if(!val) return '—';
-    if(isValidUrl(val)){
-      return `<a href="${escapeHtml(val)}" target="_blank" rel="noopener noreferrer">${escapeHtml(val)}</a>`;
-    }
-    return escapeHtml(val);
-  }
-
-  function formatDateID(iso){
-    if(!iso) return '—';
-    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-    const parts = iso.split('-');
-    if(parts.length !== 3) return iso;
-    const [y,m,d] = parts;
-    return `${parseInt(d,10)} ${months[parseInt(m,10)-1]} ${y}`;
-  }
-
-  function shortDateID(iso){
-    if(!iso) return '—';
-    const parts = iso.split('-');
-    if(parts.length !== 3) return iso;
-    return `${parts[2]}/${parts[1]}/${parts[0]}`;
-  }
-
-  // ---------- Storage (Google Sheets via Apps Script) ----------
-  function apiConfigured_(){
-    return API_URL && API_URL.indexOf('PASTE_URL_WEB_APP_DI_SINI') === -1;
-  }
-
-  async function loadEntries(){
-    if(!apiConfigured_()){
-      listRoot.innerHTML = `
-        <div class="empty">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9.5"/></svg>
-          <h3>Portal belum tersambung</h3>
-          <p>Tempelkan URL Web App Google Apps Script Anda pada konstanta <code>API_URL</code> di bagian atas kode &lt;script&gt;, lalu muat ulang halaman.</p>
-        </div>`;
-      return;
-    }
-
-    // Tampilkan cache lokal dulu (jika ada) agar terasa instan
-    let hasCache = false;
-    try{
-      const cached = localStorage.getItem(CACHE_KEY);
-      if(cached){
-        entries = JSON.parse(cached);
-        hasCache = true;
-        render();
-      }
-    }catch(e){ /* localStorage tidak tersedia, lanjut tanpa cache */ }
-
-    if(!hasCache){
-      listRoot.innerHTML = `<div class="loading-row"><span class="spinner"></span> Memuat register…</div>`;
-    }
-
-    try{
-      const res = await fetch(API_URL + '?action=list');
-      const data = await res.json();
-      if(!data.ok) throw new Error(data.error || 'Gagal memuat data');
-      entries = (data.entries || []).sort((a,b) => (a.tanggal||'').localeCompare(b.tanggal||'') || (a.createdAt||0)-(b.createdAt||0));
-      render();
-      try{ localStorage.setItem(CACHE_KEY, JSON.stringify(entries)); }catch(e){}
-    }catch(e){
-      if(!hasCache){
-        listRoot.innerHTML = `<div class="empty"><h3>Gagal memuat data</h3><p>Terjadi kendala saat mengambil register dari Google Sheets. Periksa koneksi internet dan pastikan URL API sudah benar, lalu muat ulang halaman.</p></div>`;
-      }
-      console.error('loadEntries error', e);
-    }
-  }
-
-  async function saveEntry(entry){
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // hindari CORS preflight di Apps Script
-      body: JSON.stringify({ action: 'add', entry, token: auth ? auth.token : null })
-    });
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || 'Gagal menyimpan');
-    return data;
-  }
-
-  async function deleteEntry(id){
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'delete', id, token: auth ? auth.token : null })
-    });
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || 'Gagal menghapus');
-    return data;
-  }
-
-  async function updateEntryRequest(id, entry){
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'update', id, entry, token: auth ? auth.token : null })
-    });
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || 'Gagal menyimpan perubahan');
-    return data;
-  }
-
-  async function uploadFileRequest(file){
-    const MAX_BYTES = 8 * 1024 * 1024; // 8MB, aman untuk Apps Script doPost
-    if(file.size > MAX_BYTES){
-      throw new Error('Ukuran file maksimal 8MB. Untuk file lebih besar, silakan upload manual ke Google Drive lalu tempel link-nya.');
-    }
-    const base64 = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.onerror = () => reject(new Error('Gagal membaca file.'));
-      reader.readAsDataURL(file);
-    });
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'uploadFile',
-        filename: file.name,
-        mimeType: file.type || 'application/octet-stream',
-        dataBase64: base64,
-        token: auth ? auth.token : null
-      })
-    });
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || 'Gagal mengupload file.');
-    return data.url;
-  }
-
-  async function changePasswordRequest(oldPassword, newPassword){
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'changePassword', oldPassword, newPassword, token: auth ? auth.token : null })
-    });
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || 'Gagal mengubah password');
-    return data;
-  }
-
-  async function listResourcesRequest(){
-    const res = await fetch(API_URL + '?action=listResources&token=' + encodeURIComponent(auth ? auth.token : ''));
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || 'Gagal memuat ruang unduhan');
-    return data.resources || [];
-  }
-
-  async function addResourceRequest(fields){
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'addResource', ...fields, token: auth ? auth.token : null })
-    });
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || 'Gagal menyimpan');
-    return data;
-  }
-
-  async function updateResourceRequest(id, fields){
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'updateResource', id, ...fields, token: auth ? auth.token : null })
-    });
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || 'Gagal menyimpan perubahan');
-    return data;
-  }
-
-  async function deleteResourceRequest(id){
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'deleteResource', id, token: auth ? auth.token : null })
-    });
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || 'Gagal menghapus');
-    return data;
-  }
-
-  async function loginRequest(email, password){
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'login', email, password })
-    });
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error || 'Gagal masuk');
-    return data; // { token, email }
-  }
-
-  async function logoutRequest(token){
-    try{
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'logout', token })
-      });
-    }catch(e){ /* abaikan kegagalan logout jaringan */ }
-  }
-
-  // ---------- Auth (login/logout) ----------
-  function loadAuth_(){
-    try{
-      const raw = localStorage.getItem(AUTH_KEY);
-      if(raw){ auth = JSON.parse(raw); }
-    }catch(e){ auth = null; }
-    updateAuthUI();
-  }
-  function persistAuth_(){
-    try{
-      if(auth) localStorage.setItem(AUTH_KEY, JSON.stringify(auth));
-      else localStorage.removeItem(AUTH_KEY);
-    }catch(e){}
-  }
-  function updateAuthUI(){
-    if(auth){
-      loginBtn.style.display = 'none';
-      logoutBtn.style.display = 'inline-flex';
-      changePasswordBtn.style.display = 'inline-flex';
-      authStatus.style.display = 'inline';
-      authStatus.textContent = 'Masuk sebagai ' + auth.email + (auth.isAdmin ? ' (Admin)' : '');
-      resourcesSection.style.display = 'block';
-      addResourceBtn.style.display = auth.isAdmin ? 'inline-flex' : 'none';
-      loadResources();
-    }else{
-      loginBtn.style.display = 'inline-flex';
-      logoutBtn.style.display = 'none';
-      changePasswordBtn.style.display = 'none';
-      authStatus.style.display = 'none';
-      authStatus.textContent = '';
-      resourcesSection.style.display = 'none';
-      resources = [];
-    }
-    render(); // perbarui tombol hapus di tiap entri
-  }
-
-  async function loadResources(){
-    resourcesListEl.innerHTML = `<div class="resource-empty">Memuat…</div>`;
-    try{
-      resources = await listResourcesRequest();
-      renderResources();
-    }catch(e){
-      resourcesListEl.innerHTML = `<div class="resource-empty">Gagal memuat ruang unduhan.</div>`;
-      console.error(e);
-    }
-  }
-
-  function renderResources(){
-    if(resources.length === 0){
-      resourcesListEl.innerHTML = `<div class="resource-empty">Belum ada file/folder yang dibagikan admin.</div>`;
-      return;
-    }
-    resourcesListEl.innerHTML = resources.map(r => `
-      <div class="resource-item">
-        <div class="resource-info">
-          <div class="resource-title"><a href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.title)}</a></div>
-          ${r.description ? `<div class="resource-desc">${escapeHtml(r.description)}</div>` : ''}
-        </div>
-        ${auth && auth.isAdmin ? `
-        <div class="resource-actions">
-          <button class="btn-edit-text" data-edit-resource="${r.id}">Edit</button>
-          <button class="btn-danger-text" data-delete-resource="${r.id}">Hapus</button>
-        </div>` : ''}
-      </div>
-    `).join('');
-  }
-
-  function checkResourceDriveHint(){
-    const url = document.getElementById('r_url').value.trim();
-    resourceDriveHint.style.display = /drive\.google\.com/i.test(url) ? 'flex' : 'none';
-  }
-  document.getElementById('r_url').addEventListener('input', checkResourceDriveHint);
-
-  function openResourceForm(resourceToEdit){
-    resourceForm.reset();
-    resourceError.classList.remove('show');
-    resourceDriveHint.style.display = 'none';
-    if(resourceToEdit){
-      editingResourceId = resourceToEdit.id;
-      resourcePanelTitle.textContent = 'Ubah Link/Folder Unduhan';
-      document.getElementById('resourceSubmitLabel').textContent = 'Simpan Perubahan';
-      document.getElementById('r_title').value = resourceToEdit.title || '';
-      document.getElementById('r_url').value = resourceToEdit.url || '';
-      document.getElementById('r_desc').value = resourceToEdit.description || '';
-      checkResourceDriveHint();
-    }else{
-      editingResourceId = null;
-      resourcePanelTitle.textContent = 'Tambah Link/Folder Unduhan';
-      document.getElementById('resourceSubmitLabel').textContent = 'Simpan';
-    }
-    resourceOverlay.classList.add('show');
-    document.getElementById('r_title').focus();
-  }
-  function closeResourceForm(){ resourceOverlay.classList.remove('show'); }
-
-  addResourceBtn.addEventListener('click', () => openResourceForm(null));
-  document.getElementById('closeResourceBtn').addEventListener('click', closeResourceForm);
-  document.getElementById('cancelResourceBtn').addEventListener('click', closeResourceForm);
-  resourceOverlay.addEventListener('click', (ev) => { if(ev.target === resourceOverlay) closeResourceForm(); });
-
-  resourceForm.addEventListener('submit', async (ev) => {
-    ev.preventDefault();
-    const title = document.getElementById('r_title').value.trim();
-    const url = document.getElementById('r_url').value.trim();
-    const description = document.getElementById('r_desc').value.trim();
-    if(!title || !url){
-      resourceError.textContent = 'Judul dan tautan wajib diisi.';
-      resourceError.classList.add('show');
-      return;
-    }
-    if(!isValidUrl(url)){
-      resourceError.textContent = 'Tautan harus berupa URL yang valid (diawali http:// atau https://).';
-      resourceError.classList.add('show');
-      return;
-    }
-    resourceError.classList.remove('show');
-    const submitBtn = document.getElementById('submitResourceBtn');
-    const submitLabel = document.getElementById('resourceSubmitLabel');
-    submitBtn.disabled = true;
-    const prevLabel = submitLabel.textContent;
-    submitLabel.textContent = 'Menyimpan…';
-    try{
-      if(editingResourceId){
-        await updateResourceRequest(editingResourceId, { title, url, description });
-      }else{
-        await addResourceRequest({ title, url, description });
-      }
-      closeResourceForm();
-      await loadResources();
-    }catch(e){
-      resourceError.textContent = e.message || 'Gagal menyimpan.';
-      resourceError.classList.add('show');
-    }finally{
-      submitBtn.disabled = false;
-      submitLabel.textContent = prevLabel;
-    }
+function applyTheme(id){
+  const theme = THEMES.find(t=>t.id===id) || THEMES[0];
+  currentTheme = theme.id;
+  const root = document.documentElement;
+  Object.entries(theme.vars).forEach(([k,v])=> root.style.setProperty(k, v));
+  document.querySelectorAll('.theme-chip').forEach(chip=>{
+    chip.classList.toggle('active', chip.dataset.id === theme.id);
   });
+}
 
-  resourcesListEl.addEventListener('click', async (ev) => {
-    const editBtn = ev.target.closest('[data-edit-resource]');
-    if(editBtn){
-      const id = editBtn.getAttribute('data-edit-resource');
-      const r = resources.find(x => x.id === id);
-      if(r) openResourceForm(r);
-      return;
-    }
-    const delBtn = ev.target.closest('[data-delete-resource]');
-    if(delBtn){
-      const id = delBtn.getAttribute('data-delete-resource');
-      if(confirm('Hapus link/folder unduhan ini?')){
-        delBtn.textContent = 'Menghapus…';
-        try{
-          await deleteResourceRequest(id);
-          await loadResources();
-        }catch(e){
-          alert(e.message || 'Gagal menghapus.');
-        }
-      }
-    }
+function buildThemeRow(){
+  const row = document.getElementById('themeRow');
+  THEMES.forEach(theme=>{
+    const chip = document.createElement('div');
+    chip.className = 'theme-chip' + (theme.id===currentTheme ? ' active' : '');
+    chip.dataset.id = theme.id;
+    chip.innerHTML = `<span class="swatch" style="background:${theme.swatch}"></span>${theme.name}`;
+    chip.onclick = ()=> applyTheme(theme.id);
+    row.appendChild(chip);
   });
+}
 
-  function openPasswordPanel(){
-    passwordForm.reset();
-    passwordError.classList.remove('show');
-    passwordSuccess.classList.remove('show');
-    passwordOverlay.classList.add('show');
-    document.getElementById('p_old').focus();
-  }
-  function closePasswordPanel(){ passwordOverlay.classList.remove('show'); }
+let photos = []; // {id, dataUrl, caption}
+let counter = 0;
 
-  changePasswordBtn.addEventListener('click', openPasswordPanel);
-  document.getElementById('closePasswordBtn').addEventListener('click', closePasswordPanel);
-  document.getElementById('cancelPasswordBtn').addEventListener('click', closePasswordPanel);
-  passwordOverlay.addEventListener('click', (ev) => { if(ev.target === passwordOverlay) closePasswordPanel(); });
+const grid = document.getElementById('grid');
+const addCard = document.getElementById('addCard');
+const fileInput = document.getElementById('fileInput');
 
-  passwordForm.addEventListener('submit', async (ev) => {
-    ev.preventDefault();
-    const oldPassword = document.getElementById('p_old').value;
-    const newPassword = document.getElementById('p_new').value;
-    const confirmPassword = document.getElementById('p_confirm').value;
-    passwordError.classList.remove('show');
-    passwordSuccess.classList.remove('show');
+function autoGrow(el){
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
 
-    if(!oldPassword || !newPassword || !confirmPassword){
-      passwordError.textContent = 'Semua kolom wajib diisi.';
-      passwordError.classList.add('show');
-      return;
-    }
-    if(newPassword.length < 4){
-      passwordError.textContent = 'Password baru minimal 4 karakter.';
-      passwordError.classList.add('show');
-      return;
-    }
-    if(newPassword !== confirmPassword){
-      passwordError.textContent = 'Konfirmasi password baru tidak cocok.';
-      passwordError.classList.add('show');
-      return;
-    }
+function render(){
+  // remove all cards except addCard
+  [...grid.querySelectorAll('.card')].forEach(c => c.remove());
 
-    const submitBtn = document.getElementById('submitPasswordBtn');
-    const submitLabel = document.getElementById('passwordSubmitLabel');
-    submitBtn.disabled = true;
-    submitLabel.textContent = 'Menyimpan…';
-    try{
-      await changePasswordRequest(oldPassword, newPassword);
-      passwordSuccess.textContent = 'Password berhasil diubah.';
-      passwordSuccess.classList.add('show');
-      passwordForm.reset();
-      setTimeout(closePasswordPanel, 1200);
-    }catch(e){
-      passwordError.textContent = e.message || 'Gagal mengubah password.';
-      passwordError.classList.add('show');
-    }finally{
-      submitBtn.disabled = false;
-      submitLabel.textContent = 'Simpan Password';
-    }
-  });
-
-  function openLogin(){
-    loginForm.reset();
-    loginError.classList.remove('show');
-    loginOverlay.classList.add('show');
-    document.getElementById('l_email').focus();
-  }
-  function closeLogin(){ loginOverlay.classList.remove('show'); }
-
-  loginBtn.addEventListener('click', openLogin);
-  document.getElementById('closeLoginBtn').addEventListener('click', closeLogin);
-  document.getElementById('cancelLoginBtn').addEventListener('click', closeLogin);
-  loginOverlay.addEventListener('click', (ev) => { if(ev.target === loginOverlay) closeLogin(); });
-
-  loginForm.addEventListener('submit', async (ev) => {
-    ev.preventDefault();
-    const email = document.getElementById('l_email').value.trim();
-    const password = document.getElementById('l_password').value;
-    if(!email || !password){
-      loginError.textContent = 'Email dan password wajib diisi.';
-      loginError.classList.add('show');
-      return;
-    }
-    loginError.classList.remove('show');
-    const submitBtn = document.getElementById('submitLoginBtn');
-    const submitLabel = document.getElementById('loginSubmitLabel');
-    submitBtn.disabled = true;
-    submitLabel.textContent = 'Memeriksa…';
-    try{
-      const result = await loginRequest(email, password);
-      auth = { token: result.token, email: result.email, isAdmin: !!result.isAdmin };
-      persistAuth_();
-      updateAuthUI();
-      closeLogin();
-    }catch(e){
-      loginError.textContent = e.message || 'Email atau password salah.';
-      loginError.classList.add('show');
-    }finally{
-      submitBtn.disabled = false;
-      submitLabel.textContent = 'Masuk';
-    }
-  });
-
-  logoutBtn.addEventListener('click', async () => {
-    if(auth){
-      await logoutRequest(auth.token);
-    }
-    auth = null;
-    persistAuth_();
-    updateAuthUI();
-  });
-
-  // ---------- Render list ----------
-  function render(){
-    const filtered = entries.filter(e => {
-      if(!searchTerm) return true;
-      const hay = [e.namaPengawas, e.namaKegiatan, e.tanggal, e.lamaKegiatan, e.tempatKegiatan].join(' ').toLowerCase();
-      return hay.includes(searchTerm.toLowerCase());
-    });
-
-    countNote.textContent = entries.length
-      ? `${filtered.length} dari ${entries.length} kegiatan tercatat`
-      : '';
-
-    if(entries.length === 0){
-      listRoot.innerHTML = `
-        <div class="empty">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          <h3>Register masih kosong</h3>
-          <p>Belum ada kegiatan yang dicatat. Mulai dengan menekan "Catat Kegiatan Baru".</p>
-        </div>`;
-      return;
-    }
-    if(filtered.length === 0){
-      listRoot.innerHTML = `<div class="empty"><h3>Tidak ditemukan</h3><p>Tidak ada kegiatan yang cocok dengan pencarian "${escapeHtml(searchTerm)}".</p></div>`;
-      return;
-    }
-
-    // Chronological registration numbers (oldest = 001), display newest first
-    const withNumbers = entries.map((e, i) => ({...e, regNo: String(i+1).padStart(3,'0')}));
-    const numberMap = {};
-    withNumbers.forEach(e => numberMap[e.id] = e.regNo);
-
-    const ordered = filtered.slice().sort((a,b) => (b.tanggal||'').localeCompare(a.tanggal||'') || (b.createdAt||0)-(a.createdAt||0));
-
-    const visible = showAllEntries ? ordered : ordered.slice(0, DISPLAY_LIMIT);
-
-    const cardsHtml = visible.map(e => {
-      const regNo = numberMap[e.id] || '—';
-      const year = (e.tanggal||'').split('-')[0] || '';
-      const isMine = auth && e.createdBy && auth.email.toLowerCase() === String(e.createdBy).toLowerCase();
-      const canManage = auth && (isMine || auth.isAdmin);
-      return `
-      <div class="entry ${isMine ? 'mine' : ''}" data-id="${e.id}">
-        <div class="entry-head" data-toggle="${e.id}">
-          <span class="entry-no">No. ${regNo}${year ? '/'+year : ''}</span>
-          <span class="entry-date">${shortDateID(e.tanggal)}</span>
-          <div class="entry-name-wrap">
-            <div class="entry-name">${escapeHtml(e.namaKegiatan) || '(tanpa nama)'}</div>
-            <div class="entry-sub">${escapeHtml(e.namaPengawas) || '—'}${e.tempatKegiatan ? ' &middot; ' + escapeHtml(e.tempatKegiatan) : ''}</div>
-          </div>
-          ${isMine ? '<span class="owner-badge">Milik Anda</span>' : ''}
-          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </div>
-        <div class="entry-body">
-          <div class="entry-body-inner">
-            <div class="field-grid">
-              <div class="field"><label>Nama Pengawas Sekolah</label><div class="val">${escapeHtml(e.namaPengawas) || '—'}</div></div>
-              <div class="field"><label>Nama Kegiatan</label><div class="val">${escapeHtml(e.namaKegiatan) || '—'}</div></div>
-              <div class="field"><label>Tanggal Kegiatan</label><div class="val">${formatDateID(e.tanggal)}</div></div>
-              <div class="field"><label>Lama Kegiatan</label><div class="val">${escapeHtml(e.lamaKegiatan) || '—'}</div></div>
-              <div class="field"><label>Tempat Kegiatan</label><div class="val">${escapeHtml(e.tempatKegiatan) || '—'}</div></div>
-              <div class="field full"><label>Surat Tugas</label><div class="val">${linkOrDash(e.suratTugas)}</div></div>
-              <div class="field full"><label>Dokumentasi</label><div class="val">${linkOrDash(e.dokumentasi)}</div></div>
-            </div>
-            <div class="entry-actions">
-              ${canManage ? `
-                <button class="btn-edit-text" data-edit="${e.id}">Edit entri ini</button>
-                <button class="btn-danger-text" data-delete="${e.id}">Hapus entri ini</button>
-              ` : (auth ? `<span class="entry-sub">Hanya pembuat entri atau admin yang bisa mengubah/menghapus</span>` : `<span class="entry-sub">Masuk untuk mengelola entri ini</span>`)}
-            </div>
-          </div>
-        </div>
+  photos.forEach((p, idx) => {
+    const card = document.createElement('div');
+    const isPdf = p.type === 'pdf';
+    card.className = 'card' + (isPdf ? ' pdf-card' : '');
+    card.dataset.id = p.id;
+    const controlsHtml = isPdf ? `
+      <div class="pdfControls no-export" data-id="${p.id}">
+        <button class="attach-btn" data-act="pdf-view" title="Lihat PDF">Lihat</button>
+        <button class="attach-btn" data-act="pdf-download" title="Unduh PDF">Unduh</button>
+      </div>` : `
+      <div class="imgControls no-export" data-id="${p.id}">
+        <button class="ictrl" data-act="zoomout" title="Perkecil foto">&minus;</button>
+        <span class="ival" data-role="zoomval">${Math.round(p.scale*100)}%</span>
+        <button class="ictrl" data-act="zoomin" title="Perbesar foto">+</button>
+        <div class="sep"></div>
+        <button class="ictrl" data-act="rotleft" title="Putar kiri">&#8634;</button>
+        <span class="ival" data-role="rotval">${p.rotate}&deg;</span>
+        <button class="ictrl" data-act="rotright" title="Putar kanan">&#8635;</button>
+        <div class="sep"></div>
+        <button class="ictrl reset" data-act="reset" title="Kembalikan posisi awal">Reset</button>
       </div>`;
-    }).join('');
-
-    let toggleHtml = '';
-    if(ordered.length > DISPLAY_LIMIT){
-      toggleHtml = showAllEntries
-        ? `<div class="show-toggle"><button class="btn btn-ghost" id="showLessBtn">Tampilkan lebih sedikit</button></div>`
-        : `<div class="show-toggle"><button class="btn btn-ghost" id="showAllBtn">Tampilkan Semua (${ordered.length} kegiatan)</button></div>`;
-    }
-
-    listRoot.innerHTML = cardsHtml + toggleHtml;
-
-    const showAllBtn = document.getElementById('showAllBtn');
-    if(showAllBtn) showAllBtn.addEventListener('click', () => { showAllEntries = true; render(); });
-    const showLessBtn = document.getElementById('showLessBtn');
-    if(showLessBtn) showLessBtn.addEventListener('click', () => { showAllEntries = false; render(); });
-  }
-
-  // ---------- Interactions: expand/collapse ----------
-  listRoot.addEventListener('click', async (ev) => {
-    const head = ev.target.closest('[data-toggle]');
-    if(head){
-      const entryEl = head.closest('.entry');
-      const body = entryEl.querySelector('.entry-body');
-      const isOpen = entryEl.classList.toggle('open');
-      body.style.maxHeight = isOpen ? body.scrollHeight + 'px' : '0px';
-      return;
-    }
-    const delBtn = ev.target.closest('[data-delete]');
-    if(delBtn){
-      const id = delBtn.getAttribute('data-delete');
-      if(confirm('Hapus entri kegiatan ini dari register? Tindakan ini tidak dapat dibatalkan.')){
-        delBtn.textContent = 'Menghapus…';
-        try{
-          await deleteEntry(id);
-          entries = entries.filter(e => e.id !== id);
-          try{ localStorage.setItem(CACHE_KEY, JSON.stringify(entries)); }catch(err){}
-          render();
-        }catch(e){
-          alert(e.message || 'Gagal menghapus entri. Silakan coba lagi.');
-          console.error(e);
-        }
-      }
-      return;
-    }
-    const editBtn = ev.target.closest('[data-edit]');
-    if(editBtn){
-      const id = editBtn.getAttribute('data-edit');
-      const entry = entries.find(e => e.id === id);
-      if(entry) openEntryForm(entry);
-    }
+    const pdfExtras = isPdf ? `<div class="pdf-badge">PDF</div><div class="pdf-hover no-export"><span>Klik untuk lihat &amp; unduh</span></div>` : '';
+    card.innerHTML = `
+      <button class="remove" data-id="${p.id}">&times;</button>
+      <div class="tag">
+        <button class="drag-handle no-export" title="Seret untuk menukar posisi foto">&#8942;&#8942;</button>
+        <div class="no">${idx+1}</div>
+        <input class="tagInput" data-id="${p.id}" value="${p.title.replace(/"/g,'&quot;')}">
+      </div>
+      ${controlsHtml}
+      <div class="imgbox" data-id="${p.id}" style="height:${p.boxHeight || 230}px">${pdfExtras}<img src="${p.dataUrl}" data-id="${p.id}" draggable="false" title="${isPdf ? 'Klik untuk lihat & unduh PDF' : 'Seret untuk menggeser foto'}" style="transform:${computeTransform(p)}"><div class="resize-handle no-export" data-id="${p.id}" title="Seret untuk mengubah tinggi kotak"></div></div>
+      <div class="cap"><textarea class="capInput" data-id="${p.id}" rows="2">${p.caption}</textarea></div>
+    `;
+    grid.insertBefore(card, addCard);
   });
 
-  document.getElementById('searchInput').addEventListener('input', (ev) => {
-    searchTerm = ev.target.value.trim();
-    render();
-  });
-
-  // ---------- Form panel open/close ----------
-  const closeFormBtn = document.getElementById('closeFormBtn');
-  const cancelFormBtn = document.getElementById('cancelFormBtn');
-  const panelTitle = document.getElementById('panelTitle');
-  const submitLabelEl = document.getElementById('submitLabel');
-  let editingId = null; // null = mode tambah baru, terisi = mode edit
-
-  function openEntryForm(entryToEdit){
-    if(!auth){
-      openLogin();
-      return;
-    }
-    entryForm.reset();
-    formError.classList.remove('show');
-    driveHint.style.display = 'none';
-    document.getElementById('f_surattugas_status').textContent = '';
-    document.getElementById('f_surattugas_status').className = 'upload-status';
-    document.getElementById('f_dokumentasi_status').textContent = '';
-    document.getElementById('f_dokumentasi_status').className = 'upload-status';
-
-    if(entryToEdit){
-      editingId = entryToEdit.id;
-      panelTitle.textContent = 'Ubah Kegiatan';
-      submitLabelEl.textContent = 'Simpan Perubahan';
-      document.getElementById('f_pengawas').value = entryToEdit.namaPengawas || '';
-      document.getElementById('f_nama').value = entryToEdit.namaKegiatan || '';
-      document.getElementById('f_tanggal').value = entryToEdit.tanggal || '';
-      document.getElementById('f_lama').value = entryToEdit.lamaKegiatan || '';
-      document.getElementById('f_tempat').value = entryToEdit.tempatKegiatan || '';
-      document.getElementById('f_surattugas').value = entryToEdit.suratTugas || '';
-      document.getElementById('f_dokumentasi').value = entryToEdit.dokumentasi || '';
-    }else{
-      editingId = null;
-      panelTitle.textContent = 'Catat Kegiatan Baru';
-      submitLabelEl.textContent = 'Simpan & Bubuhkan Stempel';
-      document.getElementById('f_tanggal').valueAsDate = new Date();
-    }
-    checkDriveHint();
-    formOverlay.classList.add('show');
-    document.getElementById('f_pengawas').focus();
-  }
-  function closeForm(){ formOverlay.classList.remove('show'); }
-
-  function checkDriveHint(){
-    const s = document.getElementById('f_surattugas').value.trim();
-    const d = document.getElementById('f_dokumentasi').value.trim();
-    const hasDrive = /drive\.google\.com/i.test(s) || /drive\.google\.com/i.test(d);
-    driveHint.style.display = hasDrive ? 'flex' : 'none';
-  }
-  document.getElementById('f_surattugas').addEventListener('input', checkDriveHint);
-  document.getElementById('f_dokumentasi').addEventListener('input', checkDriveHint);
-
-  function wireFileUpload(fileInputId, urlInputId, statusId){
-    const fileInput = document.getElementById(fileInputId);
-    const urlInput = document.getElementById(urlInputId);
-    const statusEl = document.getElementById(statusId);
-    const btnEl = fileInput.previousElementSibling; // .upload-btn label
-    fileInput.addEventListener('change', async () => {
-      const file = fileInput.files[0];
-      if(!file) return;
-      statusEl.className = 'upload-status';
-      statusEl.textContent = 'Mengupload "' + file.name + '"…';
-      btnEl.classList.add('uploading');
-      try{
-        const url = await uploadFileRequest(file);
-        urlInput.value = url;
-        checkDriveHint();
-        statusEl.className = 'upload-status ok';
-        statusEl.textContent = 'Terupload: ' + file.name;
-      }catch(err){
-        statusEl.className = 'upload-status err';
-        statusEl.textContent = err.message || 'Gagal upload file.';
-      }finally{
-        btnEl.classList.remove('uploading');
-        fileInput.value = '';
-      }
-    });
-  }
-  wireFileUpload('f_surattugas_file', 'f_surattugas', 'f_surattugas_status');
-  wireFileUpload('f_dokumentasi_file', 'f_dokumentasi', 'f_dokumentasi_status');
-
-  openFormBtn.addEventListener('click', () => openEntryForm(null));
-  closeFormBtn.addEventListener('click', closeForm);
-  cancelFormBtn.addEventListener('click', closeForm);
-  formOverlay.addEventListener('click', (ev) => { if(ev.target === formOverlay) closeForm(); });
-  document.addEventListener('keydown', (ev) => {
-    if(ev.key === 'Escape'){
-      closeForm();
-    }
-  });
-
-  // ---------- Submit ----------
-  entryForm.addEventListener('submit', async (ev) => {
-    ev.preventDefault();
-    const namaPengawas = document.getElementById('f_pengawas').value.trim();
-    const namaKegiatan = document.getElementById('f_nama').value.trim();
-    const tanggal = document.getElementById('f_tanggal').value;
-    const suratTugas = document.getElementById('f_surattugas').value.trim();
-    const dokumentasi = document.getElementById('f_dokumentasi').value.trim();
-
-    if(!namaPengawas || !namaKegiatan || !tanggal){
-      formError.textContent = 'Nama Pengawas Sekolah, Nama Kegiatan, dan Tanggal Kegiatan wajib diisi.';
-      formError.classList.add('show');
-      return;
-    }
-    if(suratTugas && !isValidUrl(suratTugas)){
-      formError.textContent = 'Tautan Surat Tugas harus berupa URL yang valid (diawali http:// atau https://).';
-      formError.classList.add('show');
-      return;
-    }
-    if(dokumentasi && !isValidUrl(dokumentasi)){
-      formError.textContent = 'Tautan Dokumentasi harus berupa URL yang valid (diawali http:// atau https://).';
-      formError.classList.add('show');
-      return;
-    }
-    formError.classList.remove('show');
-
-    const submitBtn = document.getElementById('submitFormBtn');
-    const submitLabel = document.getElementById('submitLabel');
-    submitBtn.disabled = true;
-    const prevLabel = submitLabel.textContent;
-    submitLabel.textContent = editingId ? 'Menyimpan perubahan…' : 'Menyimpan…';
-
-    const fieldsOnly = {
-      namaPengawas,
-      namaKegiatan,
-      tanggal,
-      lamaKegiatan: document.getElementById('f_lama').value.trim(),
-      tempatKegiatan: document.getElementById('f_tempat').value.trim(),
-      suratTugas,
-      dokumentasi
-    };
-
-    try{
-      if(editingId){
-        await updateEntryRequest(editingId, fieldsOnly);
-        const idx = entries.findIndex(e => e.id === editingId);
-        if(idx !== -1){ entries[idx] = { ...entries[idx], ...fieldsOnly }; }
-      }else{
-        const entry = { id: 'e' + Date.now() + Math.random().toString(36).slice(2,8), ...fieldsOnly, createdAt: Date.now() };
-        await saveEntry(entry);
-        entry.createdBy = auth.email;
-        entries.push(entry);
-      }
-      try{ localStorage.setItem(CACHE_KEY, JSON.stringify(entries)); }catch(err){}
-      closeForm();
-      if(!editingId) playStamp(tanggal);
+  // bind events
+  grid.querySelectorAll('.remove').forEach(btn=>{
+    btn.onclick = ()=>{
+      photos = photos.filter(p=>p.id !== btn.dataset.id);
       render();
-    }catch(e){
-      formError.textContent = e.message || 'Gagal menyimpan data. Periksa koneksi lalu coba lagi.';
-      formError.classList.add('show');
-      console.error('save error', e);
-    }finally{
-      submitBtn.disabled = false;
-      submitLabel.textContent = prevLabel;
-    }
+    };
+  });
+  grid.querySelectorAll('.pdfControls .attach-btn').forEach(btn=>{
+    btn.onclick = (e)=>{
+      e.stopPropagation();
+      const id = btn.closest('.pdfControls').dataset.id;
+      const p = photos.find(p=>p.id===id);
+      if(!p) return;
+      if(btn.dataset.act === 'pdf-view') openPdfModal(p);
+      if(btn.dataset.act === 'pdf-download') downloadPdfAttachment(p);
+    };
+  });
+  grid.querySelectorAll('.card.pdf-card .imgbox').forEach(box=>{
+    box.onclick = ()=>{
+      const p = photos.find(p=>p.id===box.dataset.id);
+      if(p) openPdfModal(p);
+    };
+  });
+  grid.querySelectorAll('.tagInput').forEach(inp=>{
+    inp.oninput = ()=>{
+      const p = photos.find(p=>p.id===inp.dataset.id);
+      if(p) p.title = inp.value;
+    };
+  });
+  grid.querySelectorAll('.capInput').forEach(ta=>{
+    autoGrow(ta);
+    ta.oninput = ()=>{
+      const p = photos.find(p=>p.id===ta.dataset.id);
+      if(p) p.caption = ta.value;
+      autoGrow(ta);
+    };
   });
 
-  // ---------- Stamp animation ----------
-  function playStamp(tanggal){
-    const overlay = document.getElementById('stampOverlay');
-    const mark = document.getElementById('stampMark');
-    document.getElementById('stampDate').textContent = shortDateID(tanggal);
-    mark.classList.remove('play');
-    void mark.offsetWidth; // reflow to restart animation
-    mark.classList.add('play');
-    overlay.style.display = 'flex';
-    setTimeout(() => { overlay.style.display = 'none'; }, 900);
+  grid.querySelectorAll('.imgControls .ictrl').forEach(btn=>{
+    btn.onclick = ()=>{
+      const id = btn.closest('.imgControls').dataset.id;
+      const p = photos.find(p=>p.id===id);
+      if(!p) return;
+      const act = btn.dataset.act;
+      if(act==='zoomin') p.scale = Math.min(4, +(p.scale + 0.15).toFixed(2));
+      if(act==='zoomout') p.scale = Math.max(0.4, +(p.scale - 0.15).toFixed(2));
+      if(act==='rotleft') p.rotate = Math.max(-45, p.rotate - 5);
+      if(act==='rotright') p.rotate = Math.min(45, p.rotate + 5);
+      if(act==='reset'){ p.scale = 1; p.rotate = 0; p.offsetX = 0; p.offsetY = 0; }
+      updateCardVisuals(p);
+    };
+  });
+
+  grid.querySelectorAll('.card:not(.pdf-card) img').forEach(img=>{
+    attachDrag(img);
+  });
+
+  grid.querySelectorAll('.resize-handle').forEach(handle=>{
+    attachResize(handle);
+  });
+
+  attachCardReorder();
+
+  renderGallery();
+}
+
+function swapPhotos(idA, idB){
+  const iA = photos.findIndex(p=>p.id===idA);
+  const iB = photos.findIndex(p=>p.id===idB);
+  if(iA === -1 || iB === -1 || iA === iB) return;
+  [photos[iA], photos[iB]] = [photos[iB], photos[iA]];
+  render();
+}
+
+function attachCardReorder(){
+  grid.querySelectorAll('.drag-handle').forEach(handle=>{
+    handle.draggable = true;
+    handle.addEventListener('dragstart', (e)=>{
+      const card = handle.closest('.card');
+      e.dataTransfer.setData('text/plain', card.dataset.id);
+      e.dataTransfer.effectAllowed = 'move';
+      if(e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(card, 30, 30);
+      card.classList.add('dragging');
+    });
+    handle.addEventListener('dragend', ()=>{
+      handle.closest('.card').classList.remove('dragging');
+    });
+  });
+
+  grid.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('dragover', (e)=>{
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      card.classList.add('drag-over');
+    });
+    card.addEventListener('dragleave', ()=>{
+      card.classList.remove('drag-over');
+    });
+    card.addEventListener('drop', (e)=>{
+      e.preventDefault();
+      card.classList.remove('drag-over');
+      const draggedId = e.dataTransfer.getData('text/plain');
+      const targetId = card.dataset.id;
+      if(draggedId) swapPhotos(draggedId, targetId);
+    });
+  });
+}
+
+function computeTransform(p){
+  const extra = 1 + Math.min(Math.abs(p.rotate), 45) / 45 * 0.35;
+  const scale = (p.scale || 1) * extra;
+  return `translate(-50%, -50%) translate(${p.offsetX||0}px, ${p.offsetY||0}px) rotate(${p.rotate||0}deg) scale(${scale})`;
+}
+
+function updateCardVisuals(p){
+  const img = grid.querySelector(`img[data-id="${p.id}"]`);
+  if(img) img.style.transform = computeTransform(p);
+  const ctrl = grid.querySelector(`.imgControls[data-id="${p.id}"]`);
+  if(ctrl){
+    const zv = ctrl.querySelector('[data-role="zoomval"]');
+    const rv = ctrl.querySelector('[data-role="rotval"]');
+    if(zv) zv.textContent = Math.round(p.scale*100) + '%';
+    if(rv) rv.textContent = p.rotate + '\u00b0';
+  }
+}
+
+function attachDrag(img){
+  const id = img.dataset.id;
+  let dragging = false, startX=0, startY=0, baseX=0, baseY=0;
+  img.addEventListener('pointerdown', (e)=>{
+    const p = photos.find(p=>p.id===id);
+    if(!p) return;
+    dragging = true;
+    startX = e.clientX; startY = e.clientY;
+    baseX = p.offsetX||0; baseY = p.offsetY||0;
+    img.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  img.addEventListener('pointermove', (e)=>{
+    if(!dragging) return;
+    const p = photos.find(p=>p.id===id);
+    if(!p) return;
+    p.offsetX = baseX + (e.clientX - startX);
+    p.offsetY = baseY + (e.clientY - startY);
+    img.style.transform = computeTransform(p);
+  });
+  const endDrag = (e)=>{ dragging = false; };
+  img.addEventListener('pointerup', endDrag);
+  img.addEventListener('pointercancel', endDrag);
+}
+
+function attachResize(handle){
+  const id = handle.dataset.id;
+  let resizing = false, startY = 0, startHeight = 0;
+  const card = handle.closest('.card');
+  const imgbox = handle.closest('.imgbox');
+
+  handle.addEventListener('pointerdown', (e)=>{
+    const p = photos.find(p=>p.id===id);
+    if(!p) return;
+    resizing = true;
+    startY = e.clientY;
+    startHeight = p.boxHeight || imgbox.offsetHeight;
+    card.classList.add('resizing');
+    handle.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  handle.addEventListener('pointermove', (e)=>{
+    if(!resizing) return;
+    const p = photos.find(p=>p.id===id);
+    if(!p) return;
+    const newHeight = Math.min(600, Math.max(120, startHeight + (e.clientY - startY)));
+    p.boxHeight = newHeight;
+    imgbox.style.height = newHeight + 'px';
+  });
+  const endResize = ()=>{ resizing = false; card.classList.remove('resizing'); };
+  handle.addEventListener('pointerup', endResize);
+  handle.addEventListener('pointercancel', endResize);
+}
+
+function addPhotoEntry(dataUrl, titleOverride){
+  counter++;
+  photos.push({
+    id: 'p'+counter+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+    type: 'image',
+    dataUrl: dataUrl,
+    title: titleOverride || ('Kegiatan '+(photos.length+1)),
+    caption: 'Tuliskan keterangan foto di sini.',
+    scale: 1,
+    rotate: 0,
+    offsetX: 0,
+    offsetY: 0,
+    boxHeight: 230
+  });
+}
+
+function addPdfEntry(thumbDataUrl, pdfDataUrl, fileName, fileSize, titleOverride){
+  counter++;
+  photos.push({
+    id: 'p'+counter+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+    type: 'pdf',
+    dataUrl: thumbDataUrl,
+    pdfDataUrl: pdfDataUrl,
+    fileName: fileName,
+    fileSize: fileSize,
+    title: titleOverride || fileName.replace(/\.pdf$/i, ''),
+    caption: 'Tuliskan keterangan dokumen di sini.',
+    scale: 1,
+    rotate: 0,
+    offsetX: 0,
+    offsetY: 0,
+    boxHeight: 230
+  });
+}
+
+function readFileAsDataUrl(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = (e)=> resolve(e.target.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function formatFileSize(bytes){
+  if(bytes < 1024) return bytes + ' B';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/(1024*1024)).toFixed(1) + ' MB';
+}
+
+// Menambahkan PDF sebagai SATU kartu (thumbnail halaman pertama) yang bisa
+// diklik untuk melihat & mengunduh berkas PDF aslinya secara utuh.
+async function addPdfAsCard(file){
+  const pdfDataUrl = await readFileAsDataUrl(file);
+  let thumbDataUrl = pdfDataUrl; // fallback jika thumbnail gagal dibuat
+  try{
+    if(window.pdfjsLib){
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({ scale: 1.5 });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+      thumbDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    }
+  } catch(err){
+    console.error('Gagal membuat pratinjau PDF, memakai fallback.', err);
+  }
+  addPdfEntry(thumbDataUrl, pdfDataUrl, file.name, file.size);
+}
+
+async function handleFiles(files){
+  const list = [...files];
+  for(const file of list){
+    try{
+      if(file.type === 'application/pdf' || /\.pdf$/i.test(file.name)){
+        await addPdfAsCard(file);
+      } else if(file.type.startsWith('image/')){
+        const dataUrl = await readFileAsDataUrl(file);
+        addPhotoEntry(dataUrl);
+      }
+    } catch(err){
+      console.error(err);
+      alert(`Gagal memproses berkas "${file.name}".`);
+    }
+  }
+  render();
+}
+
+addCard.onclick = ()=> fileInput.click();
+fileInput.onchange = (e)=>{ handleFiles(e.target.files); fileInput.value=''; };
+
+// drag & drop onto addCard
+addCard.addEventListener('dragover', e=>{ e.preventDefault(); addCard.style.borderColor='#8B2E2E'; });
+addCard.addEventListener('dragleave', e=>{ addCard.style.borderColor='#CFCBC2'; });
+addCard.addEventListener('drop', e=>{
+  e.preventDefault();
+  addCard.style.borderColor='#CFCBC2';
+  handleFiles(e.dataTransfer.files);
+});
+
+/* ---------- Export helpers (share / upload / download) ---------- */
+
+// Tunggu sampai sebuah <img> selesai memuat (termasuk saat src diganti ke data URL baru).
+function waitForImageReady(img){
+  if(img.complete && img.naturalWidth){ return Promise.resolve(); }
+  return new Promise((resolve)=>{
+    img.onload = resolve;
+    img.onerror = resolve;
+  });
+}
+
+// "Panggang" sebuah foto ke canvas seukuran kotaknya, meniru persis object-fit:cover
+// ditambah geser/putar/zoom yang sedang diterapkan pada foto tsb. Hasilnya sudah pas
+// mengisi kotak sehingga saat ditangkap html2canvas TIDAK perlu di-stretch lagi.
+function bakeCoverImageToDataUrl(img, boxW, boxH, offsetX, offsetY, rotateDeg, scale){
+  const dpr = 2; // resolusi ekstra biar tetap tajam saat diekspor
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(boxW * dpr));
+  canvas.height = Math.max(1, Math.round(boxH * dpr));
+  const ctx = canvas.getContext('2d');
+  const nw = img.naturalWidth || boxW;
+  const nh = img.naturalHeight || boxH;
+  const coverScale = Math.max(canvas.width / nw, canvas.height / nh);
+  const drawW = nw * coverScale;
+  const drawH = nh * coverScale;
+  ctx.save();
+  ctx.translate(canvas.width / 2 + (offsetX || 0) * dpr, canvas.height / 2 + (offsetY || 0) * dpr);
+  ctx.rotate((rotateDeg || 0) * Math.PI / 180);
+  ctx.scale(scale || 1, scale || 1);
+  ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+  ctx.restore();
+  return canvas.toDataURL('image/jpeg', 0.95);
+}
+
+// Ganti sementara semua <img> foto di dalam elemen yang akan diekspor dengan versi
+// yang sudah "dipanggang" pas ukuran kotaknya, supaya html2canvas tidak menstretch-nya.
+// Mengembalikan fungsi restore untuk mengembalikan foto & transform aslinya.
+async function bakeImagesForExport(containerEl){
+  const imgs = containerEl.querySelectorAll('.card .imgbox img, .gallery-item img');
+  const restores = [];
+  for(const img of imgs){
+    await waitForImageReady(img);
+    const box = img.closest('.imgbox') || img.parentElement;
+    const boxW = box.clientWidth || img.clientWidth || 1;
+    const boxH = box.clientHeight || img.clientHeight || 1;
+    const isCard = !!img.closest('.card');
+    let offsetX = 0, offsetY = 0, rotateDeg = 0, scale = 1;
+    if(isCard){
+      const p = photos.find(ph => ph.id === img.dataset.id);
+      if(p){
+        const extra = 1 + Math.min(Math.abs(p.rotate || 0), 45) / 45 * 0.35;
+        offsetX = p.offsetX || 0;
+        offsetY = p.offsetY || 0;
+        rotateDeg = p.rotate || 0;
+        scale = (p.scale || 1) * extra;
+      }
+    }
+    try{
+      const baked = bakeCoverImageToDataUrl(img, boxW, boxH, offsetX, offsetY, rotateDeg, scale);
+      restores.push({ img, src: img.src, transform: img.style.transform });
+      img.src = baked;
+      // Foto kartu laporan posisinya absolute (dipusatkan lewat translate -50%/-50%);
+      // sisanya (geser/zoom/putar) sudah "terbakar" di dalam gambar, jadi transform lain dilepas.
+      // Foto galeri posisinya normal (bukan absolute), jadi transform dikosongkan saja.
+      img.style.transform = isCard ? 'translate(-50%, -50%)' : 'none';
+    } catch(err){
+      console.error('Gagal memproses salah satu foto untuk ekspor:', err);
+    }
+  }
+  await Promise.all(restores.map(r => waitForImageReady(r.img)));
+  return function restoreImages(){
+    restores.forEach(r => {
+      r.img.src = r.src;
+      r.img.style.transform = r.transform;
+    });
+  };
+}
+
+async function captureElement(el){
+  const restoreImages = await bakeImagesForExport(el);
+  try{
+    return await html2canvas(el, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      ignoreElements: (e) => e.classList && e.classList.contains('no-export')
+    });
+  } finally {
+    restoreImages();
+  }
+}
+
+function canvasToBlob(canvas, mime, quality){
+  return new Promise(resolve => canvas.toBlob(resolve, mime, quality));
+}
+
+async function runExport(btn, fn){
+  const originalText = btn.textContent;
+  btn.textContent = 'Memproses...';
+  btn.disabled = true;
+  document.activeElement && document.activeElement.blur();
+  try{
+    await fn();
+  } catch(err){
+    alert('Gagal memproses file. Coba lagi.');
+    console.error(err);
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+}
+
+// Try the device's native share sheet (kirim ke WhatsApp/Email, unggah ke Drive, dll.)
+// Falls back to a plain download if sharing files isn't supported by the browser.
+async function shareOrDownload(file, dataUrl, filename, title){
+  if(navigator.canShare && navigator.canShare({ files: [file] })){
+    try{
+      await navigator.share({ files: [file], title: title, text: title });
+      return;
+    } catch(err){
+      if(err && err.name === 'AbortError') return; // user cancelled the share sheet
+      console.error(err);
+    }
+  }
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = dataUrl;
+  link.click();
+  alert('Perangkat/browser ini belum mendukung fitur kirim/unggah langsung, jadi filenya diunduh ke perangkat sebagai gantinya.');
+}
+
+async function sharePoster(el, filename, title){
+  const canvas = await captureElement(el);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+  const blob = await canvasToBlob(canvas, 'image/jpeg', 0.92);
+  const file = new File([blob], filename, { type: 'image/jpeg' });
+  await shareOrDownload(file, dataUrl, filename, title);
+}
+
+function dataUrlToBytes(dataUrl){
+  const base64 = dataUrl.split(',')[1];
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for(let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+// Membangun PDF cetak: halaman poster + (jika ada lampiran PDF) halaman indeks,
+// lalu SELURUH HALAMAN ASLI tiap PDF lampiran disisipkan apa adanya (bisa langsung
+// dilihat/dibaca), dan berkas aslinya disematkan sebagai lampiran yang bisa diunduh
+// dari dalam PDF hasil cetak (panel Lampiran/Attachments pada pembaca PDF).
+async function buildExportPdfBytes(el, title){
+  const canvas = await captureElement(el);
+  const jpgBytes = dataUrlToBytes(canvas.toDataURL('image/jpeg', 0.92));
+
+  const { PDFDocument, StandardFonts, rgb } = PDFLib;
+  const pdfDoc = await PDFDocument.create();
+  pdfDoc.setTitle(title || 'Laporan Dokumentasi');
+
+  const pageWidthPt = 595.28; // A4, dalam satuan point
+  const pageHeightPt = pageWidthPt * canvas.height / canvas.width;
+  const posterPage = pdfDoc.addPage([pageWidthPt, pageHeightPt]);
+  const jpgImage = await pdfDoc.embedJpg(jpgBytes);
+  posterPage.drawImage(jpgImage, { x: 0, y: 0, width: pageWidthPt, height: pageHeightPt });
+
+  const pdfCards = photos.filter(p => p.type === 'pdf' && p.pdfDataUrl);
+
+  if(pdfCards.length){
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const A4W = 595.28, A4H = 841.89;
+    let infoPage = pdfDoc.addPage([A4W, A4H]);
+    let y = A4H - 70;
+    infoPage.drawText('Lampiran Dokumen PDF', { x: 50, y, size: 16, font: fontBold, color: rgb(0.35,0.09,0.09) });
+    y -= 22;
+    infoPage.drawText('Halaman berikut memuat isi lengkap tiap dokumen di bawah ini — bisa langsung dibaca.', { x: 50, y, size: 10, font, color: rgb(0.3,0.3,0.3) });
+    y -= 14;
+    infoPage.drawText('Untuk mengunduh berkas aslinya, buka panel Lampiran/Attachments pada pembaca PDF Anda (mis. Adobe Acrobat Reader).', { x: 50, y, size: 10, font, color: rgb(0.3,0.3,0.3) });
+    y -= 24;
+
+    pdfCards.forEach((p, i)=>{
+      if(y < 60){ infoPage = pdfDoc.addPage([A4W, A4H]); y = A4H - 60; }
+      const label = `${i+1}. ${p.title || p.fileName} (${p.fileName}, ${formatFileSize(p.fileSize||0)})`;
+      infoPage.drawText(label, { x: 60, y, size: 10.5, font, color: rgb(0.15,0.15,0.15) });
+      y -= 16;
+    });
+
+    for(const p of pdfCards){
+      try{
+        const srcBytes = dataUrlToBytes(p.pdfDataUrl);
+        const srcDoc = await PDFDocument.load(srcBytes);
+        const copiedPages = await pdfDoc.copyPages(srcDoc, srcDoc.getPageIndices());
+        copiedPages.forEach(pg => pdfDoc.addPage(pg));
+        await pdfDoc.attach(srcBytes, p.fileName, {
+          mimeType: 'application/pdf',
+          description: p.title || p.fileName
+        });
+      } catch(err){
+        console.error('Gagal menyisipkan lampiran PDF:', p.fileName, err);
+      }
+    }
   }
 
-  // ---------- Init ----------
-  loadAuth_();
-  loadEntries();
-})();
+  return pdfDoc.save();
+}
+
+async function sharePDF(el, filename, title){
+  if(!window.PDFLib){
+    alert('Modul PDF belum termuat sepenuhnya. Periksa koneksi internet Anda lalu coba lagi.');
+    return;
+  }
+  const bytes = await buildExportPdfBytes(el, title);
+  const blob = new Blob([bytes], { type: 'application/pdf' });
+  const file = new File([blob], filename, { type: 'application/pdf' });
+  if(navigator.canShare && navigator.canShare({ files: [file] })){
+    try{
+      await navigator.share({ files: [file], title: title, text: title });
+      return;
+    } catch(err){
+      if(err && err.name === 'AbortError') return;
+      console.error(err);
+    }
+  }
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  setTimeout(()=> URL.revokeObjectURL(url), 30000);
+  alert('Perangkat/browser ini belum mendukung fitur kirim/unggah langsung, jadi PDF-nya diunduh ke perangkat sebagai gantinya.');
+}
+
+// kirim lembar laporan sebagai poster (JPG)
+document.getElementById('downloadBtn').onclick = ()=>{
+  if(photos.length === 0){ alert('Tambahkan minimal satu foto terlebih dahulu.'); return; }
+  const btn = document.getElementById('downloadBtn');
+  runExport(btn, ()=> sharePoster(document.getElementById('sheet'), 'laporan-dokumentasi.jpg', judulInput.value || 'Laporan Dokumentasi'));
+};
+
+// unggah lembar laporan sebagai PDF
+document.getElementById('downloadPdfBtn').onclick = ()=>{
+  if(photos.length === 0){ alert('Tambahkan minimal satu foto terlebih dahulu.'); return; }
+  const btn = document.getElementById('downloadPdfBtn');
+  runExport(btn, ()=> sharePDF(document.getElementById('sheet'), 'laporan-dokumentasi.pdf', judulInput.value || 'Laporan Dokumentasi'));
+};
+
+// kirim galeri sebagai poster (JPG)
+document.getElementById('galleryDownloadImgBtn').onclick = ()=>{
+  if(photos.length === 0){ alert('Tambahkan minimal satu foto terlebih dahulu.'); return; }
+  const btn = document.getElementById('galleryDownloadImgBtn');
+  const gg = document.getElementById('galleryGrid');
+  gg.classList.add('exporting');
+  runExport(btn, ()=> sharePoster(document.getElementById('galleryWrap'), 'galeri-poster.jpg', judulInput.value || 'Galeri Kegiatan'))
+    .finally(()=> gg.classList.remove('exporting'));
+};
+
+// unggah galeri sebagai PDF
+document.getElementById('galleryDownloadPdfBtn').onclick = ()=>{
+  if(photos.length === 0){ alert('Tambahkan minimal satu foto terlebih dahulu.'); return; }
+  const btn = document.getElementById('galleryDownloadPdfBtn');
+  const gg = document.getElementById('galleryGrid');
+  gg.classList.add('exporting');
+  runExport(btn, ()=> sharePDF(document.getElementById('galleryWrap'), 'galeri-poster.pdf', judulInput.value || 'Galeri Kegiatan'))
+    .finally(()=> gg.classList.remove('exporting'));
+};
+
+document.getElementById('judulSize').oninput = (e)=>{
+  document.documentElement.style.setProperty('--judul-size', e.target.value + 'px');
+  document.getElementById('judulSizeVal').textContent = e.target.value + 'px';
+};
+document.getElementById('judulColor').oninput = (e)=>{
+  document.documentElement.style.setProperty('--judul-color', e.target.value);
+};
+
+document.getElementById('capFont').onchange = (e)=>{
+  document.documentElement.style.setProperty('--cap-font', e.target.value);
+  renderGallery();
+};
+document.getElementById('capColor').oninput = (e)=>{
+  document.documentElement.style.setProperty('--cap-color', e.target.value);
+};
+document.getElementById('capItalic').onchange = (e)=>{
+  document.documentElement.style.setProperty('--cap-style', e.target.checked ? 'italic' : 'normal');
+  renderGallery();
+};
+
+document.getElementById('descFont').onchange = (e)=>{
+  document.documentElement.style.setProperty('--desc-font', e.target.value);
+  updateGalleryHeader();
+};
+document.getElementById('descColor').oninput = (e)=>{
+  document.documentElement.style.setProperty('--desc-color', e.target.value);
+};
+document.getElementById('descItalic').onchange = (e)=>{
+  document.documentElement.style.setProperty('--desc-style', e.target.checked ? 'italic' : 'normal');
+  updateGalleryHeader();
+};
+
+/* ---------- Galeri ---------- */
+const galleryGrid = document.getElementById('galleryGrid');
+const galleryEmpty = document.getElementById('galleryEmpty');
+const judulInput = document.getElementById('judul');
+const subInput = document.getElementById('sub');
+
+function updateGalleryHeader(){
+  document.getElementById('galleryTitle').textContent = judulInput.value || 'Judul Kegiatan';
+  const sub = document.getElementById('gallerySub');
+  sub.textContent = subInput.value || '';
+  sub.style.fontFamily = 'var(--desc-font)';
+  sub.style.fontStyle = 'var(--desc-style)';
+}
+judulInput.addEventListener('input', updateGalleryHeader);
+subInput.addEventListener('input', updateGalleryHeader);
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str == null ? '' : str;
+  return d.innerHTML;
+}
+
+function renderGallery(){
+  galleryGrid.innerHTML = '';
+  galleryEmpty.style.display = photos.length === 0 ? 'block' : 'none';
+  photos.forEach((p, idx) => {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.dataset.idx = idx;
+    item.innerHTML = `
+      <img src="${p.dataUrl}" alt="${escapeHtml(p.title)}">
+      <div class="gnum">${idx+1}</div>
+      ${p.type === 'pdf' ? '<div class="pdf-badge" style="top:8px;left:auto;right:8px;">PDF</div>' : ''}
+      <div class="gcap">
+        <div class="gtitle">${escapeHtml(p.title)}</div>
+        <div class="gdesc">${escapeHtml(p.caption)}</div>
+      </div>
+    `;
+    item.onclick = ()=> { if(p.type === 'pdf') openPdfModal(p); else openLightbox(idx); };
+    galleryGrid.appendChild(item);
+  });
+  updateGalleryHeader();
+}
+
+/* ---------- Lightbox ---------- */
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lbImg');
+const lbTitle = document.getElementById('lbTitle');
+const lbCap = document.getElementById('lbCap');
+let lbIndex = 0;
+
+function openLightbox(idx){
+  if(photos.length === 0) return;
+  lbIndex = idx;
+  showLightboxPhoto();
+  lightbox.classList.add('open');
+}
+function showLightboxPhoto(){
+  const p = photos[lbIndex];
+  if(!p) return;
+  if(p.type === 'pdf'){ closeLightbox(); openPdfModal(p); return; }
+  lbImg.src = p.dataUrl;
+  lbTitle.textContent = p.title;
+  lbCap.textContent = p.caption;
+}
+function closeLightbox(){ lightbox.classList.remove('open'); }
+function lbPrev(){ lbIndex = (lbIndex - 1 + photos.length) % photos.length; showLightboxPhoto(); }
+function lbNext(){ lbIndex = (lbIndex + 1) % photos.length; showLightboxPhoto(); }
+
+document.getElementById('lbClose').onclick = closeLightbox;
+document.getElementById('lbPrev').onclick = lbPrev;
+document.getElementById('lbNext').onclick = lbNext;
+lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', (e)=>{
+  if(!lightbox.classList.contains('open')) return;
+  if(e.key === 'Escape') closeLightbox();
+  if(e.key === 'ArrowLeft') lbPrev();
+  if(e.key === 'ArrowRight') lbNext();
+});
+
+/* ---------- View switch (Lembar Laporan / Galeri) ---------- */
+const sheetWrapEl = document.querySelector('.sheet-wrap');
+const galleryWrapEl = document.getElementById('galleryWrap');
+const toolbarBtns = document.querySelector('.toolbar .btns');
+
+document.querySelectorAll('.vtab').forEach(tab=>{
+  tab.onclick = ()=>{
+    document.querySelectorAll('.vtab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const view = tab.dataset.view;
+    if(view === 'gallery'){
+      sheetWrapEl.style.display = 'none';
+      galleryWrapEl.style.display = 'block';
+      toolbarBtns.style.display = 'none';
+      renderGallery();
+    } else {
+      sheetWrapEl.style.display = '';
+      galleryWrapEl.style.display = 'none';
+      toolbarBtns.style.display = '';
+      closeLightbox();
+    }
+  };
+});
+
+/* ---------- Tanda Tangan (signature pads) ---------- */
+const sigRow = document.getElementById('sigRow');
+const addSigBtn = document.getElementById('addSigBtn');
+let sigCounter = 0;
+
+function setupSignaturePad(canvas){
+  const ctx = canvas.getContext('2d');
+  const ratio = window.devicePixelRatio || 1;
+  const cssW = canvas.clientWidth || 188;
+  const cssH = canvas.clientHeight || 88;
+  canvas.width = cssW * ratio;
+  canvas.height = cssH * ratio;
+  ctx.scale(ratio, ratio);
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = '#1E2126';
+
+  let drawing = false, last = null;
+  const hint = canvas.parentElement.querySelector('.sig-pad-hint');
+
+  function pos(e){
+    const rect = canvas.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }
+  canvas.addEventListener('pointerdown', (e)=>{
+    drawing = true;
+    last = pos(e);
+    if(hint) hint.style.display = 'none';
+    canvas.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  canvas.addEventListener('pointermove', (e)=>{
+    if(!drawing) return;
+    const p = pos(e);
+    ctx.beginPath();
+    ctx.moveTo(last.x, last.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    last = p;
+  });
+  const stop = ()=>{ drawing = false; };
+  canvas.addEventListener('pointerup', stop);
+  canvas.addEventListener('pointercancel', stop);
+  canvas.addEventListener('pointerleave', stop);
+
+  canvas._clear = ()=>{
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if(hint) hint.style.display = 'flex';
+  };
+}
+
+function createSigBlock(opts){
+  opts = opts || {};
+  sigCounter++;
+  const block = document.createElement('div');
+  block.className = 'sig-block';
+  block.innerHTML = `
+    <button class="sig-remove no-export" title="Hapus tanda tangan ini">&times;</button>
+    <input class="sig-place" value="${opts.place || 'Kota, .....................'}">
+    <input class="sig-label" value="${opts.label || 'Mengetahui,'}">
+    <div class="sig-pad-wrap">
+      <canvas class="sig-pad"></canvas>
+      <div class="sig-pad-hint no-export">Tanda tangan di sini</div>
+    </div>
+    <button class="sig-clear no-export">Hapus tanda tangan</button>
+    <div class="sig-line"></div>
+    <input class="sig-name" value="${opts.name || '( Nama Terang )'}">
+    <input class="sig-position" value="${opts.position || 'Jabatan'}">
+  `;
+  const canvas = block.querySelector('.sig-pad');
+  setupSignaturePad(canvas);
+  block.querySelector('.sig-clear').onclick = ()=> canvas._clear();
+  return block;
+}
+
+function addSignatureBlock(opts){
+  const block = createSigBlock(opts);
+  sigRow.appendChild(block);
+  block.querySelector('.sig-remove').onclick = ()=>{
+    if(sigRow.children.length <= 1) return; // keep at least one signature block
+    block.remove();
+  };
+}
+
+/* ---------- Tanda tangan pembuat laporan (di tab Galeri) ---------- */
+const gallerySigRow = document.getElementById('gallerySigRow');
+function addGallerySignatureBlock(opts){
+  const block = createSigBlock(opts);
+  gallerySigRow.appendChild(block);
+  block.querySelector('.sig-remove').onclick = ()=>{
+    if(gallerySigRow.children.length <= 1) return; // keep at least one signature block
+    block.remove();
+  };
+}
+document.getElementById('addGallerySigBtn').onclick = ()=> addGallerySignatureBlock();
+
+addSigBtn.onclick = ()=> addSignatureBlock();
+
+// default: one signature block on load
+addSignatureBlock({ label: 'Mengetahui,', place: 'Kota, .....................', name: '( Nama Terang )', position: 'Jabatan' });
+
+// default: one signature block for report creator, on gallery view
+addGallerySignatureBlock({ label: 'Pembuat Laporan,', place: 'Kota, .....................', name: '( Nama Terang )', position: 'Jabatan' });
+
+/* ---------- Penampil PDF (lihat & unduh langsung dari kartu di lembar foto) ---------- */
+function downloadPdfAttachment(p){
+  const link = document.createElement('a');
+  link.href = p.pdfDataUrl;
+  link.download = p.fileName || 'dokumen.pdf';
+  link.click();
+}
+
+const pdfModal = document.getElementById('pdfModal');
+const pdfModalFrame = document.getElementById('pdfModalFrame');
+const pdfModalTitle = document.getElementById('pdfModalTitle');
+const pdfModalDownload = document.getElementById('pdfModalDownload');
+let currentPdfForModal = null;
+
+function openPdfModal(p){
+  currentPdfForModal = p;
+  pdfModalTitle.textContent = p.fileName || p.title || 'Dokumen PDF';
+  pdfModalFrame.src = p.pdfDataUrl;
+  pdfModal.classList.add('open');
+}
+function closePdfModal(){
+  pdfModal.classList.remove('open');
+  pdfModalFrame.src = '';
+  currentPdfForModal = null;
+}
+document.getElementById('pdfModalClose').onclick = closePdfModal;
+pdfModal.addEventListener('click', (e)=>{ if(e.target === pdfModal) closePdfModal(); });
+pdfModalDownload.onclick = ()=>{ if(currentPdfForModal) downloadPdfAttachment(currentPdfForModal); };
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape' && pdfModal.classList.contains('open')) closePdfModal();
+});
+
+buildThemeRow();
+applyTheme('marun');
+render();
 </script>
+
 </body>
 </html>
