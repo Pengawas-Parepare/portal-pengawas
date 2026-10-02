@@ -1,1722 +1,997 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generator Laporan Foto</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lora:ital@0;1&family=Merriweather:ital@0;1&family=Playfair+Display:ital@0;1&family=Caveat:wght@500;600&family=Roboto:ital@0;1&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-<script>
-  if(window['pdfjsLib']){
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  }
-</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dashboard Laporan Baca Al-Qur'an – Sekolah Binaan</title>
 <style>
-  :root{
-    --maroon:#8B2E2E;
-    --accent2:#C79A3D;
-    --header-bg:transparent;
-    --header-text:#1E2126;
-    --ink:#1E2126;
-    --muted:#6B6F76;
-    --line:#E7E5E0;
-    --paper:#FFFFFF;
-    --cream:#FAF7F2;
-    --page-bg:#EDEBE6;
-    --shadow: 0 8px 22px rgba(30,33,38,0.08);
-    --cap-font: 'Lora', serif;
-    --cap-color: #6B6F76;
-    --cap-style: italic;
-    --desc-font: 'Lora', serif;
-    --desc-style: italic;
-    --judul-size: 28px;
-    --judul-color: #1E2126;
-  }
-  *{ box-sizing:border-box; }
-  body{
-    margin:0;
-    font-family:'Poppins',sans-serif;
-    background:var(--page-bg);
-    color:var(--ink);
-    padding: 28px 16px 60px 16px;
-    transition: background .25s ease;
-  }
-
-  /* ---------- theme picker ---------- */
-  .theme-row{
-    max-width: 900px;
-    margin: 0 auto 16px auto;
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    justify-content:center;
-  }
-  .theme-chip{
-    display:flex; align-items:center; gap:8px;
-    padding: 7px 14px 7px 7px;
-    border-radius: 999px;
-    background:#fff;
-    border: 1.5px solid #DDD9D0;
-    cursor:pointer;
-    font-family:'Poppins',sans-serif;
-    font-size:12.5px;
-    font-weight:500;
-    color:#4A4D53;
-    transition: border-color .15s ease, transform .1s ease;
-  }
-  .theme-chip:hover{ transform: translateY(-1px); }
-  .theme-chip.active{ border-color: var(--maroon); color:var(--ink); font-weight:600; }
-  .theme-chip .swatch{
-    width:22px; height:22px; border-radius:50%;
-    flex-shrink:0;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
-  }
-
-  /* ---------- caption style row (not exported) ---------- */
-  .style-row{
-    max-width: 900px;
-    margin: 0 auto 22px auto;
-    display:flex;
-    gap: 20px;
-    flex-wrap:wrap;
-    align-items:center;
-    justify-content:center;
-    background:#fff;
-    border: 1.5px solid #DDD9D0;
-    border-radius: 12px;
-    padding: 12px 20px;
-    font-family:'Poppins',sans-serif;
-    font-size:12.5px;
-    color:#4A4D53;
-  }
-  .style-group{ display:flex; align-items:center; gap:8px; }
-  .style-group label{ font-weight:500; }
-  .style-group select{
-    font-family:'Poppins',sans-serif; font-size:12.5px;
-    padding:6px 9px; border-radius:6px; border:1px solid #DDD9D0;
-    background:#fff; color:#333; cursor:pointer;
-  }
-  .style-group input[type=color]{
-    width:34px; height:28px; border:1px solid #DDD9D0; border-radius:6px;
-    padding:2px; cursor:pointer; background:#fff;
-  }
-  .style-check{ display:flex; align-items:center; gap:6px; font-weight:500; cursor:pointer; }
-  .style-check input{ cursor:pointer; }
-  .style-block{ display:flex; flex-direction:column; gap:8px; align-items:center; }
-  .style-block-title{
-    font-size:10.5px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase;
-    color:#9AA0A8;
-  }
-  .style-block-controls{ display:flex; gap:14px; flex-wrap:wrap; align-items:center; justify-content:center; }
-  .style-divider{ width:1px; align-self:stretch; background:#E2DED5; }
-
-  /* ---------- view tabs (not exported) ---------- */
-  .view-tabs{
-    display:flex; gap:6px; background:#EAE7E0; padding:4px;
-    border-radius:10px; width:fit-content; margin:0 auto 18px auto;
-  }
-  .vtab{
-    border:none; background:transparent; padding:9px 20px; border-radius:7px;
-    font-family:'Poppins',sans-serif; font-size:12.5px; font-weight:600;
-    color:#6B6F76; cursor:pointer; transition:.15s;
-  }
-  .vtab.active{ background:#fff; color:var(--maroon); box-shadow:0 1px 4px rgba(0,0,0,0.12); }
-  .vtab:hover:not(.active){ color:#4A4D53; }
-
-  /* ---------- gallery view ---------- */
-  .gallery-wrap{ display:none; max-width:1000px; margin:0 auto 50px auto; padding:0 20px; }
-  .gallery-actions{
-    display:flex; justify-content:center; gap:10px; margin-bottom:20px; flex-wrap:wrap;
-  }
-  .gallery-header{ text-align:center; margin-bottom:22px; }
-  .gallery-title{ font-family:'Poppins',sans-serif; font-size:var(--judul-size); font-weight:700; color:var(--judul-color); }
-  .gallery-sub{ font-family:'Poppins',sans-serif; font-size:13px; color:#8A8D93; margin-top:4px; }
-  .gallery-grid{
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr));
-    gap:4px; background:#000;
-  }
-  .gallery-item{
-    position:relative; aspect-ratio:1/1; overflow:hidden; cursor:pointer; background:#F1EFEA;
-  }
-  .gallery-item img{
-    width:100%; height:100%; object-fit:cover; display:block; transition:transform .35s ease;
-  }
-  .gallery-item:hover img{ transform:scale(1.06); }
-  .gallery-item .gnum{
-    position:absolute; top:8px; left:8px; background:rgba(20,20,20,0.55); color:#fff;
-    font-family:'Poppins',sans-serif; font-size:10.5px; font-weight:700;
-    width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-  }
-  .gallery-item .gcap{
-    position:absolute; left:0; right:0; bottom:0; padding:22px 10px 9px;
-    background:linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0));
-    color:#fff; opacity:0; transition:opacity .25s;
-  }
-  .gallery-item:hover .gcap{ opacity:1; }
-  .gallery-grid.exporting .gcap{ opacity:1 !important; }
-  .gallery-item .gtitle{ font-family:'Poppins',sans-serif; font-weight:600; font-size:12px; margin-bottom:2px; }
-  .gallery-item .gdesc{
-    font-family:var(--cap-font); font-style:var(--cap-style); color:#fff;
-    font-size:11px; opacity:0.9; line-height:1.35;
-    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
-  }
-  .gallery-empty{
-    display:none; text-align:center; padding:60px 20px; color:#B7BABF;
-    font-family:'Poppins',sans-serif; font-size:13.5px;
-  }
-  .gallery-footer{
-    display:flex; flex-direction:column; align-items:center; gap:10px;
-    margin-top:34px; padding-top:26px; border-top:1px solid #DDD9D0;
-  }
-  .gallery-footer .sig-row{ display:flex; gap:24px; flex-wrap:wrap; justify-content:center; }
-
-  /* ---------- lightbox ---------- */
-  .lightbox{
-    display:none; position:fixed; inset:0; background:rgba(10,10,12,0.92);
-    z-index:999; align-items:center; justify-content:center; flex-direction:column;
-  }
-  .lightbox.open{ display:flex; }
-  .lb-body{ max-width:min(90vw, 880px); max-height:85vh; display:flex; flex-direction:column; align-items:center; }
-  .lb-body img{ max-width:100%; max-height:65vh; object-fit:contain; border-radius:4px; box-shadow:0 10px 40px rgba(0,0,0,0.5); }
-  .lb-info{ margin-top:16px; text-align:center; max-width:640px; }
-  .lb-title{ font-family:'Poppins',sans-serif; color:#fff; font-weight:600; font-size:14px; margin-bottom:6px; }
-  .lb-cap{ font-family:var(--cap-font); font-style:var(--cap-style); color:#D8D8D8; font-size:13px; line-height:1.5; }
-  .lb-close{
-    position:absolute; top:20px; right:24px; background:none; border:none; color:#fff;
-    font-size:32px; line-height:1; cursor:pointer; opacity:0.8;
-  }
-  .lb-close:hover{ opacity:1; }
-  .lb-nav{
-    position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.08);
-    border:none; color:#fff; font-size:18px; width:44px; height:44px; border-radius:50%;
-    cursor:pointer; display:flex; align-items:center; justify-content:center;
-  }
-  .lb-nav:hover{ background:rgba(255,255,255,0.18); }
-  .lb-prev{ left:18px; } .lb-next{ right:18px; }
-
-  /* ---------- toolbar (not exported) ---------- */
-  .toolbar{
-    max-width: 900px;
-    margin: 0 auto 22px auto;
-    background: var(--ink);
-    border-radius: 12px;
-    padding: 18px 22px;
-    color:#fff;
-    display:flex;
-    flex-wrap:wrap;
-    gap: 14px;
-    align-items:center;
-    justify-content:space-between;
-  }
-  .toolbar h1{
-    font-size:16px;
-    font-weight:600;
-    margin:0;
-  }
-  .toolbar p{
-    margin:2px 0 0 0;
-    font-size:12.5px;
-    color:#B9BDC6;
-    font-weight:300;
-  }
-  .btns{ display:flex; gap:10px; flex-wrap:wrap; }
-  .btn{
-    border:none;
-    border-radius:8px;
-    padding: 10px 16px;
-    font-family:'Poppins',sans-serif;
-    font-size:13.5px;
-    font-weight:600;
-    cursor:pointer;
-    transition: transform .12s ease, opacity .12s ease;
-  }
-  .btn:active{ transform: scale(0.97); }
-  .btn-accent{ background:var(--maroon); color:#fff; }
-  .btn-ghost{ background:#33363D; color:#fff; }
-  .btn:disabled{ opacity:0.4; cursor:not-allowed; }
-  input[type=file]{ display:none; }
-
-  /* ---------- report sheet (exported) ---------- */
-  .sheet-wrap{
-    max-width: 900px;
-    margin: 0 auto;
-  }
-  .sheet{
-    background: var(--paper);
-    box-shadow: var(--shadow);
-  }
-
-  .kop{
-    padding: 46px 56px 24px 56px;
-    text-align:center;
-    border-bottom: 4px solid var(--maroon);
-    background: var(--header-bg);
-    transition: background .25s ease, border-color .25s ease;
-  }
-  .kop .lembaga-edit{
-    font-size:13px; letter-spacing:3px; color: var(--header-mode-accent, var(--maroon)); font-weight:600;
-    text-transform:uppercase; text-align:center; border:none; background:transparent;
-    width:100%; font-family:'Poppins',sans-serif;
-  }
-  .kop .judul-edit{
-    font-size:var(--judul-size); font-weight:700; margin-top:8px; color:var(--judul-color);
-    text-align:center; border:none; background:transparent; width:100%;
-    font-family:'Poppins',sans-serif;
-  }
-  .kop .sub-edit{
-    margin-top:8px; font-size:15px; font-weight:400; color: var(--desc-color, var(--header-text));
-    opacity:0.85;
-    font-family:var(--desc-font); font-style:var(--desc-style); text-align:center; border:none;
-    background:transparent; width:100%;
-  }
-  .meta-bar{
-    display:flex; justify-content:center; gap:0; margin-top:20px; flex-wrap:wrap;
-  }
-  .meta-bar .m{
-    padding: 0 26px; text-align:center; border-right:1px solid var(--meta-line, var(--line));
-  }
-  .meta-bar .m:last-child{ border-right:none; }
-  .meta-bar .lbl{ font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color: var(--header-text); opacity:0.55; }
-  .meta-bar .val{
-    font-size:14px; font-weight:600; color:var(--header-text); margin-top:4px;
-    border:none; background:transparent; text-align:center; width:150px;
-    font-family:'Poppins',sans-serif;
-  }
-
-  .grid{
-    padding: 36px 56px 10px 56px;
-    display:flex; flex-wrap:wrap; gap:26px;
-  }
-  .card{
-    width: calc(50% - 13px);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    overflow:hidden;
-    box-shadow: var(--shadow);
-    background:#fff;
-    position:relative;
-  }
-  .card .tag{
-    display:flex; align-items:center; gap:10px;
-    padding: 12px 16px;
-    background: var(--cream);
-    border-bottom: 1px solid #EFEBE3;
-  }
-  .card .tag .no{
-    width:22px; height:22px; border-radius:50%;
-    background: var(--maroon); color:#fff; font-size:11px; font-weight:700;
-    display:flex; align-items:center; justify-content:center; flex-shrink:0;
-    transition: background .25s ease;
-  }
-  .card .tag input{
-    border:none; background:transparent; font-size:13.5px; font-weight:600;
-    color:var(--ink); width:100%; font-family:'Poppins',sans-serif;
-  }
-  .card .drag-handle{
-    flex-shrink:0; width:22px; height:22px; border:none; background:transparent;
-    color:#B7BABF; font-size:15px; letter-spacing:-2px; cursor:grab;
-    display:flex; align-items:center; justify-content:center; border-radius:5px;
-  }
-  .card .drag-handle:hover{ background:#EFEBE3; color:var(--maroon); }
-  .card.dragging{ opacity:0.4; }
-  .card.drag-over{ outline:2px dashed var(--maroon); outline-offset:-4px; }
-  .card .imgbox{
-    width:100%; height:230px; background:#F1EFEA;
-    display:flex; align-items:center; justify-content:center;
-    overflow:hidden; position:relative;
-  }
-  .card img{
-    position:absolute; top:50%; left:50%; width:100%; height:100%;
-    object-fit:cover; display:block; cursor:grab;
-    transform-origin:center center;
-    touch-action:none; user-select:none;
-  }
-  .card img:active{ cursor:grabbing; }
-  .card .imgbox .placeholder{
-    color:#B7BABF; font-size:13px; text-align:center; padding:20px;
-  }
-  .card .resize-handle{
-    position:absolute; left:0; right:0; bottom:0; height:12px;
-    cursor:row-resize; display:flex; align-items:center; justify-content:center;
-    z-index:5;
-  }
-  .card .resize-handle::after{
-    content:''; width:34px; height:4px; border-radius:3px;
-    background:rgba(255,255,255,0.85); box-shadow:0 0 0 1px rgba(0,0,0,0.15);
-  }
-  .card .resize-handle:hover::after{ background:#fff; }
-  .card.resizing .imgbox{ outline:2px solid var(--maroon); outline-offset:-2px; }
-  .card .imgControls{
-    display:flex; align-items:center; justify-content:center; flex-wrap:wrap;
-    gap:6px; padding:7px 10px; background:var(--cream);
-    border-bottom:1px solid #EFEBE3; font-size:11px; color:#6B6F76;
-  }
-  .card .imgControls .ictrl{
-    border:1px solid #DDD9D0; background:#fff; border-radius:5px;
-    width:22px; height:22px; line-height:1; font-size:13px; font-weight:600;
-    cursor:pointer; display:flex; align-items:center; justify-content:center;
-    color:#4A4D53; padding:0;
-  }
-  .card .imgControls .ictrl:hover{ border-color:var(--maroon); color:var(--maroon); }
-  .card .imgControls .ictrl.reset{ width:auto; padding:0 8px; font-size:10.5px; font-weight:500; }
-  .card .imgControls .ival{ min-width:34px; text-align:center; font-weight:500; }
-  .card .imgControls .sep{ width:1px; height:16px; background:#DDD9D0; margin:0 2px; }
-  .card .cap{
-    padding: 9px 16px 14px 16px;
-  }
-  .card .cap textarea{
-    width:100%; border:none; resize:none; background:transparent;
-    font-size:12.5px; color:var(--cap-color); font-family:var(--cap-font);
-    font-style:var(--cap-style); line-height:1.5; overflow:hidden;
-  }
-  .card .remove{
-    position:absolute; top:10px; right:10px;
-    width:24px; height:24px; border-radius:50%;
-    background:rgba(30,33,38,0.65); color:#fff; border:none;
-    font-size:14px; line-height:1; cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-  }
-
-  .add-card{
-    width: calc(50% - 13px);
-    min-height: 300px;
-    border: 2px dashed #CFCBC2;
-    border-radius: 6px;
-    display:flex; align-items:center; justify-content:center;
-    flex-direction:column; gap:10px;
-    color:#9AA0A8; cursor:pointer;
-    background: #FCFBF9;
-    text-align:center;
-    padding: 20px;
-  }
-  .add-card:hover{ border-color: var(--maroon); color:var(--maroon); }
-  .add-card .plus{ font-size:34px; font-weight:300; line-height:1; }
-  .add-card span{ font-size:13px; font-family:'Poppins',sans-serif; }
-
-  .foot{
-    margin-top: 16px;
-    padding: 24px 56px 46px 56px;
-    display:flex; justify-content:space-between; align-items:flex-end;
-    border-top: 1px solid var(--line);
-    gap: 20px;
-    flex-wrap:wrap;
-  }
-  .foot .catatan{
-    max-width: 480px; font-size:12.5px; color:var(--muted); line-height:1.6;
-  }
-  .foot .catatan b{ color:var(--ink); }
-  .foot .catatan textarea{
-    width:100%; border:none; background:transparent; resize:none;
-    font-size:12.5px; color:var(--muted); font-family:'Poppins',sans-serif; line-height:1.6;
-  }
-  .foot .sig-area{ display:flex; flex-direction:column; align-items:center; gap:10px; }
-  .foot .sig-row{ display:flex; gap:24px; flex-wrap:wrap; justify-content:center; }
-  .sig-block{ position:relative; width:190px; text-align:center; font-size:12px; color:var(--ink); }
-  .sig-block .sig-remove{
-    position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%;
-    border:1px solid #DDD9D0; background:#fff; color:#9AA0A8; font-size:12px; line-height:1;
-    cursor:pointer; display:flex; align-items:center; justify-content:center;
-  }
-  .sig-block .sig-remove:hover{ color:var(--maroon); border-color:var(--maroon); }
-  .sig-block input.sig-place{
-    border:none; background:transparent; text-align:center; font-size:11.5px;
-    color:var(--muted); font-family:'Poppins',sans-serif; width:100%; margin-bottom:2px;
-  }
-  .sig-block input.sig-label{
-    border:none; background:transparent; text-align:center; font-size:12px; font-weight:600;
-    color:var(--ink); font-family:'Poppins',sans-serif; width:100%;
-  }
-  .sig-block .sig-pad-wrap{
-    position:relative; width:100%; height:88px; margin:4px 0 2px 0;
-    background:
-      linear-gradient(#FBFAF7,#FBFAF7) padding-box;
-    border:1px dashed #D9D5CB; border-radius:5px;
-  }
-  .sig-block .sig-pad-wrap canvas{
-    width:100%; height:100%; display:block; cursor:crosshair; touch-action:none;
-  }
-  .sig-block .sig-pad-hint{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-    font-size:10.5px; color:#B7BABF; font-family:'Poppins',sans-serif; pointer-events:none;
-  }
-  .sig-block .sig-clear{
-    font-size:10px; color:#9AA0A8; background:none; border:none; cursor:pointer;
-    text-decoration:underline; padding:2px 0 4px 0; font-family:'Poppins',sans-serif;
-  }
-  .sig-block .sig-clear:hover{ color:var(--maroon); }
-  .sig-block .sig-line{ border-top:1px solid var(--ink); margin-top:2px; }
-  .sig-block input.sig-name{
-    border:none; background:transparent; text-align:center; font-size:12.5px; font-weight:700;
-    color:var(--ink); font-family:'Poppins',sans-serif; width:100%; margin-top:6px;
-  }
-  .sig-block input.sig-position{
-    border:none; background:transparent; text-align:center; font-size:11px;
-    color:var(--muted); font-family:'Poppins',sans-serif; width:100%;
-  }
-
-  @media (max-width: 640px){
-    .card, .add-card{ width:100%; }
-    .kop{ padding: 32px 22px 20px 22px; }
-    .grid{ padding: 26px 22px 10px 22px; }
-    .foot{ padding: 20px 22px 32px 22px; }
-    .kop .judul-edit{ font-size:22px; }
-  }
-
-  .hint{
-    max-width:900px; margin: 14px auto 0 auto; text-align:center;
-    font-size:12px; color:#8A8D93;
-  }
-
-  /* ---------- kartu PDF di dalam lembar foto ---------- */
-  .card.pdf-card .imgbox{ cursor:pointer; background:#F1EFEA; }
-  .card.pdf-card .imgbox img{ cursor:pointer; filter:saturate(0.9); }
-  .card.pdf-card .pdf-badge{
-    position:absolute; top:10px; left:10px; z-index:4;
-    background:var(--maroon); color:#fff; font-family:'Poppins',sans-serif;
-    font-size:10px; font-weight:700; letter-spacing:0.5px;
-    padding:4px 9px; border-radius:5px; pointer-events:none;
-  }
-  .card.pdf-card .pdf-hover{
-    position:absolute; inset:0; z-index:3;
-    background:linear-gradient(rgba(20,20,20,0.15), rgba(20,20,20,0.45));
-    display:flex; align-items:center; justify-content:center;
-    opacity:0; transition:opacity .2s ease; pointer-events:none;
-  }
-  .card.pdf-card .imgbox:hover .pdf-hover{ opacity:1; }
-  .card.pdf-card .pdf-hover span{
-    background:rgba(255,255,255,0.95); color:var(--ink);
-    font-family:'Poppins',sans-serif; font-size:12px; font-weight:600;
-    padding:8px 16px; border-radius:20px;
-  }
-  .card .pdfControls{
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    padding:8px 10px; background:var(--cream); border-bottom:1px solid #EFEBE3;
-  }
-  .card .pdfControls .attach-btn{
-    border:1px solid #DDD9D0; background:#fff; border-radius:6px;
-    padding:6px 14px; font-size:11.5px; font-weight:600; color:#4A4D53;
-    cursor:pointer; font-family:'Poppins',sans-serif;
-  }
-  .card .pdfControls .attach-btn:hover{ border-color:var(--maroon); color:var(--maroon); }
-  .attach-btn{
-    border:1px solid #DDD9D0; background:#fff; border-radius:6px;
-    padding:7px 13px; font-size:12px; font-weight:600; color:#4A4D53;
-    cursor:pointer; font-family:'Poppins',sans-serif; white-space:nowrap;
-  }
-  .attach-btn:hover{ border-color:var(--maroon); color:var(--maroon); }
-
-  /* ---------- pdf viewer modal ---------- */
-  .pdf-modal{
-    display:none; position:fixed; inset:0; background:rgba(10,10,12,0.85);
-    z-index:1000; align-items:center; justify-content:center; padding:26px;
-  }
-  .pdf-modal.open{ display:flex; }
-  .pdf-modal-body{
-    background:#fff; width:min(920px,96vw); height:92vh;
-    border-radius:8px; overflow:hidden; display:flex; flex-direction:column;
-    box-shadow:0 20px 60px rgba(0,0,0,0.4);
-  }
-  .pdf-modal-header{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:12px 16px; border-bottom:1px solid var(--line); gap:10px;
-  }
-  .pdf-modal-header b{
-    font-family:'Poppins',sans-serif; font-size:13px; color:var(--ink);
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  }
-  .pdf-modal-header .right{ display:flex; gap:8px; align-items:center; flex-shrink:0; }
-  .pdf-modal-close{
-    background:none; border:none; font-size:24px; line-height:1; cursor:pointer;
-    color:#4A4D53; padding:0 2px;
-  }
-  .pdf-modal-close:hover{ color:var(--maroon); }
-  .pdf-modal-frame{ flex:1; border:none; width:100%; }
+:root{
+  --bg:#f6f7f4; --card:#ffffff; --ink:#1d2a24; --muted:#6a766f; --line:#e1e6e0;
+  --brand:#14694a; --brand-ink:#ffffff; --ok:#1f8a5b; --ok-soft:#dff3e9;
+  --warn:#d98e04; --warn-soft:#fbefd2; --bad:#c0392b; --bad-soft:#fbe3df; --track:#ecefea;
+  --shadow:0 1px 2px rgba(20,40,30,.06),0 4px 14px rgba(20,40,30,.05);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111815; --card:#1a2420; --ink:#e8efe9; --muted:#9aa8a0; --line:#2b3832;
+    --brand:#3cae83; --brand-ink:#08140f; --ok:#4bc08f; --ok-soft:#1b3a2d;
+    --warn:#f0b03a; --warn-soft:#3b2f12; --bad:#ef7a6c; --bad-soft:#40201c; --track:#26322c;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111815; --card:#1a2420; --ink:#e8efe9; --muted:#9aa8a0; --line:#2b3832;
+  --brand:#3cae83; --brand-ink:#08140f; --ok:#4bc08f; --ok-soft:#1b3a2d;
+  --warn:#f0b03a; --warn-soft:#3b2f12; --bad:#ef7a6c; --bad-soft:#40201c; --track:#26322c;
+  --shadow:none;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:15px;line-height:1.5}
+.wrap{max-width:1120px;margin:0 auto;padding:18px 16px 60px}
+header.top{margin-bottom:14px}
+h1{font-size:20px;margin:0;line-height:1.25}
+h1 small{display:block;font-weight:400;color:var(--muted);font-size:13px;margin-top:2px}
+h2{font-size:16px;margin:0 0 10px}
+nav.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-bottom:16px;border-bottom:1px solid var(--line)}
+nav.tabs button{background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);font:inherit;font-weight:600;padding:10px 12px;cursor:pointer;white-space:nowrap}
+nav.tabs button.on{color:var(--brand);border-bottom-color:var(--brand)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:150px}
+.field label{font-size:12px;color:var(--muted);font-weight:600}
+select,input[type=month],input[type=text],input[type=number],textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px 10px;min-height:42px;width:100%}
+textarea{min-height:110px;resize:vertical}
+select:focus,input:focus,textarea:focus,button:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+.btn{font:inherit;font-weight:600;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px;min-height:42px;cursor:pointer}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.sm{padding:5px 10px;min-height:32px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.spacer{flex:1}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.kpi .l{font-size:12px;color:var(--muted);font-weight:600}
+.kpi .v{font-size:30px;font-weight:700;line-height:1.15;margin-top:2px}
+.kpi .s{font-size:12.5px;color:var(--muted)}
+.kpi.ok .v{color:var(--ok)} .kpi.warn .v{color:var(--warn)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:600px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tr.clk{cursor:pointer} tr.clk:hover td{background:var(--track)}
+tfoot td{font-weight:700;border-top:2px solid var(--line);border-bottom:0}
+.meter{display:flex;align-items:center;gap:8px;min-width:150px}
+.meter .t{flex:1;height:10px;background:var(--bad-soft);border-radius:99px;overflow:hidden;display:flex}
+.meter .t i{display:block;height:100%;background:var(--ok)}
+.meter b{font-size:13px;min-width:46px;text-align:right}
+.chip{display:inline-block;border-radius:99px;padding:2px 9px;font-size:12px;font-weight:700}
+.chip.ok{background:var(--ok-soft);color:var(--ok)} .chip.no{background:var(--warn-soft);color:var(--warn)} .chip.bad{background:var(--bad-soft);color:var(--bad)}
+.empty{text-align:center;color:var(--muted);padding:26px 10px}
+.banner{border-radius:10px;padding:9px 12px;font-size:13px;margin-bottom:14px;background:var(--warn-soft)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.grid2{grid-template-columns:1fr}}
+.legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted);margin-top:6px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.school-item{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)}
+.school-item:last-child{border-bottom:0}
+.school-item .m{color:var(--muted);font-size:13px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;font-size:14px;z-index:9;max-width:90vw}
+svg text{fill:var(--muted);font-size:11px}
+.hint{font-size:12.5px;color:var(--muted)}
+.form-narrow{max-width:560px}
+.bigin input{font-size:20px;font-weight:700;min-height:52px;text-align:right}
+.calc{display:flex;gap:12px;flex-wrap:wrap;margin:6px 0 14px}
+.calc div{flex:1;min-width:130px;background:var(--track);border-radius:10px;padding:10px 12px}
+.calc small{display:block;color:var(--muted);font-size:12px;font-weight:600}
+.calc b{font-size:22px}
+.err{border-color:var(--bad)!important;background:var(--bad-soft)!important}
+.cls{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.cls button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:5px 12px;cursor:pointer}
+.cls button.done{border-color:var(--ok);background:var(--ok-soft)}
+.cls button.cur{outline:2px solid var(--brand)}
+.miss{padding:8px 0;border-bottom:1px solid var(--line)} .miss:last-child{border-bottom:0}
+.as-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:flex-start;padding:10px 0;border-top:1px dashed var(--line)}
+.as-ctl{display:flex;flex-direction:column;gap:6px;min-width:240px;flex:1;max-width:380px}
+.as-res{display:flex;flex-wrap:wrap;gap:6px}
+.pend{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.cks{display:flex;flex-wrap:wrap;gap:8px}.ck{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:99px;padding:6px 12px;font-size:14px;cursor:pointer}.ck input{width:18px;height:18px;min-height:0}
+.who{display:flex;gap:10px;align-items:center;background:var(--track);border-radius:10px;padding:10px 12px;margin-top:10px}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
-
-  <div class="toolbar">
-    <div>
-      <h1>Generator Laporan Foto</h1>
-      <p>Upload foto, atur ukuran/posisi, isi keterangan, lalu unduh sebagai gambar.</p>
-    </div>
-    <div class="btns">
-      <label class="btn btn-ghost" for="fileInput">+ Tambah Foto</label>
-      <input type="file" id="fileInput" accept="image/*,application/pdf" multiple>
-      <button class="btn btn-ghost" id="downloadPdfBtn">Cetak PDF</button>
-      <button class="btn btn-accent" id="downloadBtn">Kirim sebagai Poster (JPG)</button>
-    </div>
-  </div>
-
-  <div class="view-tabs" id="viewTabs">
-    <button class="vtab active" data-view="sheet">Lembar Laporan</button>
-    <button class="vtab" data-view="gallery">Galeri</button>
-  </div>
-
-  <div class="theme-row" id="themeRow"></div>
-
-  <div class="style-row" id="styleRow">
-    <div class="style-block">
-      <div class="style-block-title">Judul Dokumen</div>
-      <div class="style-block-controls">
-        <div class="style-group">
-          <label for="judulSize">Ukuran</label>
-          <input type="range" id="judulSize" min="18" max="48" value="28" step="1" style="width:100px;">
-          <span id="judulSizeVal" style="font-size:11px;color:#9AA0A8;min-width:32px;">28px</span>
-        </div>
-        <div class="style-group">
-          <label for="judulColor">Warna</label>
-          <input type="color" id="judulColor" value="#1E2126">
-        </div>
-      </div>
-    </div>
-
-    <div class="style-divider"></div>
-
-    <div class="style-block">
-      <div class="style-block-title">Keterangan Foto</div>
-      <div class="style-block-controls">
-        <div class="style-group">
-          <label for="capFont">Font</label>
-          <select id="capFont">
-            <option value="'Lora', serif" selected>Lora (Serif)</option>
-            <option value="'Poppins', sans-serif">Poppins (Sans)</option>
-            <option value="'Merriweather', serif">Merriweather</option>
-            <option value="'Playfair Display', serif">Playfair Display</option>
-            <option value="'Caveat', cursive">Caveat (Tulisan Tangan)</option>
-            <option value="'Roboto', sans-serif">Roboto</option>
-          </select>
-        </div>
-        <div class="style-group">
-          <label for="capColor">Warna</label>
-          <input type="color" id="capColor" value="#6B6F76">
-        </div>
-        <label class="style-check"><input type="checkbox" id="capItalic" checked> Miring</label>
-      </div>
-    </div>
-
-    <div class="style-divider"></div>
-
-    <div class="style-block">
-      <div class="style-block-title">Deskripsi Kegiatan</div>
-      <div class="style-block-controls">
-        <div class="style-group">
-          <label for="descFont">Font</label>
-          <select id="descFont">
-            <option value="'Lora', serif" selected>Lora (Serif)</option>
-            <option value="'Poppins', sans-serif">Poppins (Sans)</option>
-            <option value="'Merriweather', serif">Merriweather</option>
-            <option value="'Playfair Display', serif">Playfair Display</option>
-            <option value="'Caveat', cursive">Caveat (Tulisan Tangan)</option>
-            <option value="'Roboto', sans-serif">Roboto</option>
-          </select>
-        </div>
-        <div class="style-group">
-          <label for="descColor">Warna</label>
-          <input type="color" id="descColor" value="#1E2126">
-        </div>
-        <label class="style-check"><input type="checkbox" id="descItalic" checked> Miring</label>
-      </div>
-    </div>
-
-    <div class="style-divider"></div>
-
-    <div class="style-block">
-      <div class="style-block-title">Perancang</div>
-      <div class="style-block-controls">
-        <span style="font-size:12.5px; font-weight:600; color:var(--maroon);">MAKMUR NONCI</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="sheet-wrap">
-    <div class="sheet" id="sheet">
-
-      <div class="kop">
-        <input class="lembaga-edit" id="lembaga" value="LAPORAN DOKUMENTASI KEGIATAN">
-        <input class="judul-edit" id="judul" value="Judul Kegiatan">
-        <input class="sub-edit" id="sub" value="Tuliskan deskripsi singkat kegiatan di sini">
-
-        <div class="meta-bar">
-          <div class="m">
-            <div class="lbl">Tanggal</div>
-            <input class="val" id="tanggal" value="20 Agustus 2026">
-          </div>
-          <div class="m">
-            <div class="lbl">Lokasi</div>
-            <input class="val" id="lokasi" value="Nama Lokasi">
-          </div>
-          <div class="m">
-            <div class="lbl">Status</div>
-            <input class="val" id="status" value="Terlaksana">
-          </div>
-        </div>
-      </div>
-
-      <div class="grid" id="grid">
-        <div class="add-card no-export" id="addCard">
-          <div class="plus">+</div>
-          <span>Klik untuk menambahkan foto atau PDF</span>
-        </div>
-      </div>
-
-      <div class="foot">
-        <div class="catatan">
-          <b>Catatan:</b>
-          <textarea id="catatan" rows="2">Dokumentasi ini merupakan bukti pelaksanaan kegiatan sebagai bagian dari laporan.</textarea>
-        </div>
-        <div class="sig-area">
-          <div class="sig-row" id="sigRow"></div>
-          <button class="btn btn-ghost no-export" id="addSigBtn">+ Tambah Tanda Tangan</button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="gallery-wrap" id="galleryWrap">
-    <div class="gallery-actions no-export">
-      <button class="btn btn-ghost" id="galleryDownloadPdfBtn">Cetak PDF</button>
-      <button class="btn btn-accent" id="galleryDownloadImgBtn">Kirim sebagai Poster (JPG)</button>
-    </div>
-    <div class="gallery-header">
-      <div class="gallery-title" id="galleryTitle">Judul Kegiatan</div>
-      <div class="gallery-sub" id="gallerySub"></div>
-    </div>
-    <div class="gallery-grid" id="galleryGrid"></div>
-    <div class="gallery-empty" id="galleryEmpty">Belum ada foto. Kembali ke Lembar Laporan untuk menambahkan foto.</div>
-
-    <div class="gallery-footer">
-      <div class="sig-row" id="gallerySigRow"></div>
-      <button class="btn btn-ghost no-export" id="addGallerySigBtn">+ Tambah Tanda Tangan</button>
-    </div>
-  </div>
-
-  <div class="lightbox" id="lightbox">
-    <button class="lb-close" id="lbClose">&times;</button>
-    <button class="lb-nav lb-prev" id="lbPrev">&#10094;</button>
-    <div class="lb-body">
-      <img id="lbImg" src="">
-      <div class="lb-info">
-        <div class="lb-title" id="lbTitle"></div>
-        <div class="lb-cap" id="lbCap"></div>
-      </div>
-    </div>
-    <button class="lb-nav lb-next" id="lbNext">&#10095;</button>
-  </div>
-
-  <div class="pdf-modal" id="pdfModal">
-    <div class="pdf-modal-body">
-      <div class="pdf-modal-header">
-        <b id="pdfModalTitle"></b>
-        <div class="right">
-          <button class="attach-btn" id="pdfModalDownload">Unduh</button>
-          <button class="pdf-modal-close" id="pdfModalClose">&times;</button>
-        </div>
-      </div>
-      <iframe class="pdf-modal-frame" id="pdfModalFrame" src=""></iframe>
-    </div>
-  </div>
-
-  <div class="hint">Semua data diproses langsung di perangkat Anda — tidak diunggah ke server mana pun.</div>
+<div class="wrap">
+  <header class="top">
+    <h1>Laporan Bulanan Baca Al-Qur'an<small>Dilaporkan oleh guru kelas · siswa Muslim, bisa membaca, dan belum bisa membaca Al-Qur'an per kelas</small></h1>
+  </header>
+  <div id="banner"></div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="input">Lapor (Guru Kelas)</button>
+    <button data-tab="daftar">Daftar Guru</button>
+    <button data-tab="kepsek">Daftar Kepala Sekolah</button>
+    <button data-tab="ringkas">Dashboard</button>
+    <button data-tab="sekolah">Kelola Sekolah</button>
+  </nav>
+  <main id="view"><div class="empty">Memuat data…</div></main>
+</div>
+<div id="toast"></div>
 
 <script>
-// ---------- Theme definitions ----------
-const THEMES = [
-  {
-    id: 'marun',
-    name: 'Merah Marun',
-    vars: {
-      '--maroon': '#8B2E2E',
-      '--accent2': '#C79A3D',
-      '--header-bg': 'transparent',
-      '--header-text': '#1E2126',
-      '--ink': '#1E2126',
-      '--muted': '#6B6F76',
-      '--line': '#E7E5E0',
-      '--paper': '#FFFFFF',
-      '--cream': '#FAF7F2',
-      '--page-bg': '#EDEBE6'
+(function(){
+"use strict";
+var BULAN=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+var now=new Date();
+var curYM=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+var LS_KEY="lapor-quran-guru";
+
+var S={schools:[],reports:{},reportsList:[],tab:"input",month:curYM,scope:"all",ready:false,mode:"loading",canWrite:true,canAdmin:true,
+  g:{school:"",kelas:"",month:curYM,muslim:"",bisa:"",pelapor:"",dirty:false,loadedKey:"",prefilled:false},
+  edit:{id:null,nama:"",jenjang:"SD/MI",kelas:""},confirmDel:null,myId:null,myName:"",names:{},raw:{},assignOpen:null,regRaw:{},dec:{},reg:{school:"",sel:{},extra:"",nama:null}};
+var repo=null,dl=null,loaded={sekolah:false,laporan:false,p:false,d:false};
+var COL_S="sekolah",COL_R="laporan_guru",COL_P="pendaftaran",COL_D="keputusan";
+var userNs=null;
+
+/* ---------- KONFIGURASI (isi sesuai panduan) ---------- */
+var FIREBASE_CONFIG={apiKey:"AIzaSyC1lqFQSoK2lCXmLcXJCSDRT4jTW6sEsLU",authDomain:"laporan-quran.firebaseapp.com",projectId:"laporan-quran",appId:"1:984150028452:web:5db34cf4907ae705f3f631"};
+var ADMIN_EMAILS=["buktikerja.makmurnonci@gmail.com"]; /* boleh lebih dari satu; harus sama dengan di Firestore Rules */
+
+/* ---------- Firebase (GitHub Pages) ---------- */
+function fbOn(){return !!(window.firebase&&FIREBASE_CONFIG.apiKey&&FIREBASE_CONFIG.apiKey.indexOf("ISI")!==0);}
+function showLogin(){
+  $("view").innerHTML='<div class="card form-narrow"><h2>Masuk</h2><p class="hint" style="margin-top:0">Masuk dengan akun Google Anda untuk melapor, mendaftar sebagai guru kelas, atau mengelola sekolah (admin).</p><button class="btn primary" data-action="login">Masuk dengan Google</button></div>';
+}
+async function fbStart(){
+  firebase.initializeApp(FIREBASE_CONFIG);
+  var auth=firebase.auth(),fs=firebase.firestore();
+  window.__auth=auth;
+  var u=await new Promise(function(res){auth.onAuthStateChanged(function(x){if(x)res(x);else showLogin();});});
+  var email=(u.email||"").toLowerCase();
+  var isAdmin=ADMIN_EMAILS.some(function(a){return String(a).toLowerCase()===email;});
+  S.email=u.email||"";
+  try{await fs.doc("pengguna/"+u.uid).set({name:u.displayName||u.email||"Guru",email:u.email||""},{merge:true});}catch(e){}
+  var user={
+    can:async function(){return true;},
+    canEdit:async function(){return isAdmin;},
+    me:async function(){return {id:u.uid,name:u.displayName||u.email||"Guru"};},
+    profiles:async function(ids){
+      var out={};
+      await Promise.all(ids.map(function(id){return fs.doc("pengguna/"+id).get().then(function(d){if(d.exists)out[id]={name:d.data().name||""};}).catch(function(){});}));
+      return out;
     },
-    swatch: 'linear-gradient(135deg,#8B2E2E,#C79A3D)'
-  },
-  {
-    id: 'navy',
-    name: 'Navy Emas',
-    vars: {
-      '--maroon': '#E3A431',
-      '--accent2': '#E3A431',
-      '--header-bg': '#16233F',
-      '--header-text': '#FFFFFF',
-      '--ink': '#16233F',
-      '--muted': '#5C657C',
-      '--line': '#E4E6EC',
-      '--paper': '#FFFFFF',
-      '--cream': '#F3F0E6',
-      '--page-bg': '#E7E9EE'
-    },
-    swatch: 'linear-gradient(135deg,#16233F,#E3A431)'
-  },
-  {
-    id: 'zamrud',
-    name: 'Zamrud Institusi',
-    vars: {
-      '--maroon': '#C9A227',
-      '--accent2': '#C9A227',
-      '--header-bg': '#0F4C3A',
-      '--header-text': '#FBF8EF',
-      '--ink': '#12332A',
-      '--muted': '#5C6D65',
-      '--line': '#E1E7E2',
-      '--paper': '#FFFFFF',
-      '--cream': '#F1EFE2',
-      '--page-bg': '#E7EBE5'
-    },
-    swatch: 'linear-gradient(135deg,#0F4C3A,#C9A227)'
-  },
-  {
-    id: 'plum',
-    name: 'Plum Elegan',
-    vars: {
-      '--maroon': '#D98BA0',
-      '--accent2': '#D98BA0',
-      '--header-bg': '#3B1F3D',
-      '--header-text': '#FBF3F6',
-      '--ink': '#3B1F3D',
-      '--muted': '#6E5E71',
-      '--line': '#ECE4EA',
-      '--paper': '#FFFFFF',
-      '--cream': '#F7EEF3',
-      '--page-bg': '#EEE6EA'
-    },
-    swatch: 'linear-gradient(135deg,#3B1F3D,#D98BA0)'
-  },
-  {
-    id: 'laut',
-    name: 'Biru Laut',
-    vars: {
-      '--maroon': '#F2B705',
-      '--accent2': '#F2B705',
-      '--header-bg': '#0E4F56',
-      '--header-text': '#F4FBFB',
-      '--ink': '#0E4F56',
-      '--muted': '#587377',
-      '--line': '#E2ECEC',
-      '--paper': '#FFFFFF',
-      '--cream': '#EAF3F1',
-      '--page-bg': '#E5EEEE'
-    },
-    swatch: 'linear-gradient(135deg,#0E4F56,#F2B705)'
-  }
-];
-
-let currentTheme = 'marun';
-
-function applyTheme(id){
-  const theme = THEMES.find(t=>t.id===id) || THEMES[0];
-  currentTheme = theme.id;
-  const root = document.documentElement;
-  Object.entries(theme.vars).forEach(([k,v])=> root.style.setProperty(k, v));
-  document.querySelectorAll('.theme-chip').forEach(chip=>{
-    chip.classList.toggle('active', chip.dataset.id === theme.id);
-  });
-}
-
-function buildThemeRow(){
-  const row = document.getElementById('themeRow');
-  THEMES.forEach(theme=>{
-    const chip = document.createElement('div');
-    chip.className = 'theme-chip' + (theme.id===currentTheme ? ' active' : '');
-    chip.dataset.id = theme.id;
-    chip.innerHTML = `<span class="swatch" style="background:${theme.swatch}"></span>${theme.name}`;
-    chip.onclick = ()=> applyTheme(theme.id);
-    row.appendChild(chip);
-  });
-}
-
-let photos = []; // {id, dataUrl, caption}
-let counter = 0;
-
-const grid = document.getElementById('grid');
-const addCard = document.getElementById('addCard');
-const fileInput = document.getElementById('fileInput');
-
-function autoGrow(el){
-  el.style.height = 'auto';
-  el.style.height = el.scrollHeight + 'px';
-}
-
-function render(){
-  // remove all cards except addCard
-  [...grid.querySelectorAll('.card')].forEach(c => c.remove());
-
-  photos.forEach((p, idx) => {
-    const card = document.createElement('div');
-    const isPdf = p.type === 'pdf';
-    card.className = 'card' + (isPdf ? ' pdf-card' : '');
-    card.dataset.id = p.id;
-    const controlsHtml = isPdf ? `
-      <div class="pdfControls no-export" data-id="${p.id}">
-        <button class="attach-btn" data-act="pdf-view" title="Lihat PDF">Lihat</button>
-        <button class="attach-btn" data-act="pdf-download" title="Unduh PDF">Unduh</button>
-      </div>` : `
-      <div class="imgControls no-export" data-id="${p.id}">
-        <button class="ictrl" data-act="zoomout" title="Perkecil foto">&minus;</button>
-        <span class="ival" data-role="zoomval">${Math.round(p.scale*100)}%</span>
-        <button class="ictrl" data-act="zoomin" title="Perbesar foto">+</button>
-        <div class="sep"></div>
-        <button class="ictrl" data-act="rotleft" title="Putar kiri">&#8634;</button>
-        <span class="ival" data-role="rotval">${p.rotate}&deg;</span>
-        <button class="ictrl" data-act="rotright" title="Putar kanan">&#8635;</button>
-        <div class="sep"></div>
-        <button class="ictrl reset" data-act="reset" title="Kembalikan posisi awal">Reset</button>
-      </div>`;
-    const pdfExtras = isPdf ? `<div class="pdf-badge">PDF</div><div class="pdf-hover no-export"><span>Klik untuk lihat &amp; unduh</span></div>` : '';
-    card.innerHTML = `
-      <button class="remove" data-id="${p.id}">&times;</button>
-      <div class="tag">
-        <button class="drag-handle no-export" title="Seret untuk menukar posisi foto">&#8942;&#8942;</button>
-        <div class="no">${idx+1}</div>
-        <input class="tagInput" data-id="${p.id}" value="${p.title.replace(/"/g,'&quot;')}">
-      </div>
-      ${controlsHtml}
-      <div class="imgbox" data-id="${p.id}" style="height:${p.boxHeight || 230}px">${pdfExtras}<img src="${p.dataUrl}" data-id="${p.id}" draggable="false" title="${isPdf ? 'Klik untuk lihat & unduh PDF' : 'Seret untuk menggeser foto'}" style="transform:${computeTransform(p)}"><div class="resize-handle no-export" data-id="${p.id}" title="Seret untuk mengubah tinggi kotak"></div></div>
-      <div class="cap"><textarea class="capInput" data-id="${p.id}" rows="2">${p.caption}</textarea></div>
-    `;
-    grid.insertBefore(card, addCard);
-  });
-
-  // bind events
-  grid.querySelectorAll('.remove').forEach(btn=>{
-    btn.onclick = ()=>{
-      photos = photos.filter(p=>p.id !== btn.dataset.id);
-      render();
-    };
-  });
-  grid.querySelectorAll('.pdfControls .attach-btn').forEach(btn=>{
-    btn.onclick = (e)=>{
-      e.stopPropagation();
-      const id = btn.closest('.pdfControls').dataset.id;
-      const p = photos.find(p=>p.id===id);
-      if(!p) return;
-      if(btn.dataset.act === 'pdf-view') openPdfModal(p);
-      if(btn.dataset.act === 'pdf-download') downloadPdfAttachment(p);
-    };
-  });
-  grid.querySelectorAll('.card.pdf-card .imgbox').forEach(box=>{
-    box.onclick = ()=>{
-      const p = photos.find(p=>p.id===box.dataset.id);
-      if(p) openPdfModal(p);
-    };
-  });
-  grid.querySelectorAll('.tagInput').forEach(inp=>{
-    inp.oninput = ()=>{
-      const p = photos.find(p=>p.id===inp.dataset.id);
-      if(p) p.title = inp.value;
-    };
-  });
-  grid.querySelectorAll('.capInput').forEach(ta=>{
-    autoGrow(ta);
-    ta.oninput = ()=>{
-      const p = photos.find(p=>p.id===ta.dataset.id);
-      if(p) p.caption = ta.value;
-      autoGrow(ta);
-    };
-  });
-
-  grid.querySelectorAll('.imgControls .ictrl').forEach(btn=>{
-    btn.onclick = ()=>{
-      const id = btn.closest('.imgControls').dataset.id;
-      const p = photos.find(p=>p.id===id);
-      if(!p) return;
-      const act = btn.dataset.act;
-      if(act==='zoomin') p.scale = Math.min(4, +(p.scale + 0.15).toFixed(2));
-      if(act==='zoomout') p.scale = Math.max(0.4, +(p.scale - 0.15).toFixed(2));
-      if(act==='rotleft') p.rotate = Math.max(-45, p.rotate - 5);
-      if(act==='rotright') p.rotate = Math.min(45, p.rotate + 5);
-      if(act==='reset'){ p.scale = 1; p.rotate = 0; p.offsetX = 0; p.offsetY = 0; }
-      updateCardVisuals(p);
-    };
-  });
-
-  grid.querySelectorAll('.card:not(.pdf-card) img').forEach(img=>{
-    attachDrag(img);
-  });
-
-  grid.querySelectorAll('.resize-handle').forEach(handle=>{
-    attachResize(handle);
-  });
-
-  attachCardReorder();
-
-  renderGallery();
-}
-
-function swapPhotos(idA, idB){
-  const iA = photos.findIndex(p=>p.id===idA);
-  const iB = photos.findIndex(p=>p.id===idB);
-  if(iA === -1 || iB === -1 || iA === iB) return;
-  [photos[iA], photos[iB]] = [photos[iB], photos[iA]];
-  render();
-}
-
-function attachCardReorder(){
-  grid.querySelectorAll('.drag-handle').forEach(handle=>{
-    handle.draggable = true;
-    handle.addEventListener('dragstart', (e)=>{
-      const card = handle.closest('.card');
-      e.dataTransfer.setData('text/plain', card.dataset.id);
-      e.dataTransfer.effectAllowed = 'move';
-      if(e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(card, 30, 30);
-      card.classList.add('dragging');
-    });
-    handle.addEventListener('dragend', ()=>{
-      handle.closest('.card').classList.remove('dragging');
-    });
-  });
-
-  grid.querySelectorAll('.card').forEach(card=>{
-    card.addEventListener('dragover', (e)=>{
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      card.classList.add('drag-over');
-    });
-    card.addEventListener('dragleave', ()=>{
-      card.classList.remove('drag-over');
-    });
-    card.addEventListener('drop', (e)=>{
-      e.preventDefault();
-      card.classList.remove('drag-over');
-      const draggedId = e.dataTransfer.getData('text/plain');
-      const targetId = card.dataset.id;
-      if(draggedId) swapPhotos(draggedId, targetId);
-    });
-  });
-}
-
-function computeTransform(p){
-  const extra = 1 + Math.min(Math.abs(p.rotate), 45) / 45 * 0.35;
-  const scale = (p.scale || 1) * extra;
-  return `translate(-50%, -50%) translate(${p.offsetX||0}px, ${p.offsetY||0}px) rotate(${p.rotate||0}deg) scale(${scale})`;
-}
-
-function updateCardVisuals(p){
-  const img = grid.querySelector(`img[data-id="${p.id}"]`);
-  if(img) img.style.transform = computeTransform(p);
-  const ctrl = grid.querySelector(`.imgControls[data-id="${p.id}"]`);
-  if(ctrl){
-    const zv = ctrl.querySelector('[data-role="zoomval"]');
-    const rv = ctrl.querySelector('[data-role="rotval"]');
-    if(zv) zv.textContent = Math.round(p.scale*100) + '%';
-    if(rv) rv.textContent = p.rotate + '\u00b0';
-  }
-}
-
-function attachDrag(img){
-  const id = img.dataset.id;
-  let dragging = false, startX=0, startY=0, baseX=0, baseY=0;
-  img.addEventListener('pointerdown', (e)=>{
-    const p = photos.find(p=>p.id===id);
-    if(!p) return;
-    dragging = true;
-    startX = e.clientX; startY = e.clientY;
-    baseX = p.offsetX||0; baseY = p.offsetY||0;
-    img.setPointerCapture(e.pointerId);
-    e.preventDefault();
-  });
-  img.addEventListener('pointermove', (e)=>{
-    if(!dragging) return;
-    const p = photos.find(p=>p.id===id);
-    if(!p) return;
-    p.offsetX = baseX + (e.clientX - startX);
-    p.offsetY = baseY + (e.clientY - startY);
-    img.style.transform = computeTransform(p);
-  });
-  const endDrag = (e)=>{ dragging = false; };
-  img.addEventListener('pointerup', endDrag);
-  img.addEventListener('pointercancel', endDrag);
-}
-
-function attachResize(handle){
-  const id = handle.dataset.id;
-  let resizing = false, startY = 0, startHeight = 0;
-  const card = handle.closest('.card');
-  const imgbox = handle.closest('.imgbox');
-
-  handle.addEventListener('pointerdown', (e)=>{
-    const p = photos.find(p=>p.id===id);
-    if(!p) return;
-    resizing = true;
-    startY = e.clientY;
-    startHeight = p.boxHeight || imgbox.offsetHeight;
-    card.classList.add('resizing');
-    handle.setPointerCapture(e.pointerId);
-    e.preventDefault();
-  });
-  handle.addEventListener('pointermove', (e)=>{
-    if(!resizing) return;
-    const p = photos.find(p=>p.id===id);
-    if(!p) return;
-    const newHeight = Math.min(600, Math.max(120, startHeight + (e.clientY - startY)));
-    p.boxHeight = newHeight;
-    imgbox.style.height = newHeight + 'px';
-  });
-  const endResize = ()=>{ resizing = false; card.classList.remove('resizing'); };
-  handle.addEventListener('pointerup', endResize);
-  handle.addEventListener('pointercancel', endResize);
-}
-
-function addPhotoEntry(dataUrl, titleOverride){
-  counter++;
-  photos.push({
-    id: 'p'+counter+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
-    type: 'image',
-    dataUrl: dataUrl,
-    title: titleOverride || ('Kegiatan '+(photos.length+1)),
-    caption: 'Tuliskan keterangan foto di sini.',
-    scale: 1,
-    rotate: 0,
-    offsetX: 0,
-    offsetY: 0,
-    boxHeight: 230
-  });
-}
-
-function addPdfEntry(thumbDataUrl, pdfDataUrl, fileName, fileSize, titleOverride){
-  counter++;
-  photos.push({
-    id: 'p'+counter+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
-    type: 'pdf',
-    dataUrl: thumbDataUrl,
-    pdfDataUrl: pdfDataUrl,
-    fileName: fileName,
-    fileSize: fileSize,
-    title: titleOverride || fileName.replace(/\.pdf$/i, ''),
-    caption: 'Tuliskan keterangan dokumen di sini.',
-    scale: 1,
-    rotate: 0,
-    offsetX: 0,
-    offsetY: 0,
-    boxHeight: 230
-  });
-}
-
-function readFileAsDataUrl(file){
-  return new Promise((resolve, reject)=>{
-    const reader = new FileReader();
-    reader.onload = (e)=> resolve(e.target.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-function formatFileSize(bytes){
-  if(bytes < 1024) return bytes + ' B';
-  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
-  return (bytes/(1024*1024)).toFixed(1) + ' MB';
-}
-
-// Menambahkan PDF sebagai SATU kartu (thumbnail halaman pertama) yang bisa
-// diklik untuk melihat & mengunduh berkas PDF aslinya secara utuh.
-async function addPdfAsCard(file){
-  const pdfDataUrl = await readFileAsDataUrl(file);
-  let thumbDataUrl = pdfDataUrl; // fallback jika thumbnail gagal dibuat
-  try{
-    if(window.pdfjsLib){
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      const page = await pdf.getPage(1);
-      const viewport = page.getViewport({ scale: 1.5 });
-      const canvas = document.createElement('canvas');
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      const ctx = canvas.getContext('2d');
-      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-      thumbDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    search:async function(q){
+      var snap=await fs.collection("pengguna").get(),ql=String(q||"").toLowerCase(),hits=[];
+      snap.forEach(function(d){var x=d.data(),nm=x.name||x.email||"";if(!ql||nm.toLowerCase().indexOf(ql)>=0||String(x.email||"").toLowerCase().indexOf(ql)>=0)hits.push({id:d.id,name:nm});});
+      return hits.slice(0,8);
     }
-  } catch(err){
-    console.error('Gagal membuat pratinjau PDF, memakai fallback.', err);
-  }
-  addPdfEntry(thumbDataUrl, pdfDataUrl, file.name, file.size);
-}
-
-async function handleFiles(files){
-  const list = [...files];
-  for(const file of list){
-    try{
-      if(file.type === 'application/pdf' || /\.pdf$/i.test(file.name)){
-        await addPdfAsCard(file);
-      } else if(file.type.startsWith('image/')){
-        const dataUrl = await readFileAsDataUrl(file);
-        addPhotoEntry(dataUrl);
-      }
-    } catch(err){
-      console.error(err);
-      alert(`Gagal memproses berkas "${file.name}".`);
-    }
-  }
-  render();
-}
-
-addCard.onclick = ()=> fileInput.click();
-fileInput.onchange = (e)=>{ handleFiles(e.target.files); fileInput.value=''; };
-
-// drag & drop onto addCard
-addCard.addEventListener('dragover', e=>{ e.preventDefault(); addCard.style.borderColor='#8B2E2E'; });
-addCard.addEventListener('dragleave', e=>{ addCard.style.borderColor='#CFCBC2'; });
-addCard.addEventListener('drop', e=>{
-  e.preventDefault();
-  addCard.style.borderColor='#CFCBC2';
-  handleFiles(e.dataTransfer.files);
-});
-
-/* ---------- Export helpers (share / upload / download) ---------- */
-
-// Tunggu sampai sebuah <img> selesai memuat (termasuk saat src diganti ke data URL baru).
-function waitForImageReady(img){
-  if(img.complete && img.naturalWidth){ return Promise.resolve(); }
-  return new Promise((resolve)=>{
-    img.onload = resolve;
-    img.onerror = resolve;
-  });
-}
-
-// "Panggang" sebuah foto ke canvas seukuran kotaknya, meniru persis object-fit:cover
-// ditambah geser/putar/zoom yang sedang diterapkan pada foto tsb. Hasilnya sudah pas
-// mengisi kotak sehingga saat ditangkap html2canvas TIDAK perlu di-stretch lagi.
-function bakeCoverImageToDataUrl(img, boxW, boxH, offsetX, offsetY, rotateDeg, scale){
-  const dpr = 2; // resolusi ekstra biar tetap tajam saat diekspor
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.max(1, Math.round(boxW * dpr));
-  canvas.height = Math.max(1, Math.round(boxH * dpr));
-  const ctx = canvas.getContext('2d');
-  const nw = img.naturalWidth || boxW;
-  const nh = img.naturalHeight || boxH;
-  const coverScale = Math.max(canvas.width / nw, canvas.height / nh);
-  const drawW = nw * coverScale;
-  const drawH = nh * coverScale;
-  ctx.save();
-  ctx.translate(canvas.width / 2 + (offsetX || 0) * dpr, canvas.height / 2 + (offsetY || 0) * dpr);
-  ctx.rotate((rotateDeg || 0) * Math.PI / 180);
-  ctx.scale(scale || 1, scale || 1);
-  ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
-  ctx.restore();
-  return canvas.toDataURL('image/jpeg', 0.95);
-}
-
-// Ganti sementara semua <img> foto di dalam elemen yang akan diekspor dengan versi
-// yang sudah "dipanggang" pas ukuran kotaknya, supaya html2canvas tidak menstretch-nya.
-// Mengembalikan fungsi restore untuk mengembalikan foto & transform aslinya.
-async function bakeImagesForExport(containerEl){
-  const imgs = containerEl.querySelectorAll('.card .imgbox img, .gallery-item img');
-  const restores = [];
-  for(const img of imgs){
-    await waitForImageReady(img);
-    const box = img.closest('.imgbox') || img.parentElement;
-    const boxW = box.clientWidth || img.clientWidth || 1;
-    const boxH = box.clientHeight || img.clientHeight || 1;
-    const isCard = !!img.closest('.card');
-    let offsetX = 0, offsetY = 0, rotateDeg = 0, scale = 1;
-    if(isCard){
-      const p = photos.find(ph => ph.id === img.dataset.id);
-      if(p){
-        const extra = 1 + Math.min(Math.abs(p.rotate || 0), 45) / 45 * 0.35;
-        offsetX = p.offsetX || 0;
-        offsetY = p.offsetY || 0;
-        rotateDeg = p.rotate || 0;
-        scale = (p.scale || 1) * extra;
-      }
-    }
-    try{
-      const baked = bakeCoverImageToDataUrl(img, boxW, boxH, offsetX, offsetY, rotateDeg, scale);
-      restores.push({ img, src: img.src, transform: img.style.transform });
-      img.src = baked;
-      // Foto kartu laporan posisinya absolute (dipusatkan lewat translate -50%/-50%);
-      // sisanya (geser/zoom/putar) sudah "terbakar" di dalam gambar, jadi transform lain dilepas.
-      // Foto galeri posisinya normal (bukan absolute), jadi transform dikosongkan saja.
-      img.style.transform = isCard ? 'translate(-50%, -50%)' : 'none';
-    } catch(err){
-      console.error('Gagal memproses salah satu foto untuk ekspor:', err);
-    }
-  }
-  await Promise.all(restores.map(r => waitForImageReady(r.img)));
-  return function restoreImages(){
-    restores.forEach(r => {
-      r.img.src = r.src;
-      r.img.style.transform = r.transform;
+  };
+  var dlx={save:function(o){
+    return new Promise(function(res){
+      var b=new Blob([o.data],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");
+      a.href=URL.createObjectURL(b);a.download=o.filename;document.body.appendChild(a);a.click();
+      setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();res();},300);
     });
+  }};
+  return {db:fs,user:user,dl:dlx};
+}
+
+/* ---------- helpers ---------- */
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function $(id){return document.getElementById(id);}
+function ymLabel(ym){var p=ym.split("-");return BULAN[+p[1]-1]+" "+p[0];}
+function shiftYM(ym,n){var p=ym.split("-");var d=new Date(+p[0],+p[1]-1+n,1);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");}
+function toInt(v){var n=parseInt(v,10);return isNaN(n)||n<0?0:n;}
+function fmt(n){return n.toLocaleString("id-ID");}
+function pct(b,m){return m>0?Math.round(b/m*1000)/10:null;}
+function pctTxt(p){return p==null?"–":p.toLocaleString("id-ID",{minimumFractionDigits:0,maximumFractionDigits:1})+"%";}
+function uid(){return "s"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function slug(s){
+  var x=String(s).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+  if(x)return x;
+  var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return "k"+Math.abs(h).toString(36);
+}
+function tgl(ts){return ts?new Date(ts).toLocaleDateString("id-ID",{day:"numeric",month:"short"}):"";}
+function sortedSchools(){return S.schools.slice().sort(function(a,b){return String(a.nama).localeCompare(String(b.nama),"id");});}
+function schoolById(id){for(var i=0;i<S.schools.length;i++)if(S.schools[i].id===id)return S.schools[i];return null;}
+function managed(){return S.schools.filter(function(s){return s.kepsekId&&s.kepsekId===S.myId;});}
+function isMgr(){return S.mode!=="shared"?S.canAdmin:(S.canAdmin||managed().length>0);}
+function manages(sid){if(S.canAdmin)return true;var s=schoolById(sid);return !!(s&&s.kepsekId&&s.kepsekId===S.myId);}
+function visSchools(){
+  var a=sortedSchools();
+  if(S.mode!=="shared"||S.canAdmin)return a;
+  var out=[];
+  a.forEach(function(s){
+    if(manages(s.id)){out.push(s);return;}
+    var own=s.kelas.filter(function(k){return k.guruId&&k.guruId===S.myId;});
+    if(own.length)out.push({id:s.id,nama:s.nama,jenjang:s.jenjang,kepsekId:s.kepsekId,kelas:own});
+  });
+  return out;
+}
+function strip(o){var x=Object.assign({},o||{});delete x.id;return x;}
+function regDoc(req,nama){var cur=S.regRaw[S.myId]||{},o={requests:req,nama:nama};if(cur.kepsek)o.kepsek=cur.kepsek;return o;}
+function normSchool(d){
+  var kel=(d.kelas||[]).map(function(k){return typeof k==="string"?{id:slug(k),nama:k,guruId:null}:{id:String(k.id),nama:String(k.nama),guruId:k.guruId?String(k.guruId):null};});
+  return {id:d.id,nama:d.nama||"",jenjang:d.jenjang||"",kelas:kel,kepsekId:d.kepsekId||null};
+}
+function crep(sid,kid,ym){return S.reports[sid+"_"+kid+"_"+ym]||null;}
+function schoolStats(s,ym){
+  var m=0,b=0,done=0;
+  s.kelas.forEach(function(k){var r=crep(s.id,k.id,ym);if(r){done++;var mm=toInt(r.muslim);m+=mm;b+=Math.min(toInt(r.bisa),mm);}});
+  return {m:m,b:b,n:m-b,done:done,total:s.kelas.length};
+}
+function toast(msg){var t=$("toast");t.innerHTML='<div class="toast">'+esc(msg)+'</div>';clearTimeout(toast._t);toast._t=setTimeout(function(){t.innerHTML="";},2800);}
+function typedName(id){var d=S.regRaw[id];return d&&d.nama?String(d.nama):"";}
+function nameOf(id){return id?(typedName(id)||S.names[id]||"Guru"):"";}
+function guruTxt(k){return k.guruId?nameOf(k.guruId):"";}
+function reporterName(r){return S.mode==="shared"?nameOf(r._by):(r.pelapor||"–");}
+function allowed(){
+  var out=[];
+  sortedSchools().forEach(function(s){s.kelas.forEach(function(k){
+    if(S.mode==="local"||S.canAdmin||(S.myId&&k.guruId===S.myId))out.push({s:s,k:k});
+  });});
+  return out;
+}
+function lsGet(){try{return JSON.parse(localStorage.getItem(LS_KEY)||"{}");}catch(e){return {};}}
+function lsSet(o){try{localStorage.setItem(LS_KEY,JSON.stringify(o));}catch(e){}}
+
+/* ---------- storage adapters ---------- */
+function localRepo(){
+  var mem={sekolah:{},laporan_guru:{}},subs={sekolah:[],laporan_guru:[]};
+  try{var raw=localStorage.getItem("lapor-quran-v3");if(raw){var o=JSON.parse(raw);mem.sekolah=o.sekolah||{};mem.laporan_guru=o.laporan_guru||{};}}catch(e){}
+  function persist(){try{localStorage.setItem("lapor-quran-v3",JSON.stringify(mem));}catch(e){}}
+  function list(c){return Object.keys(mem[c]).map(function(id){var d=JSON.parse(JSON.stringify(mem[c][id]));d.id=id;return d;});}
+  function emit(c){subs[c].forEach(function(f){f(list(c));});}
+  return {
+    subscribe:function(c,f){subs[c].push(f);setTimeout(function(){f(list(c));},0);},
+    set:function(c,id,d){mem[c][id]=d;persist();emit(c);return Promise.resolve();},
+    del:function(c,id){delete mem[c][id];persist();emit(c);return Promise.resolve();}
   };
 }
-
-async function captureElement(el){
-  const restoreImages = await bakeImagesForExport(el);
-  try{
-    return await html2canvas(el, {
-      scale: 2,
-      backgroundColor: '#ffffff',
-      useCORS: true,
-      ignoreElements: (e) => e.classList && e.classList.contains('no-export')
-    });
-  } finally {
-    restoreImages();
-  }
+function dbRepo(db){
+  return {
+    subscribe:function(c,f){
+      return db.collection(c).onSnapshot(function(s){f(s.docs.map(function(d){var o=Object.assign({},d.data());o.id=d.id;return o;}));},
+        function(e){toast("Gagal memuat data ("+(e&&e.code||"error")+")");});
+    },
+    subscribeDoc:function(c,id,f){
+      return db.doc(c+"/"+id).onSnapshot(function(d){var o=null;if(d.exists){o=Object.assign({},d.data());o.id=d.id;}f(o?[o]:[]);},
+        function(e){toast("Gagal memuat data ("+(e&&e.code||"error")+")");});
+    },
+    set:function(c,id,d){return db.doc(c+"/"+id).set(d);},
+    del:function(c,id){return db.doc(c+"/"+id).delete();}
+  };
+}
+function writeFail(e){
+  if(e&&e.code==="invalid_argument"){toast("Anda tidak punya izin untuk mengubah data ini.");}
+  else toast("Gagal menyimpan"+(e&&e.code?" ("+e.code+")":"")+". Coba lagi.");
 }
 
-function canvasToBlob(canvas, mime, quality){
-  return new Promise(resolve => canvas.toBlob(resolve, mime, quality));
+/* ---------- chrome ---------- */
+function renderBanner(){
+  var h="";
+  if(S.mode==="local")h+='<div class="banner">Mode lokal: data hanya tersimpan di browser ini. Hubungkan Firebase (isi FIREBASE_CONFIG di berkas ini) agar laporan semua guru terkumpul di satu tempat.</div>';
+  if(window.__auth&&S.mode==="shared")h+='<div class="hint" style="margin-bottom:10px">Masuk sebagai <b>'+esc(S.email||S.myName)+'</b> ('+(S.canAdmin?"admin":(managed().length?"kepala sekolah":"guru"))+') · <button class="btn sm" data-action="logout">Keluar</button></div>';
+  if(S.mode==="shared"&&!S.canWrite)h+='<div class="banner">Anda hanya punya akses lihat. Minta pemilik membagikan sebagai <b>Contributor</b> agar bisa mengirim laporan.</div>';
+  $("banner").innerHTML=h;
 }
-
-async function runExport(btn, fn){
-  const originalText = btn.textContent;
-  btn.textContent = 'Memproses...';
-  btn.disabled = true;
-  document.activeElement && document.activeElement.blur();
-  try{
-    await fn();
-  } catch(err){
-    alert('Gagal memproses file. Coba lagi.');
-    console.error(err);
-  } finally {
-    btn.textContent = originalText;
-    btn.disabled = false;
-  }
-}
-
-// Try the device's native share sheet (kirim ke WhatsApp/Email, unggah ke Drive, dll.)
-// Falls back to a plain download if sharing files isn't supported by the browser.
-async function shareOrDownload(file, dataUrl, filename, title){
-  if(navigator.canShare && navigator.canShare({ files: [file] })){
-    try{
-      await navigator.share({ files: [file], title: title, text: title });
-      return;
-    } catch(err){
-      if(err && err.name === 'AbortError') return; // user cancelled the share sheet
-      console.error(err);
+function render(){
+  renderBanner();
+  var isK=S.mode==="shared"&&!S.canAdmin&&managed().length>0;
+  if(isK&&(S.tab==="input"||S.tab==="daftar"||S.tab==="kepsek"))S.tab="ringkas";
+  var tabs=document.querySelectorAll("#tabs button");
+  for(var i=0;i<tabs.length;i++){
+    var tn=tabs[i].getAttribute("data-tab");
+    tabs[i].classList.toggle("on",tn===S.tab);
+    if(tn!=="sekolah"&&tn!=="ringkas")tabs[i].style.display=(isK&&(tn==="input"||tn==="daftar"||tn==="kepsek"))?"none":"";
+    if(tn==="sekolah"){
+      tabs[i].style.display=!isMgr()?"none":"";
+      var np=(S.mode==="shared"&&isMgr()&&S.ready)?pendingList().length+(S.canAdmin?pendingKS().length:0):0;
+      tabs[i].textContent=(S.canAdmin?"Kelola Sekolah":"Persetujuan Guru")+(np?" ("+np+")":"");
     }
   }
-  const link = document.createElement('a');
-  link.download = filename;
-  link.href = dataUrl;
-  link.click();
-  alert('Perangkat/browser ini belum mendukung fitur kirim/unggah langsung, jadi filenya diunduh ke perangkat sebagai gantinya.');
+  if(S.tab==="sekolah"&&!isMgr())S.tab="input";
+  if(!S.ready){$("view").innerHTML='<div class="empty">Memuat data…</div>';return;}
+  if(S.scope!=="all"&&!schoolById(S.scope))S.scope="all";
+  if(S.tab==="ringkas")renderDash();
+  else if(S.tab==="input")renderInput();
+  else if(S.tab==="daftar")renderDaftar();
+  else if(S.tab==="kepsek")renderKepsekDaftar();
+  else if(S.canAdmin||S.mode!=="shared")renderSchools();
+  else renderKepsek();
 }
 
-async function sharePoster(el, filename, title){
-  const canvas = await captureElement(el);
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-  const blob = await canvasToBlob(canvas, 'image/jpeg', 0.92);
-  const file = new File([blob], filename, { type: 'image/jpeg' });
-  await shareOrDownload(file, dataUrl, filename, title);
+/* ---------- Dashboard ---------- */
+function meter(b,m){
+  var p=pct(b,m);
+  return '<div class="meter"><div class="t">'+(p==null?"":'<i style="width:'+p+'%"></i>')+'</div><b>'+pctTxt(p)+'</b></div>';
 }
-
-function dataUrlToBytes(dataUrl){
-  const base64 = dataUrl.split(',')[1];
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  for(let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  return bytes;
+function statusChip(st){
+  if(st.total>0&&st.done===st.total)return '<span class="chip ok">Lengkap '+st.done+'/'+st.total+'</span>';
+  if(st.done>0)return '<span class="chip no">Sebagian '+st.done+'/'+st.total+'</span>';
+  return '<span class="chip bad">Belum lapor</span>';
 }
-
-// Membangun PDF cetak: halaman poster + (jika ada lampiran PDF) halaman indeks,
-// lalu SELURUH HALAMAN ASLI tiap PDF lampiran disisipkan apa adanya (bisa langsung
-// dilihat/dibaca), dan berkas aslinya disematkan sebagai lampiran yang bisa diunduh
-// dari dalam PDF hasil cetak (panel Lampiran/Attachments pada pembaca PDF).
-async function buildExportPdfBytes(el, title){
-  const canvas = await captureElement(el);
-  const jpgBytes = dataUrlToBytes(canvas.toDataURL('image/jpeg', 0.92));
-
-  const { PDFDocument, StandardFonts, rgb } = PDFLib;
-  const pdfDoc = await PDFDocument.create();
-  pdfDoc.setTitle(title || 'Laporan Dokumentasi');
-
-  const pageWidthPt = 595.28; // A4, dalam satuan point
-  const pageHeightPt = pageWidthPt * canvas.height / canvas.width;
-  const posterPage = pdfDoc.addPage([pageWidthPt, pageHeightPt]);
-  const jpgImage = await pdfDoc.embedJpg(jpgBytes);
-  posterPage.drawImage(jpgImage, { x: 0, y: 0, width: pageWidthPt, height: pageHeightPt });
-
-  const pdfCards = photos.filter(p => p.type === 'pdf' && p.pdfDataUrl);
-
-  if(pdfCards.length){
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-    const A4W = 595.28, A4H = 841.89;
-    let infoPage = pdfDoc.addPage([A4W, A4H]);
-    let y = A4H - 70;
-    infoPage.drawText('Lampiran Dokumen PDF', { x: 50, y, size: 16, font: fontBold, color: rgb(0.35,0.09,0.09) });
-    y -= 22;
-    infoPage.drawText('Halaman berikut memuat isi lengkap tiap dokumen di bawah ini — bisa langsung dibaca.', { x: 50, y, size: 10, font, color: rgb(0.3,0.3,0.3) });
-    y -= 14;
-    infoPage.drawText('Untuk mengunduh berkas aslinya, buka panel Lampiran/Attachments pada pembaca PDF Anda (mis. Adobe Acrobat Reader).', { x: 50, y, size: 10, font, color: rgb(0.3,0.3,0.3) });
-    y -= 24;
-
-    pdfCards.forEach((p, i)=>{
-      if(y < 60){ infoPage = pdfDoc.addPage([A4W, A4H]); y = A4H - 60; }
-      const label = `${i+1}. ${p.title || p.fileName} (${p.fileName}, ${formatFileSize(p.fileSize||0)})`;
-      infoPage.drawText(label, { x: 60, y, size: 10.5, font, color: rgb(0.15,0.15,0.15) });
-      y -= 16;
-    });
-
-    for(const p of pdfCards){
-      try{
-        const srcBytes = dataUrlToBytes(p.pdfDataUrl);
-        const srcDoc = await PDFDocument.load(srcBytes);
-        const copiedPages = await pdfDoc.copyPages(srcDoc, srcDoc.getPageIndices());
-        copiedPages.forEach(pg => pdfDoc.addPage(pg));
-        await pdfDoc.attach(srcBytes, p.fileName, {
-          mimeType: 'application/pdf',
-          description: p.title || p.fileName
-        });
-      } catch(err){
-        console.error('Gagal menyisipkan lampiran PDF:', p.fileName, err);
-      }
-    }
-  }
-
-  return pdfDoc.save();
-}
-
-async function sharePDF(el, filename, title){
-  if(!window.PDFLib){
-    alert('Modul PDF belum termuat sepenuhnya. Periksa koneksi internet Anda lalu coba lagi.');
+function renderDash(){
+  var schools=visSchools();
+  if(S.mode==="shared"&&!S.canAdmin&&schools.length===1&&S.scope==="all")S.scope=schools[0].id;
+  if(!schools.length&&S.mode==="shared"&&!S.canAdmin&&sortedSchools().length){$("view").innerHTML='<div class="card empty form-narrow"><h2>Dashboard belum tersedia</h2><p>Dashboard tampil setelah pendaftaran Anda sebagai guru kelas disetujui.</p></div>';return;}
+  if(!schools.length){
+    $("view").innerHTML='<div class="card empty"><h2>Belum ada sekolah binaan</h2><p>Sekolah dan daftar kelas ditambahkan oleh admin di tab Kelola Sekolah.</p>'+(S.canAdmin?'<button class="btn primary" data-action="goto-sekolah">Tambah sekolah</button>':'')+'</div>';
     return;
   }
-  const bytes = await buildExportPdfBytes(el, title);
-  const blob = new Blob([bytes], { type: 'application/pdf' });
-  const file = new File([blob], filename, { type: 'application/pdf' });
-  if(navigator.canShare && navigator.canShare({ files: [file] })){
-    try{
-      await navigator.share({ files: [file], title: title, text: title });
+  var opts='<option value="all">Semua sekolah binaan</option>'+schools.map(function(s){return '<option value="'+esc(s.id)+'"'+(S.scope===s.id?" selected":"")+'>'+esc(s.nama)+'</option>';}).join("");
+  var pc=(S.mode==="shared"&&isMgr())?pendingList().length+(S.canAdmin?pendingKS().length:0):0;
+  var head=(pc?'<div class="banner">Ada <b>'+pc+'</b> permintaan pendaftaran guru yang menunggu validasi. <button class="btn sm" data-action="goto-sekolah">Tinjau</button></div>':'')+'<div class="bar"><div class="field"><label for="f-month">Bulan laporan</label><input type="month" id="f-month" value="'+esc(S.month)+'"></div>'+
+    '<div class="field" style="min-width:220px"><label for="f-scope">Sekolah</label><select id="f-scope">'+opts+'</select></div><div class="spacer"></div>'+
+    '<button class="btn" data-action="csv-month">Unduh CSV bulan ini</button><button class="btn" data-action="csv-all">Unduh CSV semua bulan</button></div>';
+
+  var list=S.scope==="all"?schools:schools.filter(function(s){return s.id===S.scope;});
+  var tot={m:0,b:0,n:0,done:0,total:0};
+  list.forEach(function(s){var t=schoolStats(s,S.month);tot.m+=t.m;tot.b+=t.b;tot.n+=t.n;tot.done+=t.done;tot.total+=t.total;});
+  var kpis='<div class="kpis">'+
+    '<div class="kpi"><div class="l">Siswa beragama Islam</div><div class="v">'+fmt(tot.m)+'</div><div class="s">'+ymLabel(S.month)+'</div></div>'+
+    '<div class="kpi ok"><div class="l">Sudah bisa membaca Al-Qur\'an</div><div class="v">'+fmt(tot.b)+'</div><div class="s">'+pctTxt(pct(tot.b,tot.m))+' dari siswa Muslim</div></div>'+
+    '<div class="kpi warn"><div class="l">Belum bisa membaca Al-Qur\'an</div><div class="v">'+fmt(tot.n)+'</div><div class="s">'+pctTxt(pct(tot.n,tot.m))+' dari siswa Muslim</div></div>'+
+    '<div class="kpi"><div class="l">Kelas sudah lapor</div><div class="v">'+tot.done+'<span style="font-size:16px;color:var(--muted)"> / '+tot.total+'</span></div><div class="s">guru kelas bulan '+ymLabel(S.month)+'</div></div></div>';
+
+  var body="";
+  if(S.scope==="all"){
+    var rows="";
+    list.forEach(function(s){
+      var t=schoolStats(s,S.month);
+      rows+='<tr class="clk" data-action="pick-school" data-id="'+esc(s.id)+'"><td><b>'+esc(s.nama)+'</b><div class="hint">'+esc(s.jenjang)+'</div></td>'+
+        '<td>'+statusChip(t)+'</td><td class="n">'+(t.done?fmt(t.m):"–")+'</td><td class="n">'+(t.done?fmt(t.b):"–")+'</td><td class="n">'+(t.done?fmt(t.n):"–")+'</td><td>'+meter(t.b,t.m)+'</td></tr>';
+    });
+    body='<div class="card"><h2>Rekap per sekolah · '+ymLabel(S.month)+'</h2><div class="scroll"><table><thead><tr><th>Sekolah</th><th>Kelas lapor</th><th class="n">Siswa Muslim</th><th class="n">Bisa baca</th><th class="n">Belum bisa</th><th>% Bisa baca</th></tr></thead><tbody>'+rows+'</tbody>'+
+      '<tfoot><tr><td>Total</td><td>'+tot.done+'/'+tot.total+' kelas</td><td class="n">'+fmt(tot.m)+'</td><td class="n">'+fmt(tot.b)+'</td><td class="n">'+fmt(tot.n)+'</td><td>'+meter(tot.b,tot.m)+'</td></tr></tfoot></table></div>'+
+      '<div class="legend"><span><i style="background:var(--ok)"></i>Bisa membaca</span><span><i style="background:var(--bad-soft);border:1px solid var(--line)"></i>Belum bisa</span><span>Klik sekolah untuk melihat rincian per kelas.</span></div></div>';
+    var miss="";
+    list.forEach(function(s){
+      var ks=s.kelas.filter(function(k){return !crep(s.id,k.id,S.month);});
+      if(ks.length)miss+='<div class="miss"><b>'+esc(s.nama)+'</b> <span class="hint">('+ks.length+' kelas)</span><div class="cls">'+ks.map(function(k){return '<span class="chip bad">'+esc(k.nama)+(k.guruId?' · '+esc(guruTxt(k)):' · belum ada guru')+'</span>';}).join("")+'</div></div>';
+    });
+    body+='<div class="card"><h2>Kelas yang belum melapor · '+ymLabel(S.month)+'</h2>'+(miss||'<div class="empty">Semua kelas sudah melapor bulan ini.</div>')+'</div>';
+  }else{
+    var s=list[0],rows2="";
+    s.kelas.forEach(function(k){
+      var r=crep(s.id,k.id,S.month);
+      if(r){
+        var m=toInt(r.muslim),b=Math.min(toInt(r.bisa),m);
+        rows2+='<tr><td><b>'+esc(k.nama)+'</b></td><td>'+esc(reporterName(r))+'<div class="hint">'+tgl(r.updatedAt)+'</div></td><td class="n">'+fmt(m)+'</td><td class="n">'+fmt(b)+'</td><td class="n">'+fmt(m-b)+'</td><td>'+meter(b,m)+'</td></tr>';
+      }else{
+        rows2+='<tr><td><b>'+esc(k.nama)+'</b></td><td><span class="chip bad">Belum lapor</span><div class="hint">'+(k.guruId?esc(guruTxt(k)):'Belum ada guru kelas')+'</div></td><td class="n">–</td><td class="n">–</td><td class="n">–</td><td>'+meter(0,0)+'</td></tr>';
+      }
+    });
+    var st=schoolStats(s,S.month);
+    body='<div class="card"><div class="bar" style="margin-bottom:6px"><h2 style="margin:0">'+esc(s.nama)+' · per kelas · '+ymLabel(S.month)+'</h2><div class="spacer"></div><button class="btn sm" data-action="back-all">← Semua sekolah</button></div>'+
+      '<div class="scroll"><table><thead><tr><th>Kelas</th><th>Guru pelapor</th><th class="n">Siswa Muslim</th><th class="n">Bisa baca</th><th class="n">Belum bisa</th><th>% Bisa baca</th></tr></thead><tbody>'+rows2+'</tbody>'+
+      '<tfoot><tr><td>Total</td><td>'+st.done+'/'+st.total+' kelas</td><td class="n">'+fmt(st.m)+'</td><td class="n">'+fmt(st.b)+'</td><td class="n">'+fmt(st.n)+'</td><td>'+meter(st.b,st.m)+'</td></tr></tfoot></table></div></div>';
+  }
+  $("view").innerHTML=head+kpis+body+trendCard(list);
+}
+function trendCard(list){
+  var months=[];for(var i=5;i>=0;i--)months.push(shiftYM(S.month,-i));
+  var pts=months.map(function(ym){
+    var m=0,b=0,any=false;
+    list.forEach(function(s){var t=schoolStats(s,ym);if(t.done){any=true;m+=t.m;b+=t.b;}});
+    return any?pct(b,m):null;
+  });
+  var W=640,H=210,L=40,R=16,T=16,B=32,iw=W-L-R,ih=H-T-B;
+  function x(i){return L+iw*i/(months.length-1);}
+  function y(v){return T+ih*(1-v/100);}
+  var g="";
+  [0,25,50,75,100].forEach(function(v){g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(y(v)+4)+'" text-anchor="end">'+v+'%</text>';});
+  var path="",dots="",seg=[];
+  pts.forEach(function(v,i){
+    g+='<text x="'+x(i)+'" y="'+(H-10)+'" text-anchor="middle">'+BULAN[+months[i].split("-")[1]-1].slice(0,3)+' '+months[i].slice(2,4)+'</text>';
+    if(v==null){if(seg.length){path+=seg.join(" ")+" ";seg=[];}return;}
+    seg.push((seg.length?"L":"M")+x(i)+" "+y(v));
+    dots+='<circle cx="'+x(i)+'" cy="'+y(v)+'" r="4" fill="var(--ok)"/><text x="'+x(i)+'" y="'+(y(v)-9)+'" text-anchor="middle" style="fill:var(--ink);font-weight:700">'+pctTxt(v)+'</text>';
+  });
+  if(seg.length)path+=seg.join(" ");
+  var has=pts.some(function(v){return v!=null;});
+  return '<div class="card"><h2>Tren % siswa Muslim yang bisa membaca Al-Qur\'an (6 bulan terakhir)</h2>'+
+    (has?'<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Grafik tren persentase siswa bisa membaca Al-Qur\'an">'+g+'<path d="'+path+'" fill="none" stroke="var(--ok)" stroke-width="2.5"/>'+dots+'</svg>'
+      :'<div class="empty">Belum ada data laporan pada rentang bulan ini.</div>')+'</div>';
+}
+
+/* ---------- Lapor (guru kelas) ---------- */
+function renderDaftar(){
+  var h;
+  if(!sortedSchools().length)h='<div class="card empty form-narrow"><h2>Belum ada sekolah</h2><p>Admin perlu menambahkan sekolah dan daftar kelas terlebih dahulu.</p></div>';
+  else if(S.mode!=="shared")h='<div class="card form-narrow"><h2>Daftar sebagai guru kelas</h2><p class="hint" style="margin:0">Pendaftaran guru hanya berfungsi setelah Firebase dihubungkan, karena butuh akun yang bisa divalidasi admin. Di mode lokal tidak ada akun.</p></div>';
+  else if(!S.myId)h='<div class="card empty form-narrow"><h2>Akun Anda belum dikenali</h2><p>Masuk dengan akun Google Anda.</p></div>';
+  else h=regCard(true);
+  $("view").innerHTML=h;
+}
+
+/* ---------- Pendaftaran guru & validasi admin ---------- */
+function reqKey(sid,kid){return sid+"_"+kid;}
+function reqStatus(uid,r){
+  var sc=schoolById(r.sekolahId),k=sc&&sc.kelas.filter(function(x){return x.id===r.kelasId;})[0];
+  if(!sc)return "hilang";
+  if(!k&&!r.baru)return "hilang";
+  if(k&&k.guruId===uid)return "disetujui";
+  if(k&&k.guruId)return "terisi";
+  var d=S.dec[uid],ts=d&&d.ditolak&&d.ditolak[reqKey(r.sekolahId,r.kelasId)];
+  if(ts&&ts>=(r.ts||0))return "ditolak";
+  return "menunggu";
+}
+function pendingList(){
+  var out=[];
+  Object.keys(S.regRaw).forEach(function(uid){
+    var rs=(S.regRaw[uid]&&S.regRaw[uid].requests)||{};
+    Object.keys(rs).forEach(function(key){
+      var r=rs[key];if(!r||!r.sekolahId)return;
+      if(manages(r.sekolahId)&&reqStatus(uid,r)==="menunggu")out.push({uid:uid,key:key,r:r});
+    });
+  });
+  out.sort(function(a,b){return (a.r.ts||0)-(b.r.ts||0);});
+  return out;
+}
+function regCard(force){
+  if(S.mode!=="shared"||(S.canAdmin&&!force)||!S.myId)return "";
+  var schools=sortedSchools();
+  if(!schools.length)return "";
+  var rg=S.reg;
+  if(!rg.school||!schoolById(rg.school))rg.school=schools[0].id;
+  var sc=schoolById(rg.school);
+  var open=sc.kelas.filter(function(k){return !k.guruId;});
+  var mineR=(S.regRaw[S.myId]&&S.regRaw[S.myId].requests)||{};
+  function isPend(k){var r=mineR[reqKey(sc.id,k.id)];return !!r&&reqStatus(S.myId,r)==="menunggu";}
+  Object.keys(rg.sel).forEach(function(id){if(!open.some(function(k){return k.id===id&&!isPend(k);}))delete rg.sel[id];});
+  var so=schools.map(function(x){return '<option value="'+esc(x.id)+'"'+(rg.school===x.id?" selected":"")+'>'+esc(x.nama)+'</option>';}).join("");
+  var ko=open.map(function(k){var pd=isPend(k);return '<label class="ck"><input type="checkbox" data-rk="'+esc(k.id)+'"'+((rg.sel[k.id]||pd)?" checked":"")+(pd?" disabled":"")+'> '+esc(k.nama)+(pd?' <span class="hint">(sudah diajukan)</span>':'')+'</label>';}).join("");
+  var mine=(S.regRaw[S.myId]&&S.regRaw[S.myId].requests)||{};
+  var rows=Object.keys(mine).map(function(key){
+    var r=mine[key],st=reqStatus(S.myId,r),sc2=schoolById(r.sekolahId);
+    if(!sc2)return "";
+    var kn=r.kelasNama||"";
+    var chip={menunggu:'<span class="chip no">Menunggu validasi admin</span>',disetujui:'<span class="chip ok">Disetujui</span>',ditolak:'<span class="chip bad">Ditolak</span>',terisi:'<span class="chip bad">Kelas sudah punya guru lain</span>',hilang:'<span class="chip bad">Kelas tidak ditemukan</span>'}[st];
+    var act=(st==="menunggu"||st==="ditolak"||st==="terisi")?'<button class="btn sm" data-action="reg-cancel" data-key="'+esc(key)+'">'+(st==="menunggu"?"Batalkan":"Hapus")+'</button>':"";
+    return '<div class="pend"><div><b>'+esc(sc2.nama)+'</b> · '+esc(kn)+'<div class="hint">Diajukan '+tgl(r.ts)+'</div></div><div>'+chip+' '+act+'</div></div>';
+  }).join("");
+  if(rg.nama===null)rg.nama=typedName(S.myId)||S.myName||"";
+  var form='<div class="field" style="max-width:420px"><label for="r-nama">Nama lengkap guru</label><input type="text" id="r-nama" value="'+esc(rg.nama)+'" placeholder="Tulis nama lengkap Anda" autocomplete="name"></div>'+
+    '<div class="field" style="max-width:320px;margin-top:10px"><label for="r-school">Sekolah</label><select id="r-school">'+so+'</select></div>'+
+    (open.length?'<div class="field" style="margin-top:10px"><label>Pilih dari daftar kelas (boleh lebih dari satu)</label><div class="cks">'+ko+'</div></div>':'<div class="hint" style="margin-top:8px">Semua kelas di daftar sekolah ini sudah punya guru.</div>')+
+    '<div class="field" style="margin-top:10px"><label for="r-extra">Kelas belum ada di daftar? Ketik sendiri</label><input type="text" id="r-extra" value="'+esc(rg.extra)+'" placeholder="mis. Kelas 4B, Kelas 5A (pisahkan dengan koma)" autocomplete="off"><div class="hint">Kelas yang Anda ketik akan dibuat setelah admin menyetujui.</div></div>'+
+    '<div class="bar" style="margin:12px 0 0"><button class="btn primary" data-action="reg-submit"'+(S.canWrite?"":" disabled")+'>Ajukan pendaftaran</button></div>';
+  return '<div class="card form-narrow"><h2>Daftar sebagai guru kelas</h2>'+
+    '<div class="hint" style="margin-bottom:8px">Pilih sekolah, lalu centang kelas yang Anda ajar atau ketik nama kelasnya sendiri. Setelah admin menyetujui, kelas itu muncul di halaman laporan Anda.</div>'+
+    form+(rows?'<h2 style="margin-top:16px">Status pendaftaran Anda</h2>'+rows:'')+'</div>';
+}
+function submitReg(){
+  var rg=S.reg,sc=schoolById(rg.school);
+  var nama=String(rg.nama||"").trim().replace(/\s+/g," ");
+  if(nama.length<3){toast("Tulis nama lengkap Anda");return;}
+  if(!sc){toast("Pilih sekolah");return;}
+  var cur=(S.regRaw[S.myId]&&S.regRaw[S.myId].requests)||{};
+  var next=JSON.parse(JSON.stringify(cur)),ts=Date.now(),n=0,skipped=[],seen={};
+  sc.kelas.forEach(function(k){if(rg.sel[k.id]&&!k.guruId){next[reqKey(sc.id,k.id)]={sekolahId:sc.id,kelasId:k.id,kelasNama:k.nama,ts:ts};seen[k.id]=1;n++;}});
+  String(rg.extra||"").split(/[,\n;]+/).forEach(function(raw){
+    var nm=raw.trim().replace(/\s+/g," ");if(!nm)return;
+    var ex=sc.kelas.filter(function(k){return k.nama.toLowerCase()===nm.toLowerCase();})[0];
+    if(ex){
+      if(ex.guruId){skipped.push(ex.nama);return;}
+      if(!seen[ex.id]){next[reqKey(sc.id,ex.id)]={sekolahId:sc.id,kelasId:ex.id,kelasNama:ex.nama,ts:ts};seen[ex.id]=1;n++;}
       return;
-    } catch(err){
-      if(err && err.name === 'AbortError') return;
-      console.error(err);
     }
-  }
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  link.click();
-  setTimeout(()=> URL.revokeObjectURL(url), 30000);
-  alert('Perangkat/browser ini belum mendukung fitur kirim/unggah langsung, jadi PDF-nya diunduh ke perangkat sebagai gantinya.');
-}
-
-// kirim lembar laporan sebagai poster (JPG)
-document.getElementById('downloadBtn').onclick = ()=>{
-  if(photos.length === 0){ alert('Tambahkan minimal satu foto terlebih dahulu.'); return; }
-  const btn = document.getElementById('downloadBtn');
-  runExport(btn, ()=> sharePoster(document.getElementById('sheet'), 'laporan-dokumentasi.jpg', judulInput.value || 'Laporan Dokumentasi'));
-};
-
-// unggah lembar laporan sebagai PDF
-document.getElementById('downloadPdfBtn').onclick = ()=>{
-  if(photos.length === 0){ alert('Tambahkan minimal satu foto terlebih dahulu.'); return; }
-  const btn = document.getElementById('downloadPdfBtn');
-  runExport(btn, ()=> sharePDF(document.getElementById('sheet'), 'laporan-dokumentasi.pdf', judulInput.value || 'Laporan Dokumentasi'));
-};
-
-// kirim galeri sebagai poster (JPG)
-document.getElementById('galleryDownloadImgBtn').onclick = ()=>{
-  if(photos.length === 0){ alert('Tambahkan minimal satu foto terlebih dahulu.'); return; }
-  const btn = document.getElementById('galleryDownloadImgBtn');
-  const gg = document.getElementById('galleryGrid');
-  gg.classList.add('exporting');
-  runExport(btn, ()=> sharePoster(document.getElementById('galleryWrap'), 'galeri-poster.jpg', judulInput.value || 'Galeri Kegiatan'))
-    .finally(()=> gg.classList.remove('exporting'));
-};
-
-// unggah galeri sebagai PDF
-document.getElementById('galleryDownloadPdfBtn').onclick = ()=>{
-  if(photos.length === 0){ alert('Tambahkan minimal satu foto terlebih dahulu.'); return; }
-  const btn = document.getElementById('galleryDownloadPdfBtn');
-  const gg = document.getElementById('galleryGrid');
-  gg.classList.add('exporting');
-  runExport(btn, ()=> sharePDF(document.getElementById('galleryWrap'), 'galeri-poster.pdf', judulInput.value || 'Galeri Kegiatan'))
-    .finally(()=> gg.classList.remove('exporting'));
-};
-
-document.getElementById('judulSize').oninput = (e)=>{
-  document.documentElement.style.setProperty('--judul-size', e.target.value + 'px');
-  document.getElementById('judulSizeVal').textContent = e.target.value + 'px';
-};
-document.getElementById('judulColor').oninput = (e)=>{
-  document.documentElement.style.setProperty('--judul-color', e.target.value);
-};
-
-document.getElementById('capFont').onchange = (e)=>{
-  document.documentElement.style.setProperty('--cap-font', e.target.value);
-  renderGallery();
-};
-document.getElementById('capColor').oninput = (e)=>{
-  document.documentElement.style.setProperty('--cap-color', e.target.value);
-};
-document.getElementById('capItalic').onchange = (e)=>{
-  document.documentElement.style.setProperty('--cap-style', e.target.checked ? 'italic' : 'normal');
-  renderGallery();
-};
-
-document.getElementById('descFont').onchange = (e)=>{
-  document.documentElement.style.setProperty('--desc-font', e.target.value);
-  updateGalleryHeader();
-};
-document.getElementById('descColor').oninput = (e)=>{
-  document.documentElement.style.setProperty('--desc-color', e.target.value);
-};
-document.getElementById('descItalic').onchange = (e)=>{
-  document.documentElement.style.setProperty('--desc-style', e.target.checked ? 'italic' : 'normal');
-  updateGalleryHeader();
-};
-
-/* ---------- Galeri ---------- */
-const galleryGrid = document.getElementById('galleryGrid');
-const galleryEmpty = document.getElementById('galleryEmpty');
-const judulInput = document.getElementById('judul');
-const subInput = document.getElementById('sub');
-
-function updateGalleryHeader(){
-  document.getElementById('galleryTitle').textContent = judulInput.value || 'Judul Kegiatan';
-  const sub = document.getElementById('gallerySub');
-  sub.textContent = subInput.value || '';
-  sub.style.fontFamily = 'var(--desc-font)';
-  sub.style.fontStyle = 'var(--desc-style)';
-}
-judulInput.addEventListener('input', updateGalleryHeader);
-subInput.addEventListener('input', updateGalleryHeader);
-
-function escapeHtml(str){
-  const d = document.createElement('div');
-  d.textContent = str == null ? '' : str;
-  return d.innerHTML;
-}
-
-function renderGallery(){
-  galleryGrid.innerHTML = '';
-  galleryEmpty.style.display = photos.length === 0 ? 'block' : 'none';
-  photos.forEach((p, idx) => {
-    const item = document.createElement('div');
-    item.className = 'gallery-item';
-    item.dataset.idx = idx;
-    item.innerHTML = `
-      <img src="${p.dataUrl}" alt="${escapeHtml(p.title)}">
-      <div class="gnum">${idx+1}</div>
-      ${p.type === 'pdf' ? '<div class="pdf-badge" style="top:8px;left:auto;right:8px;">PDF</div>' : ''}
-      <div class="gcap">
-        <div class="gtitle">${escapeHtml(p.title)}</div>
-        <div class="gdesc">${escapeHtml(p.caption)}</div>
-      </div>
-    `;
-    item.onclick = ()=> { if(p.type === 'pdf') openPdfModal(p); else openLightbox(idx); };
-    galleryGrid.appendChild(item);
+    var id=slug(nm),base=id,i=2;
+    while(sc.kelas.some(function(k){return k.id===id;})||seen[id]){id=base+"-"+i;i++;}
+    seen[id]=1;
+    next[reqKey(sc.id,id)]={sekolahId:sc.id,kelasId:id,kelasNama:nm,baru:true,ts:ts};n++;
   });
-  updateGalleryHeader();
+  if(!n){toast(skipped.length?skipped.join(", ")+" sudah punya guru":"Pilih atau ketik minimal satu kelas");return;}
+  repo.set(COL_P,S.myId,regDoc(next,nama)).then(function(){rg.sel={};rg.extra="";toast(n+" kelas diajukan. Menunggu validasi admin."+(skipped.length?" Dilewati (sudah ada guru): "+skipped.join(", "):""));render();}).catch(writeFail);
+}
+function cancelReg(key){
+  var cur=(S.regRaw[S.myId]&&S.regRaw[S.myId].requests)||{};
+  var next=JSON.parse(JSON.stringify(cur));delete next[key];
+  repo.set(COL_P,S.myId,regDoc(next,typedName(S.myId))).then(function(){toast("Dihapus");render();}).catch(writeFail);
+}
+function approveReg(uid,key){
+  var rs=(S.regRaw[uid]&&S.regRaw[uid].requests)||{},r=rs[key];if(!r)return;
+  var sc=schoolById(r.sekolahId);if(!sc)return;
+  var ex=sc.kelas.filter(function(k){return k.id===r.kelasId;})[0],kl;
+  if(ex){
+    if(ex.guruId){toast("Kelas ini sudah punya guru");return;}
+    kl=sc.kelas.map(function(k){return k.id===r.kelasId?{id:k.id,nama:k.nama,guruId:uid}:k;});
+  }else if(r.baru){
+    kl=sc.kelas.concat([{id:r.kelasId,nama:r.kelasNama,guruId:uid}]);
+  }else return;
+  saveKelasList(sc,kl).then(function(){toast("Guru disetujui untuk "+r.kelasNama);}).catch(writeFail);
+}
+function rejectReg(uid,key){
+  var d=(S.dec[uid]&&S.dec[uid].ditolak)||{};
+  var next=JSON.parse(JSON.stringify(d));next[key]=Date.now();
+  repo.set(COL_D,uid,Object.assign(strip(S.dec[uid]),{ditolak:next})).then(function(){toast("Pendaftaran ditolak");}).catch(writeFail);
+}
+function ksStatus(uid,req){
+  var sc=schoolById(req.sekolahId);if(!sc)return "hilang";
+  if(sc.kepsekId===uid)return "disetujui";
+  if(sc.kepsekId)return "terisi";
+  var d=S.dec[uid];if(d&&d.kepsekDitolak&&d.kepsekDitolak>=(req.ts||0))return "ditolak";
+  return "menunggu";
+}
+function pendingKS(){
+  var out=[];
+  Object.keys(S.regRaw).forEach(function(uid){var q=S.regRaw[uid]&&S.regRaw[uid].kepsek;if(q&&q.sekolahId&&ksStatus(uid,q)==="menunggu")out.push({uid:uid,r:q});});
+  return out;
+}
+function pendingKSCard(){
+  if(S.mode!=="shared"||!S.canAdmin)return "";
+  var l=pendingKS();if(!l.length)return "";
+  return '<div class="card"><h2>Permintaan Kepala Sekolah ('+l.length+')</h2>'+l.map(function(p){var sc=schoolById(p.r.sekolahId);
+    return '<div class="pend"><div><b>'+esc(nameOf(p.uid))+'</b><div class="hint">Kepala sekolah '+esc(sc.nama)+' · diajukan '+tgl(p.r.ts)+'</div></div><div><button class="btn sm primary" data-action="ks-approve" data-uid="'+esc(p.uid)+'" data-sid="'+esc(p.r.sekolahId)+'">Setujui</button> <button class="btn sm danger" data-action="ks-reject" data-uid="'+esc(p.uid)+'">Tolak</button></div></div>';}).join("")+'</div>';
+}
+function ksCard(){
+  if(S.mode!=="shared"||S.canAdmin||!S.myId)return "";
+  var schools=sortedSchools();if(!schools.length)return "";
+  var mine=managed(),req=(S.regRaw[S.myId]||{}).kepsek,st=req?ksStatus(S.myId,req):"",info="";
+  if(mine.length)info='<div class="pend"><div><b>'+esc(mine.map(function(x){return x.nama;}).join(", "))+'</b></div><span class="chip ok">Anda kepala sekolah</span></div>';
+  else if(req&&st!=="hilang"){
+    var sc=schoolById(req.sekolahId);
+    var chip={menunggu:'<span class="chip no">Menunggu validasi admin</span>',ditolak:'<span class="chip bad">Ditolak</span>',terisi:'<span class="chip bad">Sekolah sudah punya kepala sekolah</span>'}[st]||"";
+    info='<div class="pend"><div><b>'+esc(sc.nama)+'</b><div class="hint">Diajukan '+tgl(req.ts)+'</div></div><div>'+chip+' <button class="btn sm" data-action="ks-cancel">'+(st==="menunggu"?"Batalkan":"Hapus")+'</button></div></div>';
+  }
+  var form=(mine.length||st==="menunggu")?"":'<div class="field" style="max-width:320px"><label for="k-school">Sekolah yang Anda pimpin</label><select id="k-school">'+schools.map(function(x){return '<option value="'+esc(x.id)+'">'+esc(x.nama)+'</option>';}).join("")+'</select></div><div class="bar" style="margin:12px 0 0"><button class="btn primary" data-action="ks-submit"'+(S.canWrite?"":" disabled")+'>Ajukan sebagai Kepala Sekolah</button></div>';
+  return '<div class="card form-narrow"><h2>Daftar sebagai Kepala Sekolah</h2><div class="hint" style="margin-bottom:8px">Pilih sekolah Anda. Setelah admin menyetujui, Anda bisa menyetujui guru yang mendaftar dan memantau laporan guru tiap bulan.</div>'+info+form+'</div>';
+}
+function renderKepsekDaftar(){
+  var h,c='<div class="card form-narrow"><h2>Daftar sebagai Kepala Sekolah</h2><p class="hint" style="margin:0">';
+  if(S.mode!=="shared")h=c+'Fitur ini butuh Firebase dan akun Google.</p></div>';
+  else if(S.canAdmin)h=c+'Anda masuk sebagai admin, jadi tidak perlu mendaftar. Bagikan alamat situs ke kepala sekolah. Permintaan mereka muncul di tab Kelola Sekolah untuk Anda setujui.</p></div>';
+  else if(!S.myId)h=c+'Akun Anda belum dikenali. Masuk dengan akun Google Anda.</p></div>';
+  else if(!sortedSchools().length)h=c+'Admin perlu menambahkan sekolah terlebih dahulu.</p></div>';
+  else h=ksCard();
+  $("view").innerHTML=h;
+}
+function renderKepsek(){
+  var h=pendingCard();
+  managed().forEach(function(s){
+    var rows=s.kelas.map(function(k){var r=crep(s.id,k.id,S.month);
+      return '<div class="pend"><div><b>'+esc(k.nama)+'</b><div class="hint">'+(k.guruId?esc(guruTxt(k)):'Belum ada guru')+'</div></div><div>'+(k.guruId?(r?'<span class="chip ok">Sudah lapor</span>':'<span class="chip bad">Belum lapor</span>')+' <button class="btn sm danger" data-action="unassign" data-sid="'+esc(s.id)+'" data-kid="'+esc(k.id)+'">Lepas guru</button>':'')+'</div></div>';}).join("");
+    h+='<div class="card"><h2>'+esc(s.nama)+' · guru kelas ('+ymLabel(S.month)+')</h2>'+(rows||'<div class="empty">Belum ada kelas.</div>')+'<div class="hint" style="margin-top:8px">Rincian angka per bulan ada di tab Dashboard.</div></div>';
+  });
+  $("view").innerHTML=h;
+}
+function jsonCard(){return '<div class="card"><h2>Cadangan data (JSON)</h2><div class="hint" style="margin-bottom:8px">Unduh cadangan sekolah, kelas, guru, dan semua laporan. Memulihkan akan menimpa data yang ID-nya sama.</div><div class="bar" style="margin:0"><button class="btn" data-action="json-export">Unduh cadangan JSON</button><button class="btn" data-action="json-import">Pulihkan dari file JSON</button><input type="file" id="j-file" accept=".json,application/json" style="display:none"></div></div>';}
+function exportJSON(){
+  var o={versi:1,dibuat:new Date().toISOString(),sekolah:S.schools.map(function(x){var d={id:x.id,nama:x.nama,jenjang:x.jenjang,kelas:x.kelas.map(function(k){var y={id:k.id,nama:k.nama};if(k.guruId)y.guruId=k.guruId;return y;})};if(x.kepsekId)d.kepsekId=x.kepsekId;return d;}),laporan:Object.keys(S.raw).map(function(id){return {id:id,reports:(S.raw[id]&&S.raw[id].reports)||{}};})};
+  var b=new Blob([JSON.stringify(o,null,2)],{type:"application/json"}),a=document.createElement("a");
+  a.href=URL.createObjectURL(b);a.download="cadangan-laporan-quran-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},300);toast("Cadangan diunduh");
+}
+function importJSON(inp){
+  var f=inp.files&&inp.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    var o;try{o=JSON.parse(rd.result);}catch(e){toast("File bukan JSON yang valid");return;}
+    if(!o||!Array.isArray(o.sekolah)||!Array.isArray(o.laporan)){toast("Format cadangan tidak dikenali");return;}
+    if(!confirm("Pulihkan "+o.sekolah.length+" sekolah dan laporan dari "+o.laporan.length+" guru? Data dengan ID sama akan ditimpa."))return;
+    var ps=[];
+    o.sekolah.forEach(function(x){if(!x||!x.id)return;var d={nama:x.nama||"",jenjang:x.jenjang||"",kelas:x.kelas||[]};if(x.kepsekId)d.kepsekId=x.kepsekId;ps.push(repo.set(COL_S,String(x.id),d));});
+    o.laporan.forEach(function(l){if(l&&l.id)ps.push(repo.set(COL_R,String(l.id),{reports:l.reports||{}}));});
+    Promise.all(ps).then(function(){toast("Data dipulihkan");}).catch(writeFail);
+  };
+  rd.readAsText(f);inp.value="";
+}
+function pendingCard(){
+  var list=pendingList();
+  return pendingKSCard()+'<div class="card"><h2>Permintaan pendaftaran guru ('+list.length+')</h2>'+
+    (list.length?list.map(function(p){
+      var sc=schoolById(p.r.sekolahId);
+      return '<div class="pend"><div><b>'+esc(nameOf(p.uid))+'</b><div class="hint">'+esc(sc?sc.nama:"")+' · '+esc(p.r.kelasNama||"")+(p.r.baru&&sc&&!sc.kelas.some(function(k){return k.id===p.r.kelasId;})?' <span class="chip no">kelas baru</span>':'')+' · diajukan '+tgl(p.r.ts)+'</div></div>'+
+        '<div><button class="btn sm primary" data-action="approve" data-uid="'+esc(p.uid)+'" data-key="'+esc(p.key)+'">Setujui</button> <button class="btn sm danger" data-action="reject" data-uid="'+esc(p.uid)+'" data-key="'+esc(p.key)+'">Tolak</button></div></div>';
+    }).join(""):'<div class="hint">Tidak ada permintaan yang menunggu. Guru mendaftar sendiri lewat tab Lapor.</div>')+'</div>';
 }
 
-/* ---------- Lightbox ---------- */
-const lightbox = document.getElementById('lightbox');
-const lbImg = document.getElementById('lbImg');
-const lbTitle = document.getElementById('lbTitle');
-const lbCap = document.getElementById('lbCap');
-let lbIndex = 0;
-
-function openLightbox(idx){
-  if(photos.length === 0) return;
-  lbIndex = idx;
-  showLightboxPhoto();
-  lightbox.classList.add('open');
+function loadG(al,force){
+  var g=S.g;
+  var ok=al.some(function(x){return x.s.id===g.school&&x.k.id===g.kelas;});
+  if(!ok){g.school=al.length?al[0].s.id:"";g.kelas=al.length?al[0].k.id:"";g.loadedKey="";}
+  var key=g.school+"_"+g.kelas+"_"+g.month;
+  if(!force&&g.loadedKey===key)return;
+  var r=crep(g.school,g.kelas,g.month);
+  g.prefilled=false;
+  if(r){g.muslim=String(toInt(r.muslim));g.bisa=String(toInt(r.bisa));if(S.mode==="local"&&!g.pelapor&&r.pelapor)g.pelapor=r.pelapor;}
+  else{
+    var p=crep(g.school,g.kelas,shiftYM(g.month,-1));
+    g.muslim=p?String(toInt(p.muslim)):"";g.bisa="";g.prefilled=!!p;
+  }
+  g.dirty=false;g.loadedKey=key;
 }
-function showLightboxPhoto(){
-  const p = photos[lbIndex];
-  if(!p) return;
-  if(p.type === 'pdf'){ closeLightbox(); openPdfModal(p); return; }
-  lbImg.src = p.dataUrl;
-  lbTitle.textContent = p.title;
-  lbCap.textContent = p.caption;
+function renderInput(){
+  var g=S.g,al=allowed();
+  if(!sortedSchools().length){
+    $("view").innerHTML='<div class="card empty"><h2>Belum ada sekolah</h2><p>Admin perlu menambahkan sekolah dan daftar kelas terlebih dahulu.</p>'+(S.canAdmin?'<button class="btn primary" data-action="goto-sekolah">Kelola sekolah</button>':'')+'</div>';
+    return;
+  }
+  if(!al.length){
+    $("view").innerHTML=(S.myId?'<div class="card form-narrow"><h2>Anda belum terdaftar sebagai guru kelas</h2><p class="hint" style="margin:0">Daftarkan kelas yang Anda ajar di bawah ini. Admin akan memvalidasi, lalu kelas Anda muncul di halaman ini.</p></div>'+regCard():'<div class="card empty form-narrow"><h2>Akun Anda belum dikenali</h2><p>Masuk dengan akun Google Anda.</p></div>');
+    return;
+  }
+  loadG(al,false);
+  var cur=null;al.forEach(function(x){if(x.s.id===g.school&&x.k.id===g.kelas)cur=x;});
+  var s=cur.s,k=cur.k;
+  var dis=S.canWrite?"":" disabled";
+  var schoolsAllowed=[],seen={};al.forEach(function(x){if(!seen[x.s.id]){seen[x.s.id]=1;schoolsAllowed.push(x.s);}});
+  var kelasAllowed=al.filter(function(x){return x.s.id===g.school;});
+  var pick;
+  if(al.length===1){
+    pick='<div class="who"><div><b>'+esc(s.nama)+'</b><div class="hint">'+esc(k.nama)+'</div></div></div>';
+  }else{
+    var so=schoolsAllowed.map(function(x){return '<option value="'+esc(x.id)+'"'+(g.school===x.id?" selected":"")+'>'+esc(x.nama)+'</option>';}).join("");
+    var ko=kelasAllowed.map(function(x){return '<option value="'+esc(x.k.id)+'"'+(g.kelas===x.k.id?" selected":"")+'>'+esc(x.k.nama)+'</option>';}).join("");
+    pick='<div class="grid2"><div class="field"><label for="g-school">Sekolah</label><select id="g-school">'+so+'</select></div><div class="field"><label for="g-kelas">Kelas</label><select id="g-kelas">'+ko+'</select></div></div>';
+  }
+  var existed=!!crep(g.school,g.kelas,g.month);
+  var by="";
+  if(S.mode==="shared"){
+    var onBehalf=S.canAdmin&&k.guruId&&k.guruId!==S.myId;
+    by='<div class="hint" style="margin-top:10px">Pelapor: <b>'+esc(onBehalf?nameOf(k.guruId):(typedName(S.myId)||S.myName||"Anda"))+'</b>'+(onBehalf?' (Anda mengisi atas nama guru kelas ini)':'')+'</div>';
+  }else{
+    by='<div class="field" style="margin-top:10px"><label for="g-pelapor">Nama guru kelas</label><input type="text" id="g-pelapor" value="'+esc(g.pelapor)+'" placeholder="Nama lengkap Anda"'+dis+'></div>';
+  }
+  var chips=kelasAllowed.map(function(x){
+    var d=!!crep(g.school,x.k.id,g.month);
+    return '<button class="'+(d?"done ":"")+(x.k.id===g.kelas?"cur":"")+'" data-action="pick-class" data-id="'+esc(x.k.id)+'">'+(d?"✓ ":"")+esc(x.k.nama)+'</button>';
+  }).join("");
+  var chipCard=kelasAllowed.length>1?'<div class="card form-narrow"><h2>Kelas Anda di '+esc(s.nama)+'</h2><div class="cls">'+chips+'</div></div>':'';
+  $("view").innerHTML='<div class="card form-narrow"><h2>Laporan kelas · '+ymLabel(g.month)+'</h2>'+pick+
+    '<div class="field" style="margin-top:10px"><label for="g-month">Bulan laporan</label><input type="month" id="g-month" value="'+esc(g.month)+'"></div>'+by+
+    '<div class="grid2 bigin" style="margin-top:12px"><div class="field"><label for="g-muslim">Jumlah siswa beragama Islam</label><input type="number" inputmode="numeric" min="0" id="g-muslim" value="'+esc(g.muslim)+'"'+dis+'></div>'+
+    '<div class="field"><label for="g-bisa">Yang sudah bisa membaca Al-Qur\'an</label><input type="number" inputmode="numeric" min="0" id="g-bisa" value="'+esc(g.bisa)+'"'+dis+'></div></div>'+
+    (g.prefilled?'<div class="hint" style="margin-top:6px">Jumlah siswa Muslim diisi dari laporan bulan lalu. Ubah jika ada perubahan.</div>':'')+
+    '<div class="calc"><div><small>Belum bisa membaca (otomatis)</small><b id="g-belum">–</b></div><div><small>Persentase bisa membaca</small><b id="g-pct">–</b></div></div>'+
+    '<div class="bar" style="margin-bottom:0"><button class="btn primary" data-action="save-report"'+dis+'>'+(existed?"Perbarui laporan":"Kirim laporan")+'</button>'+
+    (existed?'<button class="btn danger" data-action="del-report"'+dis+'>Hapus</button>':'')+'<span class="hint" id="g-msg"></span></div>'+
+    (existed?'<div class="hint" style="margin-top:8px">Kelas ini sudah dilaporkan bulan ini. Mengirim lagi akan memperbarui data sebelumnya.</div>':'')+
+    '</div>'+chipCard+regCard();
+  updG();
 }
-function closeLightbox(){ lightbox.classList.remove('open'); }
-function lbPrev(){ lbIndex = (lbIndex - 1 + photos.length) % photos.length; showLightboxPhoto(); }
-function lbNext(){ lbIndex = (lbIndex + 1) % photos.length; showLightboxPhoto(); }
+function updG(){
+  var g=S.g,m=toInt(g.muslim),b=toInt(g.bisa),bad=b>m;
+  var bl=$("g-belum");if(!bl)return;
+  bl.textContent=g.muslim===""?"–":(bad?"!":fmt(m-b));
+  $("g-pct").textContent=(g.muslim===""||bad)?"–":pctTxt(pct(b,m));
+  $("g-bisa").classList.toggle("err",bad);
+}
+function targetDoc(k){
+  if(S.mode==="local")return "lokal";
+  if(S.canAdmin&&k.guruId&&k.guruId!==S.myId)return k.guruId;
+  return S.myId;
+}
+function writeMyReports(docId,mutate){
+  var cur=(S.raw[docId]&&S.raw[docId].reports)||{};
+  var next=JSON.parse(JSON.stringify(cur));
+  mutate(next);
+  return repo.set(COL_R,docId,{reports:next});
+}
+function saveReport(){
+  var g=S.g,msg=$("g-msg");
+  function fail(t){msg.textContent=t;msg.style.color="var(--bad)";}
+  var s=schoolById(g.school),k=s&&s.kelas.filter(function(x){return x.id===g.kelas;})[0];
+  if(!k)return fail("Pilih kelas.");
+  if(S.mode==="local"&&!g.pelapor.trim())return fail("Isi nama guru kelas.");
+  if(g.muslim==="")return fail("Isi jumlah siswa Muslim.");
+  if(g.bisa==="")return fail("Isi jumlah yang sudah bisa membaca (isi 0 jika belum ada).");
+  if(toInt(g.bisa)>toInt(g.muslim))return fail("Yang bisa membaca tidak boleh melebihi jumlah siswa Muslim.");
+  var docId=targetDoc(k);
+  if(!docId)return fail("Akun Anda belum dikenali, laporan tidak dapat disimpan.");
+  var key=g.school+"_"+g.kelas+"_"+g.month;
+  var entry={sekolahId:g.school,kelasId:g.kelas,kelasNama:k.nama,bulan:g.month,muslim:toInt(g.muslim),bisa:toInt(g.bisa),updatedAt:Date.now()};
+  if(S.mode==="local")entry.pelapor=g.pelapor.trim();
+  writeMyReports(docId,function(o){o[key]=entry;}).then(function(){
+    g.dirty=false;g.loadedKey="";
+    if(S.mode==="local")lsSet({pelapor:g.pelapor.trim()});
+    toast("Laporan "+k.nama+" tersimpan. Terima kasih!");render();
+  }).catch(writeFail);
+}
+function deleteReport(){
+  var g=S.g,s=schoolById(g.school),k=s.kelas.filter(function(x){return x.id===g.kelas;})[0];
+  var docId=targetDoc(k),key=g.school+"_"+g.kelas+"_"+g.month;
+  writeMyReports(docId,function(o){delete o[key];}).then(function(){g.loadedKey="";toast("Laporan dihapus");render();}).catch(writeFail);
+}
 
-document.getElementById('lbClose').onclick = closeLightbox;
-document.getElementById('lbPrev').onclick = lbPrev;
-document.getElementById('lbNext').onclick = lbNext;
-lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) closeLightbox(); });
-document.addEventListener('keydown', (e)=>{
-  if(!lightbox.classList.contains('open')) return;
-  if(e.key === 'Escape') closeLightbox();
-  if(e.key === 'ArrowLeft') lbPrev();
-  if(e.key === 'ArrowRight') lbNext();
+/* ---------- Kelola sekolah (admin) ---------- */
+var PRESET={"SD/MI":function(){var a=[];for(var i=1;i<=6;i++)a.push("Kelas "+i);return a;},
+  "SMP/MTs":function(){return ["Kelas 7","Kelas 8","Kelas 9"];},
+  "SMA/SMK/MA":function(){return ["Kelas 10","Kelas 11","Kelas 12"];},
+  "TK/PAUD":function(){return ["Kelompok A","Kelompok B"];},
+  "Lainnya":function(){return [];}};
+function assignPanel(sc){
+  if(S.mode!=="shared")return '<div class="hint" style="margin-top:8px">Penugasan guru kelas tersedia setelah Firebase dihubungkan.</div>';
+  return '<div style="margin-top:10px"><div class="hint">Cari nama guru lalu pilih untuk menghubungkannya dengan kelas. Hanya guru tersebut yang dapat mengisi laporan kelasnya.</div>'+
+    sc.kelas.map(function(k){
+      return '<div class="as-row"><div><b>'+esc(k.nama)+'</b><div class="hint">'+(k.guruId?'Guru: '+esc(guruTxt(k)):'Belum ada guru')+'</div></div>'+
+        '<div class="as-ctl"><input type="text" class="as-q" data-sid="'+esc(sc.id)+'" data-kid="'+esc(k.id)+'" placeholder="Cari nama guru…" autocomplete="off"><div class="as-res"></div>'+
+        (k.guruId?'<div><button class="btn sm" data-action="unassign" data-sid="'+esc(sc.id)+'" data-kid="'+esc(k.id)+'">Lepas guru</button></div>':'')+'</div></div>';
+    }).join("")+'</div>';
+}
+function renderSchools(){
+  var e=S.edit;
+  var jen=Object.keys(PRESET).map(function(j){return '<option'+(e.jenjang===j?" selected":"")+'>'+esc(j)+'</option>';}).join("");
+  var items=sortedSchools().map(function(s){
+    var cd=S.confirmDel===s.id,open=S.assignOpen===s.id;
+    var withG=s.kelas.filter(function(k){return k.guruId;}).length;
+    return '<div class="school-item" style="display:block"><div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center"><div><b>'+esc(s.nama)+'</b><div class="m">'+esc(s.jenjang)+' · '+s.kelas.length+' kelas ('+withG+' sudah ada guru): '+esc(s.kelas.map(function(k){return k.nama;}).join(", ")||"–")+'</div></div>'+
+      '<div><button class="btn sm" data-action="toggle-assign" data-id="'+esc(s.id)+'">'+(open?"Tutup":"Atur guru kelas")+'</button> '+(s.kepsekId?'<button class="btn sm" data-action="ks-remove" data-id="'+esc(s.id)+'">Lepas kepsek ('+esc(nameOf(s.kepsekId))+')</button> ':'')+'<button class="btn sm" data-action="edit-school" data-id="'+esc(s.id)+'">Ubah</button> <button class="btn sm danger" data-action="del-school" data-id="'+esc(s.id)+'">'+(cd?"Klik lagi untuk hapus":"Hapus")+'</button></div></div>'+
+      (open?assignPanel(s):'')+'</div>';
+  }).join("");
+  var form='<div class="card"><h2>'+(e.id?"Ubah sekolah":"Tambah sekolah binaan")+'</h2>'+
+    '<div class="grid2"><div class="field"><label for="e-nama">Nama sekolah</label><input type="text" id="e-nama" value="'+esc(e.nama)+'" placeholder="mis. SDN 12 Barru"></div>'+
+    '<div class="field"><label for="e-jenjang">Jenjang</label><select id="e-jenjang">'+jen+'</select></div></div>'+
+    '<div class="field" style="margin-top:10px"><label for="e-kelas">Daftar kelas (satu kelas per baris)</label><textarea id="e-kelas" placeholder="Kelas 1A&#10;Kelas 1B&#10;Kelas 2">'+esc(e.kelas)+'</textarea></div>'+
+    '<div class="bar" style="margin:10px 0 0"><button class="btn" data-action="preset">Isi otomatis sesuai jenjang</button><div class="spacer"></div>'+
+    (e.id?'<button class="btn" data-action="cancel-edit">Batal</button>':'')+
+    '<button class="btn primary" data-action="save-school">'+(e.id?"Simpan perubahan":"Tambah sekolah")+'</button></div>'+
+    '<div class="hint" style="margin-top:6px">Satu baris = satu kelas dengan satu guru pelapor. Setelah sekolah tersimpan, pakai tombol Atur guru kelas untuk menghubungkan nama guru ke tiap kelas.</div></div>';
+  $("view").innerHTML=(S.mode==="shared"?pendingCard():"")+form+'<div class="card"><h2>Sekolah binaan ('+S.schools.length+')</h2>'+(items||'<div class="empty">Belum ada sekolah.</div>')+'</div>'+(S.mode==="shared"?jsonCard():"");
+}
+function saveKelasList(sc,kelas){
+  var o={nama:sc.nama,jenjang:sc.jenjang,kelas:kelas.map(function(k){var x={id:k.id,nama:k.nama};if(k.guruId)x.guruId=k.guruId;return x;})};
+  if(sc.kepsekId)o.kepsekId=sc.kepsekId;
+  return repo.set(COL_S,sc.id,o);
+}
+function parseKelas(text,old){
+  var byName={},used={},out=[];
+  var oldBy={};
+  (old||[]).forEach(function(k){byName[k.nama]=k.id;oldBy[k.nama]=k;});
+  String(text).split(/\r?\n/).forEach(function(l){
+    l=l.trim();if(!l)return;
+    for(var i=0;i<out.length;i++)if(out[i].nama===l)return;
+    var id=byName[l]||slug(l);
+    var base=id,n=2;while(used[id]){id=base+"-"+n;n++;}
+    used[id]=1;out.push({id:id,nama:l,guruId:oldBy[l]?oldBy[l].guruId:null});
+  });
+  return out;
+}
+function saveSchool(){
+  var e=S.edit;
+  e.nama=$("e-nama").value.trim();e.jenjang=$("e-jenjang").value;e.kelas=$("e-kelas").value;
+  if(!e.nama){toast("Nama sekolah wajib diisi");return;}
+  var old=e.id?schoolById(e.id):null;
+  var kelas=parseKelas(e.kelas,old?old.kelas:[]);
+  if(!kelas.length){toast("Isi minimal satu kelas");return;}
+  var id=e.id||uid();
+  saveKelasList({id:id,nama:e.nama,jenjang:e.jenjang,kepsekId:old&&old.kepsekId},kelas).then(function(){
+    S.edit={id:null,nama:"",jenjang:"SD/MI",kelas:""};toast("Sekolah tersimpan");render();
+  }).catch(writeFail);
+}
+function deleteSchool(id){
+  repo.del(COL_S,id).then(function(){S.confirmDel=null;if(S.assignOpen===id)S.assignOpen=null;toast("Sekolah dihapus");}).catch(writeFail);
+}
+
+/* ---------- CSV ---------- */
+function csvCell(v){v=String(v==null?"":v);return /[",;\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+function buildCSV(onlyMonth){
+  var lines=[["Bulan","Sekolah","Jenjang","Kelas","Siswa Muslim","Bisa Membaca Al-Qur'an","Belum Bisa Membaca","Persen Bisa","Guru Pelapor","Terakhir Diperbarui"]];
+  var rs=S.reportsList.filter(function(r){return !onlyMonth||r.bulan===onlyMonth;});
+  rs.sort(function(a,b){return a.bulan!==b.bulan?(a.bulan<b.bulan?-1:1):String(a.sekolahId+a.kelasNama).localeCompare(b.sekolahId+b.kelasNama);});
+  rs.forEach(function(r){
+    var s=schoolById(r.sekolahId);if(!s||!visSchools().some(function(v){return v.id===s.id;}))return;
+    var m=toInt(r.muslim),b=Math.min(toInt(r.bisa),m),p=pct(b,m);
+    lines.push([r.bulan,s.nama,s.jenjang,r.kelasNama,m,b,m-b,p==null?"":p,reporterName(r),r.updatedAt?new Date(r.updatedAt).toISOString().slice(0,10):""]);
+  });
+  return "\ufeff"+lines.map(function(l){return l.map(csvCell).join(",");}).join("\r\n");
+}
+function exportCSV(onlyMonth){
+  if(!dl){toast("Fitur unduh tidak tersedia di tampilan ini");return;}
+  var csv=buildCSV(onlyMonth);
+  if(csv.split("\r\n").length<2){toast("Belum ada data untuk diunduh");return;}
+  dl.save({filename:"laporan-baca-quran-"+(onlyMonth||"semua-bulan")+".csv",data:csv}).then(function(){toast("File diunduh");}).catch(function(e){if(!e||e.code!=="declined")toast("Gagal mengunduh");});
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",function(ev){
+  var t=ev.target.closest("[data-tab],[data-action]");if(!t)return;
+  var tab=t.getAttribute("data-tab");
+  if(tab){S.tab=tab;S.confirmDel=null;render();return;}
+  var a=t.getAttribute("data-action"),id=t.getAttribute("data-id");
+  if(a==="login"){
+    var pr=new firebase.auth.GoogleAuthProvider();
+    window.__auth.signInWithPopup(pr).catch(function(e){
+      if(e&&(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-this-environment"))window.__auth.signInWithRedirect(pr);
+      else if(!e||e.code!=="auth/popup-closed-by-user")toast("Gagal masuk"+(e&&e.code?" ("+e.code+")":""));
+    });
+  }
+  else if(a==="logout"){window.__auth.signOut().then(function(){location.reload();});}
+  else if(a==="goto-sekolah"){S.tab="sekolah";render();}
+  else if(a==="pick-school"){S.scope=id;render();}
+  else if(a==="back-all"){S.scope="all";render();}
+  else if(a==="pick-class"){S.g.kelas=id;S.g.loadedKey="";S.g.dirty=false;render();}
+  else if(a==="csv-month")exportCSV(S.month);
+  else if(a==="csv-all")exportCSV(null);
+  else if(a==="save-report")saveReport();
+  else if(a==="del-report")deleteReport();
+  else if(a==="preset"){var j=$("e-jenjang").value;S.edit.nama=$("e-nama").value;S.edit.jenjang=j;S.edit.kelas=PRESET[j]().join("\n");render();}
+  else if(a==="save-school")saveSchool();
+  else if(a==="edit-school"){var s=schoolById(id);if(s){S.edit={id:s.id,nama:s.nama,jenjang:s.jenjang||"Lainnya",kelas:s.kelas.map(function(k){return k.nama;}).join("\n")};render();window.scrollTo(0,0);}}
+  else if(a==="cancel-edit"){S.edit={id:null,nama:"",jenjang:"SD/MI",kelas:""};render();}
+  else if(a==="del-school"){if(S.confirmDel===id)deleteSchool(id);else{S.confirmDel=id;render();}}
+  else if(a==="ks-submit"){
+    var ksel=$("k-school");if(!ksel||!ksel.value)return;
+    var kc=S.regRaw[S.myId]||{};
+    repo.set(COL_P,S.myId,{requests:kc.requests||{},nama:kc.nama||S.myName||S.email||"Kepala Sekolah",kepsek:{sekolahId:ksel.value,ts:Date.now()}}).then(function(){toast("Diajukan. Menunggu validasi admin.");render();}).catch(writeFail);
+  }
+  else if(a==="ks-cancel"){
+    var kc2=S.regRaw[S.myId]||{};
+    repo.set(COL_P,S.myId,{requests:kc2.requests||{},nama:kc2.nama||S.myName||""}).then(function(){toast("Dihapus");render();}).catch(writeFail);
+  }
+  else if(a==="ks-approve"){
+    var ksc=schoolById(t.getAttribute("data-sid")),kuid=t.getAttribute("data-uid");if(!ksc)return;
+    if(ksc.kepsekId&&ksc.kepsekId!==kuid){toast("Sekolah ini sudah punya kepala sekolah");return;}
+    saveKelasList(Object.assign({},ksc,{kepsekId:kuid}),ksc.kelas).then(function(){toast("Kepala sekolah disetujui");}).catch(writeFail);
+  }
+  else if(a==="ks-reject"){
+    var ku=t.getAttribute("data-uid");
+    repo.set(COL_D,ku,Object.assign(strip(S.dec[ku]),{kepsekDitolak:Date.now()})).then(function(){toast("Pendaftaran ditolak");}).catch(writeFail);
+  }
+  else if(a==="ks-remove"){
+    var rs=schoolById(id);if(!rs)return;
+    saveKelasList(Object.assign({},rs,{kepsekId:null}),rs.kelas).then(function(){toast("Kepala sekolah dilepas");}).catch(writeFail);
+  }
+  else if(a==="json-export")exportJSON();
+  else if(a==="json-import"){var jf=$("j-file");if(jf)jf.click();}
+  else if(a==="reg-submit")submitReg();
+  else if(a==="reg-cancel")cancelReg(t.getAttribute("data-key"));
+  else if(a==="approve")approveReg(t.getAttribute("data-uid"),t.getAttribute("data-key"));
+  else if(a==="reject")rejectReg(t.getAttribute("data-uid"),t.getAttribute("data-key"));
+  else if(a==="toggle-assign"){S.assignOpen=S.assignOpen===id?null:id;render();}
+  else if(a==="assign"||a==="unassign"){
+    var sc=schoolById(t.getAttribute("data-sid"));if(!sc)return;
+    var kid=t.getAttribute("data-kid"),gid=t.getAttribute("data-gid");
+    if(a==="assign"){S.names[gid]=t.getAttribute("data-gname");}
+    var kl=sc.kelas.map(function(k){return k.id===kid?{id:k.id,nama:k.nama,guruId:a==="assign"?gid:null}:k;});
+    saveKelasList(sc,kl).then(function(){toast(a==="assign"?"Guru kelas ditetapkan":"Guru kelas dilepas");}).catch(writeFail);
+  }
+});
+function runSearch(inp){
+  if(!userNs)return;
+  var box=inp.parentNode.querySelector(".as-res"),sid=inp.getAttribute("data-sid"),kid=inp.getAttribute("data-kid");
+  userNs.search(inp.value.trim()).then(function(hits){
+    if(!hits||!hits.length){box.innerHTML='<span class="hint">'+(inp.value.trim()?"Tidak ada nama yang cocok.":"Ketik nama guru untuk mencari.")+'</span>';return;}
+    box.innerHTML=hits.map(function(h){return '<button class="btn sm" data-action="assign" data-sid="'+esc(sid)+'" data-kid="'+esc(kid)+'" data-gid="'+esc(h.id)+'" data-gname="'+esc(h.name)+'">'+esc(h.name)+'</button>';}).join("");
+  });
+}
+document.addEventListener("focusin",function(ev){if(ev.target.classList&&ev.target.classList.contains("as-q"))runSearch(ev.target);});
+document.addEventListener("change",function(ev){
+  var t=ev.target;
+  if(t.id==="j-file"){importJSON(t);return;}
+  if(t.id==="f-month"&&t.value){S.month=t.value;render();}
+  else if(t.id==="f-scope"){S.scope=t.value;render();}
+  else if(t.id==="g-school"){S.g.school=t.value;S.g.kelas="";S.g.loadedKey="";S.g.dirty=false;render();}
+  else if(t.id==="g-kelas"){S.g.kelas=t.value;S.g.loadedKey="";S.g.dirty=false;render();}
+  else if(t.id==="r-school"){S.reg.school=t.value;S.reg.sel={};render();}
+  else if(t.getAttribute&&t.getAttribute("data-rk")){var rk=t.getAttribute("data-rk");if(t.checked)S.reg.sel[rk]=1;else delete S.reg.sel[rk];}
+  else if(t.id==="g-month"&&t.value){S.g.month=t.value;S.g.loadedKey="";S.g.dirty=false;render();}
+});
+document.addEventListener("input",function(ev){
+  var t=ev.target,g=S.g;
+  if(t.classList&&t.classList.contains("as-q")){runSearch(t);return;}
+  if(t.id==="r-extra"){S.reg.extra=t.value;return;}
+  if(t.id==="r-nama"){S.reg.nama=t.value;return;}
+  if(t.id==="g-muslim"){g.muslim=t.value;g.dirty=true;g.prefilled=false;updG();}
+  else if(t.id==="g-bisa"){g.bisa=t.value;g.dirty=true;updG();}
+  else if(t.id==="g-pelapor"){g.pelapor=t.value;g.dirty=true;}
+  else return;
+  var msg=$("g-msg");if(msg)msg.textContent="";
 });
 
-/* ---------- View switch (Lembar Laporan / Galeri) ---------- */
-const sheetWrapEl = document.querySelector('.sheet-wrap');
-const galleryWrapEl = document.getElementById('galleryWrap');
-const toolbarBtns = document.querySelector('.toolbar .btns');
-
-document.querySelectorAll('.vtab').forEach(tab=>{
-  tab.onclick = ()=>{
-    document.querySelectorAll('.vtab').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');
-    const view = tab.dataset.view;
-    if(view === 'gallery'){
-      sheetWrapEl.style.display = 'none';
-      galleryWrapEl.style.display = 'block';
-      toolbarBtns.style.display = 'none';
-      renderGallery();
-    } else {
-      sheetWrapEl.style.display = '';
-      galleryWrapEl.style.display = 'none';
-      toolbarBtns.style.display = '';
-      closeLightbox();
+/* ---------- data wiring ---------- */
+function collectIds(){
+  if(S.ownOnly)return S.myId?[S.myId]:[];
+  var ids={};
+  if(S.myId)ids[S.myId]=1;
+  S.schools.forEach(function(sc){sc.kelas.forEach(function(k){if(k.guruId)ids[k.guruId]=1;});});
+  Object.keys(S.raw).forEach(function(id){if(id!=="lokal")ids[id]=1;});
+  Object.keys(S.regRaw).forEach(function(id){ids[id]=1;});
+  return Object.keys(ids);
+}
+async function resolveNames(){
+  if(!userNs)return;
+  var need=collectIds().filter(function(id){return !S.names[id]&&!typedName(id);});
+  if(!need.length)return;
+  try{
+    var ps=await userNs.profiles(need);
+    need.forEach(function(id){if(ps[id]&&ps[id].name)S.names[id]=ps[id].name;});
+  }catch(e){}
+}
+function rebuildReports(){
+  var best={};
+  Object.keys(S.raw).forEach(function(uid){
+    var rs=(S.raw[uid]&&S.raw[uid].reports)||{};
+    Object.keys(rs).forEach(function(key){
+      var r=rs[key];if(!r||!r.sekolahId)return;
+      var sc=schoolById(r.sekolahId);if(!sc)return;
+      var k=sc.kelas.filter(function(x){return x.id===r.kelasId;})[0];if(!k)return;
+      if(S.mode==="shared"&&k.guruId&&k.guruId!==uid)return;
+      var kk=r.sekolahId+"_"+r.kelasId+"_"+r.bulan;
+      var c=Object.assign({},r);c._by=uid;
+      if(!best[kk]||(c.updatedAt||0)>(best[kk].updatedAt||0))best[kk]=c;
+    });
+  });
+  S.reports=best;
+  S.reportsList=Object.keys(best).map(function(k){return best[k];});
+}
+function onData(){
+  if(!(loaded.sekolah&&loaded.laporan&&loaded.p&&loaded.d))return;
+  rebuildReports();
+  var go=function(){
+    S.ready=true;
+    if(!S._tabSet){S._tabSet=1;if(S.mode==="shared"&&!S.canAdmin&&managed().length)S.tab="ringkas";}
+    rebuildReports();
+    var ae=document.activeElement;
+    if(S.tab==="sekolah"&&ae&&((ae.classList&&ae.classList.contains("as-q"))||/^e-/.test(ae.id||"")))return;
+    if(S.tab==="input"&&S.g.dirty)return;
+    if(ae&&(ae.id==="r-extra"||ae.id==="r-nama"))return;
+    render();
+  };
+  if(userNs&&collectIds().some(function(id){return !S.names[id];}))resolveNames().then(go);else go();
+}
+function start(){
+  var saved=lsGet();
+  if(saved.pelapor)S.g.pelapor=saved.pelapor;
+  render();
+  (async function(){
+    var db=null;
+    try{
+      if(window.claude&&window.claude.use){
+        db=await window.claude.use("db");
+        userNs=await window.claude.use("user");
+        dl=await window.claude.use("downloads");
+      }
+    }catch(e){}
+    if(!db&&fbOn()){
+      try{var fb=await fbStart();db=fb.db;userNs=fb.user;dl=fb.dl;}
+      catch(e){toast("Gagal masuk ke Firebase"+(e&&e.code?" ("+e.code+")":""));}
     }
-  };
-});
-
-/* ---------- Tanda Tangan (signature pads) ---------- */
-const sigRow = document.getElementById('sigRow');
-const addSigBtn = document.getElementById('addSigBtn');
-let sigCounter = 0;
-
-function setupSignaturePad(canvas){
-  const ctx = canvas.getContext('2d');
-  const ratio = window.devicePixelRatio || 1;
-  const cssW = canvas.clientWidth || 188;
-  const cssH = canvas.clientHeight || 88;
-  canvas.width = cssW * ratio;
-  canvas.height = cssH * ratio;
-  ctx.scale(ratio, ratio);
-  ctx.lineWidth = 2;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  ctx.strokeStyle = '#1E2126';
-
-  let drawing = false, last = null;
-  const hint = canvas.parentElement.querySelector('.sig-pad-hint');
-
-  function pos(e){
-    const rect = canvas.getBoundingClientRect();
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-  }
-  canvas.addEventListener('pointerdown', (e)=>{
-    drawing = true;
-    last = pos(e);
-    if(hint) hint.style.display = 'none';
-    canvas.setPointerCapture(e.pointerId);
-    e.preventDefault();
-  });
-  canvas.addEventListener('pointermove', (e)=>{
-    if(!drawing) return;
-    const p = pos(e);
-    ctx.beginPath();
-    ctx.moveTo(last.x, last.y);
-    ctx.lineTo(p.x, p.y);
-    ctx.stroke();
-    last = p;
-  });
-  const stop = ()=>{ drawing = false; };
-  canvas.addEventListener('pointerup', stop);
-  canvas.addEventListener('pointercancel', stop);
-  canvas.addEventListener('pointerleave', stop);
-
-  canvas._clear = ()=>{
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if(hint) hint.style.display = 'flex';
-  };
+    if(userNs){
+      try{var c=await userNs.can("data.write");S.canWrite=c!==false;}catch(e){}
+      try{S.canAdmin=!!(await userNs.canEdit());}catch(e){}
+      try{var me=await userNs.me();S.myId=me.id||null;S.myName=me.name||"";if(S.myId&&S.myName)S.names[S.myId]=S.myName;}catch(e){}
+    }
+    S.mode=db?"shared":"local";
+    if(!db)S.canAdmin=true;
+    if(db&&S.canAdmin)S.tab="ringkas";
+    repo=db?dbRepo(db):localRepo();
+    var hR=function(l){var m={};l.forEach(function(d){m[d.id]=d;});S.raw=m;loaded.laporan=true;onData();};
+    var hP=function(l){var m={};l.forEach(function(d){m[d.id]=d;});S.regRaw=m;loaded.p=true;onData();};
+    var hD=function(l){var m={};l.forEach(function(d){m[d.id]=d;});S.dec=m;loaded.d=true;onData();};
+    var scope=null,unsubs=[];
+    /* admin & kepala sekolah memuat semua data; guru biasa hanya datanya sendiri */
+    function wire(full){
+      var want=full?"full":"own";
+      if(scope===want)return;
+      unsubs.forEach(function(u){if(u)u();});unsubs=[];
+      scope=want;S.ownOnly=!full;
+      loaded.laporan=false;loaded.p=false;loaded.d=false;
+      if(full){
+        unsubs.push(repo.subscribe(COL_R,hR));
+        if(db){unsubs.push(repo.subscribe(COL_P,hP));unsubs.push(repo.subscribe(COL_D,hD));}
+        else{loaded.p=true;loaded.d=true;}
+      }else{
+        unsubs.push(repo.subscribeDoc(COL_R,S.myId,hR));
+        unsubs.push(repo.subscribeDoc(COL_P,S.myId,hP));
+        unsubs.push(repo.subscribeDoc(COL_D,S.myId,hD));
+      }
+    }
+    repo.subscribe(COL_S,function(l){
+      S.schools=l.map(normSchool);loaded.sekolah=true;
+      wire(!db||!S.myId||S.canAdmin||managed().length>0);
+      onData();
+    });
+  })();
 }
-
-function createSigBlock(opts){
-  opts = opts || {};
-  sigCounter++;
-  const block = document.createElement('div');
-  block.className = 'sig-block';
-  block.innerHTML = `
-    <button class="sig-remove no-export" title="Hapus tanda tangan ini">&times;</button>
-    <input class="sig-place" value="${opts.place || 'Kota, .....................'}">
-    <input class="sig-label" value="${opts.label || 'Mengetahui,'}">
-    <div class="sig-pad-wrap">
-      <canvas class="sig-pad"></canvas>
-      <div class="sig-pad-hint no-export">Tanda tangan di sini</div>
-    </div>
-    <button class="sig-clear no-export">Hapus tanda tangan</button>
-    <div class="sig-line"></div>
-    <input class="sig-name" value="${opts.name || '( Nama Terang )'}">
-    <input class="sig-position" value="${opts.position || 'Jabatan'}">
-  `;
-  const canvas = block.querySelector('.sig-pad');
-  setupSignaturePad(canvas);
-  block.querySelector('.sig-clear').onclick = ()=> canvas._clear();
-  return block;
-}
-
-function addSignatureBlock(opts){
-  const block = createSigBlock(opts);
-  sigRow.appendChild(block);
-  block.querySelector('.sig-remove').onclick = ()=>{
-    if(sigRow.children.length <= 1) return; // keep at least one signature block
-    block.remove();
-  };
-}
-
-/* ---------- Tanda tangan pembuat laporan (di tab Galeri) ---------- */
-const gallerySigRow = document.getElementById('gallerySigRow');
-function addGallerySignatureBlock(opts){
-  const block = createSigBlock(opts);
-  gallerySigRow.appendChild(block);
-  block.querySelector('.sig-remove').onclick = ()=>{
-    if(gallerySigRow.children.length <= 1) return; // keep at least one signature block
-    block.remove();
-  };
-}
-document.getElementById('addGallerySigBtn').onclick = ()=> addGallerySignatureBlock();
-
-addSigBtn.onclick = ()=> addSignatureBlock();
-
-// default: one signature block on load
-addSignatureBlock({ label: 'Mengetahui,', place: 'Kota, .....................', name: '( Nama Terang )', position: 'Jabatan' });
-
-// default: one signature block for report creator, on gallery view
-addGallerySignatureBlock({ label: 'Pembuat Laporan,', place: 'Kota, .....................', name: '( Nama Terang )', position: 'Jabatan' });
-
-/* ---------- Penampil PDF (lihat & unduh langsung dari kartu di lembar foto) ---------- */
-function downloadPdfAttachment(p){
-  const link = document.createElement('a');
-  link.href = p.pdfDataUrl;
-  link.download = p.fileName || 'dokumen.pdf';
-  link.click();
-}
-
-const pdfModal = document.getElementById('pdfModal');
-const pdfModalFrame = document.getElementById('pdfModalFrame');
-const pdfModalTitle = document.getElementById('pdfModalTitle');
-const pdfModalDownload = document.getElementById('pdfModalDownload');
-let currentPdfForModal = null;
-
-function openPdfModal(p){
-  currentPdfForModal = p;
-  pdfModalTitle.textContent = p.fileName || p.title || 'Dokumen PDF';
-  pdfModalFrame.src = p.pdfDataUrl;
-  pdfModal.classList.add('open');
-}
-function closePdfModal(){
-  pdfModal.classList.remove('open');
-  pdfModalFrame.src = '';
-  currentPdfForModal = null;
-}
-document.getElementById('pdfModalClose').onclick = closePdfModal;
-pdfModal.addEventListener('click', (e)=>{ if(e.target === pdfModal) closePdfModal(); });
-pdfModalDownload.onclick = ()=>{ if(currentPdfForModal) downloadPdfAttachment(currentPdfForModal); };
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'Escape' && pdfModal.classList.contains('open')) closePdfModal();
-});
-
-buildThemeRow();
-applyTheme('marun');
-render();
+start();
+})();
 </script>
-
 </body>
 </html>
